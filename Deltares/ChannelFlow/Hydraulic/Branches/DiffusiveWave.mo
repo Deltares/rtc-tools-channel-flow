@@ -1,6 +1,6 @@
 within Deltares.ChannelFlow.Hydraulic.Branches;
 
-model Sobek
+model DiffusiveWave
   import SI = Modelica.SIunits;
   extends Internal.PartialBranchSobek(nominal_depth = fill(uniform_nominal_depth, n_level_nodes + 1), nominal_width = fill(width, n_level_nodes + 1), H(each min=H_b));
   // Nominal depth
@@ -13,4 +13,4 @@ equation
   // Compute cross sections
   cross_section = width * (H - fill(H_b, n_level_nodes));
   annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10})));
-end Sobek;
+end DiffusiveWave;
