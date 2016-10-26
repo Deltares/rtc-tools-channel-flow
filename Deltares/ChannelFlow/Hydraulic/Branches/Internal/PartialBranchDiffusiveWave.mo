@@ -1,7 +1,7 @@
 within Deltares.ChannelFlow.Hydraulic.Branches.Internal;
 
-partial model PartialBranchSobek
-  import SI = Modelica.SIunits; 
+partial model PartialBranchDiffusiveWave
+  import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
   // Lateral inflow points, use -1 for diffuse inflow
@@ -54,10 +54,10 @@ equation
   // Note that the equation is formulated without any divisions, to make collocation more robust.
   for section in 2:n_level_nodes loop
 //    (if use_inertia then 1 else 0) * der(Q[section]) + Modelica.Constants.g_n * nominal_depth[section] * nominal_width[section] * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * wind_stress + friction_coefficient * Q[section] = 0;
-    
+
   Modelica.Constants.g_n * 0.5 * (cross_section[section] + cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ (friction_coefficient^2 * (0.5 * (cross_section[section] + cross_section[section - 1]))^2 / (width + ((H[section] + H[section-1])))) = 0;
-  
-  
+
+
   end for;
   // Mass balance equations
   // Mass balance equations for same height nodes result in relation between flows on connectors.  We can therefore chain branch elements.
@@ -66,5 +66,4 @@ equation
     der(cross_section[node]) = (Q[node] - Q[node + 1] + QForcing_distribution[node]) / dxq[node];
   end for;
   annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10}), graphics = {Rectangle(visible = true, fillColor = {0, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-60, -20}, {60, 20}})}));
-end PartialBranchSobek;
-
+end PartialBranchDiffusiveWave;
