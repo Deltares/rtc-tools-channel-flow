@@ -1,6 +1,6 @@
 within Deltares.ChannelFlow.Hydraulic.Branches.Internal;
 
-partial model PartialBranchDiffusiveWave
+model PartialHybridTheta
   import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
@@ -26,6 +26,8 @@ partial model PartialBranchDiffusiveWave
   // Discretization options
   parameter Boolean use_inertia = true;
   parameter Integer n_level_nodes = 2;
+  parameter Real theta = 0;
+  parameter SI.VolumeFlowRate Q_nominal = 0.0;
 protected
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Distance[n_level_nodes] dxq;
@@ -55,7 +57,7 @@ equation
   for section in 2:n_level_nodes loop
 //    (if use_inertia then 1 else 0) * der(Q[section]) + Modelica.Constants.g_n * nominal_depth[section] * nominal_width[section] * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * wind_stress + friction_coefficient * Q[section] = 0;
 
-  Modelica.Constants.g_n * 0.5 * (cross_section[section] + cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ (friction_coefficient^2 * 0.5 * (cross_section[section] + cross_section[section - 1]) * (width + ((H[section] + H[section-1])))) = 0;
+  Modelica.Constants.g_n * 0.5 * (cross_section[section] + cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ (friction_coefficient^2 * 0.5 * (cross_section[section] + cross_section[section - 1]) * (width + ((H[section] + H[section-1])))) * theta + (1 - theta) * (Q_nominal * Modelica.Constants.g_n) / (friction_coefficient^2 * (nominal_depth[section] * 2 + nominal_width[section]) * (nominal_width[section] * nominal_depth[section])) * Q[section] = 0;
 
 
   end for;
@@ -66,4 +68,4 @@ equation
     der(cross_section[node]) = (Q[node] - Q[node + 1] + QForcing_distribution[node]) / dxq[node];
   end for;
   annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10}), graphics = {Rectangle(visible = true, fillColor = {0, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-60, -20}, {60, 20}})}));
-end PartialBranchDiffusiveWave;
+end PartialHybridTheta;
