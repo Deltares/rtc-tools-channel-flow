@@ -55,7 +55,7 @@ equation
   for section in 2:n_level_nodes loop
 //    (if use_inertia then 1 else 0) * der(Q[section]) + Modelica.Constants.g_n * nominal_depth[section] * nominal_width[section] * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * wind_stress + friction_coefficient * Q[section] = 0;
 
-  Modelica.Constants.g_n * 0.5 * (cross_section[section] + cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ (friction_coefficient^2 * 0.5 * (cross_section[section] + cross_section[section - 1]) * (width + ((H[section] + H[section-1])))) = 0;
+  Modelica.Constants.g_n * 0.5 * (cross_section[section] + cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ (friction_coefficient^2 * (0.5 * (cross_section[section] + cross_section[section - 1]))^2 / (width + ((H[section] + H[section-1])))) = 0;
 
 
   end for;
