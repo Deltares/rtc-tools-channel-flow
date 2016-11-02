@@ -2,7 +2,7 @@ within Deltares.ChannelFlow.Hydraulic.Branches;
 
 model Linear
   import SI = Modelica.SIunits;
-  extends Internal.PartialBranch(nominal_depth = fill(uniform_nominal_depth, n_level_nodes + 1), nominal_width = fill(width, n_level_nodes + 1), H(each min=H_b));
+  extends Internal.PartialHomotopic(theta = 0.0, nominal_depth = fill(uniform_nominal_depth, n_level_nodes + 1), nominal_width = fill(width, n_level_nodes + 1), H(each min=H_b));
   // Nominal depth
   parameter SI.Distance uniform_nominal_depth;
   // Width
