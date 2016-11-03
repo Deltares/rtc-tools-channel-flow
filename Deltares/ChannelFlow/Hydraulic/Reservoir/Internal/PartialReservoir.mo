@@ -9,7 +9,7 @@ partial model PartialReservoir
   input SI.VolumeFlowRate Q_spill;
   // States
   SI.Position H;
-  SI.Volume V(nominal = 1e6);
+  SI.Volume V(min=0, nominal = 1e6);
 equation
   // Water level
   H = HQUp.H;
