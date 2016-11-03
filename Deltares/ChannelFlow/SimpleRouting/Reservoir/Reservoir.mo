@@ -8,7 +8,7 @@ block Reservoir
   input SI.VolumeFlowRate Q_turbine;
   input SI.VolumeFlowRate Q_spill;
   // States
-  SI.Volume V(nominal = 1e6);
+  SI.Volume V(min = 0, nominal = 1e6);
 equation
   // Mass balance
   der(V) = QIn.Q - QOut.Q + sum(QForcing);
