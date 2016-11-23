@@ -1,7 +1,7 @@
 within Deltares.ChannelFlow.Hydraulic.Branches.Internal;
 
-partial model PartialBranch
-  import SI = Modelica.SIunits; 
+partial model PartialHomotopic
+  import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
   // Lateral inflow points, use -1 for diffuse inflow
@@ -24,6 +24,8 @@ partial model PartialBranch
   // Discretization options
   parameter Boolean use_inertia = true;
   parameter Integer n_level_nodes = 2;
+  parameter Real theta;
+  parameter SI.VolumeFlowRate Q_nominal = 1.0;
 protected
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Area[n_level_nodes] _cross_section;
@@ -52,14 +54,13 @@ equation
   // Momentum equation
   // Note that the equation is formulated without any divisions, to make collocation more robust.
   for section in 2:n_level_nodes loop
-    (if use_inertia then 1 else 0) * der(Q[section]) + Modelica.Constants.g_n * nominal_depth[section] * nominal_width[section] * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * wind_stress + friction_coefficient * Q[section] = 0;
+      (if use_inertia then 1 else 0) * der(Q[section]) + theta * Modelica.Constants.g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * Modelica.Constants.g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * wind_stress + theta * (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ (friction_coefficient^2 * (0.5 * (_cross_section[section] + _cross_section[section - 1]))^2 / (nominal_width[section] + (H[section] + H[section-1]))) + (1 - theta) * (abs(Q_nominal) * Modelica.Constants.g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
   end for;
   // Mass balance equations
-  // Mass balance equations for same height nodes result in relation between flows on connectors.  We can therefore chain branch elements.
+  // Mass balance equations for same height nodes result in relation between flows on connectors. We can therefore chain branch elements.
   // Note that every mass balance is over half of the element, the cross section of which varies linearly between the cross section at the boundary and the cross section in the middle.
   for node in 1:n_level_nodes loop
     der(_cross_section[node]) = (Q[node] - Q[node + 1] + _QForcing_distribution[node]) / _dxq[node];
   end for;
   annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10}), graphics = {Rectangle(visible = true, fillColor = {0, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-60, -20}, {60, 20}})}));
-end PartialBranch;
-
+end PartialHomotopic;
