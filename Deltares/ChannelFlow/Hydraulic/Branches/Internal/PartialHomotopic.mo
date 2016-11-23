@@ -54,10 +54,10 @@ equation
   // Momentum equation
   // Note that the equation is formulated without any divisions, to make collocation more robust.
   for section in 2:n_level_nodes loop
-      (if use_inertia then 1 else 0) * der(Q[section]) + theta * Modelica.Constants.g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx +  (1 - theta) * Modelica.Constants.g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * wind_stress +  theta * (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ (friction_coefficient^2 * (0.5 * (_cross_section[section] + _cross_section[section - 1]))^2 / (nominal_width[section] + ((H[section] + H[section-1]))))  +  (1 - theta) * (Q_nominal * Modelica.Constants.g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
+      (if use_inertia then 1 else 0) * der(Q[section]) + theta * Modelica.Constants.g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * Modelica.Constants.g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * wind_stress + theta * (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ (friction_coefficient^2 * (0.5 * (_cross_section[section] + _cross_section[section - 1]))^2 / (nominal_width[section] + (H[section] + H[section-1]))) + (1 - theta) * (abs(Q_nominal) * Modelica.Constants.g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
   end for;
   // Mass balance equations
-  // Mass balance equations for same height nodes result in relation between flows on connectors.  We can therefore chain branch elements.
+  // Mass balance equations for same height nodes result in relation between flows on connectors. We can therefore chain branch elements.
   // Note that every mass balance is over half of the element, the cross section of which varies linearly between the cross section at the boundary and the cross section in the middle.
   for node in 1:n_level_nodes loop
     der(_cross_section[node]) = (Q[node] - Q[node + 1] + _QForcing_distribution[node]) / _dxq[node];
