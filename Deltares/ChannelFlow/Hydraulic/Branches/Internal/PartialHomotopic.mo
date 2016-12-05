@@ -11,7 +11,7 @@ partial model PartialHomotopic
   // Flow
   SI.VolumeFlowRate[n_level_nodes + 1] Q;
   // Water level
-  SI.Position[n_level_nodes] H;
+  SI.Position[n_level_nodes] H; // would be nice to set min using the H_b_array here (see http://www.jmodelica.org/717 )
   // Length
   parameter SI.Distance length = 1.0;
   // Nominal depth and width for linearized pressure term and wind stress term
