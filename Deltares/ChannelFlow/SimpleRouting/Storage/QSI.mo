@@ -2,8 +2,8 @@ within Deltares.ChannelFlow.SimpleRouting.Storage;
 
 block QSI
   import SI = Modelica.SIunits;
+  extends Deltares.ChannelFlow.Internal.QSI;
   extends Deltares.ChannelFlow.Internal.QForcing;
-  Deltares.ChannelFlow.Interfaces.QInPort QIn annotation(Placement(visible = true, transformation(origin = {-80, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {-80, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   // States
   SI.Volume V(min=0, nominal = 1e6);
 equation

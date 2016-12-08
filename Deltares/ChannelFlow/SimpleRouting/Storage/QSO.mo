@@ -2,8 +2,8 @@ within Deltares.ChannelFlow.SimpleRouting.Storage;
 
 block QSO
   import SI = Modelica.SIunits;
+  extends Deltares.ChannelFlow.Internal.QSO;
   extends Deltares.ChannelFlow.Internal.QForcing;
-  Deltares.ChannelFlow.Interfaces.QOutPort QOut annotation(Placement(visible = true, transformation(origin = {80, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0), iconTransformation(origin = {80, 0}, extent = {{-20, -20}, {20, 20}}, rotation = 0)));
   // Inputs
   input SI.VolumeFlowRate QOut_control;
   // States
