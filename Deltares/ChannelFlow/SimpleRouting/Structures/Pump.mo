@@ -2,7 +2,8 @@ within Deltares.ChannelFlow.SimpleRouting.Structures;
 
 model Pump "Pump"
   import SI = Modelica.SIunits;
-  extends Deltares.ChannelFlow.Interfaces.Partials.QSISO;
+  extends Deltares.ChannelFlow.Internal.QSISO;
+  // Inputs
   input SI.VolumeFlowRate Q;
 equation
   QIn.Q + QOut.Q = 0;
