@@ -36,7 +36,7 @@ algorithm
   _QForcing_distribution := fill(0.0, n_level_nodes);
   for i_Qforcing in 1:n_QForcing loop
     if QForcing_chainage[i_Qforcing] == -1 then
-        _QForcing_distribution := _QForcing_distribution + QForcing[i_Qforcing] * dxq / length;
+        _QForcing_distribution := _QForcing_distribution + QForcing[i_Qforcing] * _dxq / length;
     else
         _QForcing_distribution[QForcing_chainage[i_Qforcing]] := _QForcing_distribution[QForcing_chainage[i_Qforcing]] + QForcing[i_Qforcing];
     end if;
