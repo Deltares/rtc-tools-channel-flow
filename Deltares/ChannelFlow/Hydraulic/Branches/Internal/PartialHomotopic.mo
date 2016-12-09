@@ -4,8 +4,10 @@ partial model PartialHomotopic
   import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
+  extends Deltares.ChannelFlow.Internal.QLateral;
   // Lateral inflow points, use -1 for diffuse inflow
   parameter Integer QForcing_chainage[n_QForcing] = fill(1, n_QForcing);
+  parameter Integer QLateral_chainage[n_QLateral] = fill(1, n_QLateral);
   // Wind stress
   input SI.Stress wind_stress(nominal = 1e-1) = 0.0;
   // Flow
@@ -30,15 +32,22 @@ protected
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Area[n_level_nodes] _cross_section;
   SI.Distance[n_level_nodes] _dxq;
-  SI.VolumeFlowRate[n_level_nodes] _QForcing_distribution;
+  SI.VolumeFlowRate[n_level_nodes] _QPerpendicular_distribution;
 algorithm
   // Fill helper array for lateral forcing
-  _QForcing_distribution := fill(0.0, n_level_nodes);
-  for i_Qforcing in 1:n_QForcing loop
-    if QForcing_chainage[i_Qforcing] == -1 then
-        _QForcing_distribution := _QForcing_distribution + QForcing[i_Qforcing] * dxq / length;
+  _QPerpendicular_distribution := fill(0.0, n_level_nodes);
+  for i_QForcing in 1:n_QForcing loop
+    if QForcing_chainage[i_QForcing] == -1 then
+        _QPerpendicular_distribution := _QPerpendicular_distribution + QForcing[i_QForcing] * _dxq / length;
     else
-        _QForcing_distribution[QForcing_chainage[i_Qforcing]] := _QForcing_distribution[QForcing_chainage[i_Qforcing]] + QForcing[i_Qforcing];
+        _QPerpendicular_distribution[QForcing_chainage[i_QForcing]] := _QPerpendicular_distribution[QForcing_chainage[i_QForcing]] + QForcing[i_QForcing];
+    end if;
+  end for;
+  for i_QLateral in 1:n_QLateral loop
+    if QLateral_chainage[i_QLateral] == -1 then
+        _QPerpendicular_distribution := _QPerpendicular_distribution + QLateral[i_QLateral].Q * _dxq / length;
+    else
+        _QPerpendicular_distribution[QLateral_chainage[i_QLateral]] := _QPerpendicular_distribution[QLateral_chainage[i_QLateral]] + QLateral[i_QLateral].Q;
     end if;
   end for;
 equation
@@ -60,7 +69,7 @@ equation
   // Mass balance equations for same height nodes result in relation between flows on connectors. We can therefore chain branch elements.
   // Note that every mass balance is over half of the element, the cross section of which varies linearly between the cross section at the boundary and the cross section in the middle.
   for node in 1:n_level_nodes loop
-    der(_cross_section[node]) = (Q[node] - Q[node + 1] + _QForcing_distribution[node]) / _dxq[node];
+    der(_cross_section[node]) = (Q[node] - Q[node + 1] + _QPerpendicular_distribution[node]) / _dxq[node];
   end for;
   annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10}), graphics = {Rectangle(visible = true, fillColor = {0, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-60, -20}, {60, 20}})}));
 end PartialHomotopic;
