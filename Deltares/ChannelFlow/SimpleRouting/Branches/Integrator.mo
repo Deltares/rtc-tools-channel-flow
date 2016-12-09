@@ -1,7 +1,6 @@
 within Deltares.ChannelFlow.SimpleRouting.Branches;
 
 block Integrator
-  import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.QSISO;
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
