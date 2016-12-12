@@ -4,8 +4,9 @@ partial model PartialHomotopic
   import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
-  // Lateral inflow points, use -1 for diffuse inflow
-  parameter Integer QForcing_chainage[n_QForcing, n_level_nodes] = fill(0, n_QForcing, n_level_nodes);
+  // Lateral inflow. A Matrix with n_QForcing rows and n_level_nodes columns. Each row corresponds to a QForcing and defines the distribution of that QForcing along the Branch.
+  // NOTE: To preserve mass, each row should sum to 1.0
+  parameter Real QForcing_map[n_QForcing, n_level_nodes] = fill(0, n_QForcing, n_level_nodes);
   // Wind stress
   input SI.Stress wind_stress(nominal = 1e-1) = 0.0;
   // Flow
@@ -30,7 +31,7 @@ protected
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Area[n_level_nodes] _cross_section;
   SI.Distance[n_level_nodes] _dxq;
-  SI.VolumeFlowRate[n_level_nodes] _QForcing_distribution = QForcing * QForcing_chainage;
+  SI.VolumeFlowRate[n_level_nodes] _QForcing_distribution = QForcing * QForcing_map;
 equation
   // Store boundary values into array for convenience
   Q[1] = HQUp.Q;
