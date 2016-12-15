@@ -17,13 +17,13 @@ model HomotopicFixedFreeWeir "Homotopic One-way Fixed Weir In the Free Flow Regi
   // "Max Function" hardness parameter
   parameter Integer nonlinear_hardness_factor = 100;
 protected
-  Modelica.SIunits.VolumeFlowRate Linear_Q_weir;
-  Modelica.SIunits.VolumeFlowRate Nonlinear_Q_weir;
+  Modelica.SIunits.VolumeFlowRate linear_Q_weir;
+  Modelica.SIunits.VolumeFlowRate monlinear_Q_weir;
 equation
-  Linear_Q_weir = (2.0 / 3.0 * width * sqrt(2.0 / 3.0 * Modelica.Constants.g_n) * linearization_offset ^ exponent) / linearization_offset * (HQUp.H - h);
-  Nonlinear_Q_weir = 2.0 / 3.0 * width * sqrt(2.0 / 3.0 * Modelica.Constants.g_n) * (log(1 + exp((HQUp.H - h) * nonlinear_hardness_factor)) / nonlinear_hardness_factor) ^ exponent;
+  linear_Q_weir = (2.0 / 3.0 * width * sqrt(2.0 / 3.0 * Modelica.Constants.g_n) * linearization_offset ^ exponent) / linearization_offset * (HQUp.H - h);
+  monlinear_Q_weir = 2.0 / 3.0 * width * sqrt(2.0 / 3.0 * Modelica.Constants.g_n) * (log(1 + exp((HQUp.H - h) * nonlinear_hardness_factor)) / nonlinear_hardness_factor) ^ exponent;
   // Combine Linear and Nonlinear Equations
-  HQUp.Q = Linear_Q_weir * (1 - theta) + Nonlinear_Q_weir * theta;
+  HQUp.Q = (1 - theta) * linear_Q_weir + theta * monlinear_Q_weir;
   // Inflow equals outflow
   HQUp.Q + HQDown.Q = 0.0;
   annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10}), graphics = {Polygon(visible = true, origin = {-0, -16.667}, fillColor = {128, 128, 128}, fillPattern = FillPattern.Solid, lineThickness = 2, points = {{0, 66.667}, {-50, -33.333}, {50, -33.333}})}), Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10})));
