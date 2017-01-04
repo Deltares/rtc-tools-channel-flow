@@ -27,6 +27,9 @@ partial model PartialHomotopic
   parameter Integer n_level_nodes = 2;
   parameter Real theta;
   parameter SI.VolumeFlowRate Q_nominal = 1.0;
+  // Minimum value of the divisor of the friction term.  This defaults to a nonzero value,
+  // so that empty reaches won't immediately yield NaN errors.  
+  parameter Real min_divisor = 1e-12;
 protected
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Area[n_level_nodes] _cross_section;
@@ -45,7 +48,7 @@ equation
   // Momentum equation
   // Note that the equation is formulated without any divisions, to make collocation more robust.
   for section in 2:n_level_nodes loop
-      (if use_inertia then 1 else 0) * der(Q[section]) + theta * Modelica.Constants.g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * Modelica.Constants.g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * wind_stress + theta * (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ (friction_coefficient^2 * (0.5 * (_cross_section[section] + _cross_section[section - 1]))^2 / (nominal_width[section] + (H[section] + H[section-1]))) + (1 - theta) * (abs(Q_nominal) * Modelica.Constants.g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
+      (if use_inertia then 1 else 0) * der(Q[section]) + theta * Modelica.Constants.g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * Modelica.Constants.g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * wind_stress + theta * (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ max(min_divisor, friction_coefficient^2 * (0.5 * (_cross_section[section] + _cross_section[section - 1]))^2 / (nominal_width[section] + (H[section] + H[section-1]))) + (1 - theta) * (abs(Q_nominal) * Modelica.Constants.g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
   end for;
   // Mass balance equations
   // Mass balance equations for same height nodes result in relation between flows on connectors. We can therefore chain branch elements.
