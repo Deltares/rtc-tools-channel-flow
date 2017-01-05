@@ -17,7 +17,7 @@ model HomotopicLinear
   parameter SI.Distance H_b_down;
   // Array of Bottom Levels
   parameter SI.Distance H_b[n_level_nodes] = linspace(H_b_up, H_b_down, n_level_nodes);
- equation
+equation
   // Compute cross sections
   _cross_section = width .* (H .- H_b);
   annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10})));
