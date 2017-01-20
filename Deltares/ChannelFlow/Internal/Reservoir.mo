@@ -1,6 +1,6 @@
 within Deltares.ChannelFlow.Internal;
 
-block Reservoir
+partial class Reservoir
   import SI = Modelica.SIunits;
   // Inputs
   input SI.VolumeFlowRate Q_turbine;
