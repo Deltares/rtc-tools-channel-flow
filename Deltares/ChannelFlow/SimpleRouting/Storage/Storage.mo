@@ -1,6 +1,6 @@
-within Deltares.ChannelFlow.SimpleRouting.Storage;
+within Deltares.ChannelFlow.SimpleRouting.Storage; 
 
-block Storage
+block Storage "DEPRECATED, use Branches.Integrator instead"
   import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.QSISO;
   extends Deltares.ChannelFlow.Internal.QForcing;
