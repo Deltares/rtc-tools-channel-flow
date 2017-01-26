@@ -20,5 +20,4 @@ model HomotopicLinear
 equation
   // Compute cross sections
   _cross_section = width .* (H .- H_b);
-  annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10})));
 end HomotopicLinear;
