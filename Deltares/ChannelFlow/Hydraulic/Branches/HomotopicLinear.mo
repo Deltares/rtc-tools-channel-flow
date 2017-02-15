@@ -12,13 +12,12 @@ model HomotopicLinear
   // Array of Widths
   parameter SI.Distance width[n_level_nodes] = linspace(width_up, width_down, n_level_nodes);
   // Upstream Bottom Level (same 'Up' as HQUp)
-  parameter SI.Distance H_b_up; 
+  parameter SI.Position H_b_up; 
   // Downstream Bottom Level (same 'Down' as HQDown)
-  parameter SI.Distance H_b_down;
+  parameter SI.Position H_b_down;
   // Array of Bottom Levels
-  parameter SI.Distance H_b[n_level_nodes] = linspace(H_b_up, H_b_down, n_level_nodes);
- equation
+  parameter SI.Position H_b[n_level_nodes] = linspace(H_b_up, H_b_down, n_level_nodes);
+equation
   // Compute cross sections
   _cross_section = width .* (H .- H_b);
-  annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10})));
 end HomotopicLinear;
