@@ -19,10 +19,10 @@ protected
   Modelica.SIunits.VolumeFlowRate linear_Q_weir;
   Modelica.SIunits.VolumeFlowRate nonlinear_Q_weir;
 equation
-  linear_Q_weir = (2.0 / 3.0 * width * sqrt(2.0 / 3.0 * Modelica.Constants.g_n) * linearization_offset ^ exponent) / linearization_offset * (HQUp.H - h);
-  nonlinear_Q_weir = 2.0 / 3.0 * width * sqrt(2.0 / 3.0 * Modelica.Constants.g_n) * (log(1 + exp((HQUp.H - h) * nonlinear_hardness_factor)) / nonlinear_hardness_factor) ^ exponent;
+  linear_Q_weir = (1 - theta) * ((2.0 / 3.0 * width * sqrt(2.0 / 3.0 * Modelica.Constants.g_n) * linearization_offset ^ exponent) / linearization_offset * (HQUp.H - h));
+  nonlinear_Q_weir = theta * (2.0 / 3.0 * width * sqrt(2.0 / 3.0 * Modelica.Constants.g_n) * (log(1 + exp((HQUp.H - h) * nonlinear_hardness_factor)) / nonlinear_hardness_factor) ^ exponent);
   // Combine Linear and Nonlinear Equations
-  HQUp.Q = (1 - theta) * linear_Q_weir + theta * nonlinear_Q_weir;
+  HQUp.Q = linear_Q_weir + nonlinear_Q_weir;
   // Inflow equals outflow
   HQUp.Q + HQDown.Q = 0.0;
   HQUp.Q = Q;
