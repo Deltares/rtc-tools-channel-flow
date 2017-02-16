@@ -1,8 +1,16 @@
 within Deltares.ChannelFlow.Hydraulic.Structures;
 
 model PumpZ
-  extends Deltares.ChannelFlow.Hydraulic.Structures.Pump(redeclare connector HQPort1 = Deltares.ChannelFlow.Interfaces.HQZCPort);
+  extends Deltares.ChannelFlow.Hydraulic.Structures.Pump(redeclare connector HQPort = Deltares.ChannelFlow.Interfaces.HQZCPort);
+  parameter Real Q_nominal = 1;
+  parameter Real C_nominal = 1;
+  parameter Real theta;
 equation
   HQUp.Z + HQDown.Z = 0;
-  HQUp.C = HQDown.C;
+  //Z depends on which direction the flow is
+  if(Q > 0) then
+    HQUp.Z = theta*HQUp.C*Q + (1-theta) *(Q_nominal*C_nominal+C_nominal*(Q-Q_nominal) + Q_nominal*(HQUp.C-C_nominal)) ; 
+  else
+    HQUp.Z =(theta*HQDown.C*Q+(1-theta) *(-Q_nominal*C_nominal+C_nominal*(Q+Q_nominal) - Q_nominal*(HQDown.C-C_nominal)) ) ; 
+  end if;                               
 end PumpZ;
