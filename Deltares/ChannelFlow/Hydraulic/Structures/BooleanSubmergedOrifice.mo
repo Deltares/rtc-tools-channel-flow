@@ -11,9 +11,9 @@ model BooleanSubmergedOrifice "BooleanSubmergedOrifice"
   // Overestimate of Max Flow Rate TODO: Is this needed, or can we use big M?
   parameter Modelica.SIunits.VolumeFlowRate overestimate_max_Q = 1e3;
   // Handy Big M
-  Real M = 1e10;
+  parameter Real M = 1e10;
   // Boolean to detect if flow is downhill
-  input Boolean is_downhill(fixed=false);
+  input Boolean is_downhill;
 protected
   Real nominal_Q(min=0.0, max=1.0);
   Real is_downhill_test1(max=0.0);
