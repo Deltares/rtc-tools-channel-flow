@@ -16,7 +16,7 @@ model HomotopicFixedWeir "Homotopic Two-way Fixed Weir For Both Free and Submerg
   Modelica.SIunits.VolumeFlowRate Q;
   // Delineates where free weir flow becomes submerged weir flow
   Real submerged_flow_ratio = 1.5;
-protected
+//protected
   Modelica.SIunits.VolumeFlowRate linear_Q_weir;
   // Non-linearized Submerged weir flow
   Modelica.SIunits.VolumeFlowRate nonlinear_Q_submerged_weir;
@@ -43,7 +43,7 @@ equation
   //Max[Max[(HQDown.H- h) ,(HQUp.H- h) ],0] 
   higher_level_above_crest = sqrt((sqrt(((HQDown.H - h) - (HQUp.H - h)) ^ 2 + Modelica.Constants.eps) / 2 + ((HQDown.H - h) + (HQUp.H - h)) / 2) ^ 2 + Modelica.Constants.eps) / 2 + ((sqrt(((HQDown.H - h) - (HQUp.H - h)) ^ 2 + Modelica.Constants.eps) / 2 + ((HQDown.H - h) + (HQUp.H - h)) / 2)) / 2;
   //Max[-1*Max[-(HQDown.H-h),-(HQUp.H-h)],0]
-  lower_level_above_crest = sqrt((-1 * sqrt(((-(HQDown.H - h)) - (-(HQUp.H - h))) ^ 2 + Modelica.Constants.eps) / 2 + ((-(HQDown.H - h)) + (-(HQUp.H - h))) / 2) ^ 2 + Modelica.Constants.eps) / 2 + (-1 * sqrt(((-(HQDown.H - h)) - (-(HQUp.H - h))) ^ 2 + Modelica.Constants.eps) / 2 + ((-(HQDown.H - h)) + (-(HQUp.H - h))) / 2) / 2;
+  lower_level_above_crest = sqrt((-1 * (sqrt(((-(HQDown.H - h)) - (-(HQUp.H - h))) ^ 2 + Modelica.Constants.eps) / 2 + ((-(HQDown.H - h)) + (-(HQUp.H - h))) / 2)) ^ 2 + Modelica.Constants.eps) / 2 + (-1 * (sqrt(((-(HQDown.H - h)) - (-(HQUp.H - h))) ^ 2 + Modelica.Constants.eps) / 2 + ((-(HQDown.H - h)) + (-(HQUp.H - h))) / 2)) / 2;
   //Max[(HQUp.H-h),(HQDown.H-h)]-submerged_flow_ratio*-1*Max[-(HQUp.H-h),-(HQDown.H-h)]
   submerged_flow_test = sqrt(((HQUp.H - h) - (HQDown.H - h)) ^ 2 + Modelica.Constants.eps) / 2 + ((HQUp.H - h) + (HQDown.H - h)) / 2 + submerged_flow_ratio * sqrt(((-(HQUp.H - h)) - (-(HQDown.H - h))) ^ 2 + Modelica.Constants.eps) / 2 + ((-(HQUp.H - h)) + (-(HQDown.H - h))) / 2;
 
