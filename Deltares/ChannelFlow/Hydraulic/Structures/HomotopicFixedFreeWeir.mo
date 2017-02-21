@@ -13,14 +13,15 @@ model HomotopicFixedFreeWeir "Homotopic One-way Fixed Weir In the Free Flow Regi
   // Homotopy Parameter
   parameter Real theta;
   // "Max Function" hardness parameter
-  parameter Integer nonlinear_hardness_factor = 30;
   Modelica.SIunits.VolumeFlowRate Q;
 protected
   Modelica.SIunits.VolumeFlowRate linear_Q_weir;
   Modelica.SIunits.VolumeFlowRate nonlinear_Q_weir;
 equation
-  linear_Q_weir = (1 - theta) * ((2.0 / 3.0 * width * sqrt(2.0 / 3.0 * Modelica.Constants.g_n) * linearization_offset ^ exponent) / linearization_offset * (HQUp.H - h));
-  nonlinear_Q_weir = theta * (2.0 / 3.0 * width * sqrt(2.0 / 3.0 * Modelica.Constants.g_n) * (log(1 + exp((HQUp.H - h) * nonlinear_hardness_factor)) / nonlinear_hardness_factor) ^ exponent);
+  linear_Q_weir = (1 - theta) * ((2.0 / 3.0 * width * sqrt(2.0 / 3.0 * Modelica.Constants.g_n ) * linearization_offset ^ exponent) / linearization_offset * (HQUp.H - h));
+  // nonlinear_Q_weir now uses the max function max(a,b) = sqrt[(a-b)^2 + eps]/2 + (a + b)/2, which is more precise than log(exp(a) + exp(b)) for comparing two values.
+  // TODO: Make sure that it is not too precise (the log-exp trick was very nice and smooth)
+  nonlinear_Q_weir = theta * (2.0 / 3.0 * width * sqrt(2.0 / 3.0 * Modelica.Constants.g_n ) * (sqrt((HQUp.H - h) ^ 2 + Modelica.Constants.eps)/2 + (HQUp.H - h) / 2) ^ exponent);
   // Combine Linear and Nonlinear Equations
   HQUp.Q = linear_Q_weir + nonlinear_Q_weir;
   // Inflow equals outflow
