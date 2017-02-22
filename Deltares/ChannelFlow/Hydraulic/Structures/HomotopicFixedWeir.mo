@@ -7,7 +7,6 @@ model HomotopicFixedWeir "Homotopic Two-way Fixed Weir For Both Free and Submerg
   // Crest width
   parameter Modelica.SIunits.Distance width;
   parameter Real exponent(unit = "1") = 1.5;
-  // Set this to be approximately the daily maximum expected water level above the crest level
   parameter Real linearization_parameter = 0.5;
   // parameter for tuning the flow over the weir
   parameter Real submerged_flow_factor = 1.0;
