@@ -4,7 +4,7 @@ model HomotopicLinearZ
   import SI = Modelica.SIunits; 
   extends Deltares.ChannelFlow.Hydraulic.Branches.HomotopicLinear(redeclare connector HQPort = Deltares.ChannelFlow.Interfaces.HQZCPort);  
   SI.VolumeFlowRate[n_level_nodes+1] Z;
-  SI.VolumeFlowRate[n_level_nodes] C;
+  SI.Density[n_level_nodes] C;
   parameter Real C_nominal=1;
 equation
 

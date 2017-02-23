@@ -2,8 +2,8 @@ within Deltares.ChannelFlow.Hydraulic.Structures;
 
 model PumpZ
   extends Deltares.ChannelFlow.Hydraulic.Structures.Pump(redeclare connector HQPort = Deltares.ChannelFlow.Interfaces.HQZCPort);
-  parameter Real Q_nominal = 1;
-  parameter Real C_nominal = 1;
+  parameter Modelica.SIunits.MassFlowRate Q_nominal = 1;
+  parameter Modelica.SIunits.Density C_nominal = 1;
   parameter Real theta;
 equation
   HQUp.Z + HQDown.Z = 0;
