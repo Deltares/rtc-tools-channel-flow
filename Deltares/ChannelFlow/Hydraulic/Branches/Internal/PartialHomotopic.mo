@@ -10,13 +10,16 @@ partial model PartialHomotopic
   parameter Real QForcing_map[n_QForcing, n_level_nodes] = fill(1 / n_level_nodes, n_QForcing, n_level_nodes);
   parameter Real QLateral_map[n_QLateral, n_level_nodes] = fill(1 / n_level_nodes, n_QLateral, n_level_nodes);
   // Wind stress
-  input SI.Stress wind_stress(nominal = 1e-1) = 0.0;
+  input SI.Stress wind_stress_u(nominal = 1e-1) = 0.0; //wind stress in x (u, easting) direction (= 0 radians, 0 degrees)
+  input SI.Stress wind_stress_v(nominal = 1e-1) = 0.0; //wind stress in y (v, northing) direction (= 0.5*pi radians, 90 degrees)
   // Flow
   SI.VolumeFlowRate[n_level_nodes + 1] Q;
   // Water level
   SI.Position[n_level_nodes] H;
   // Length
   parameter SI.Distance length = 1.0;
+  // Rotation
+  parameter Real rotation_deg = 0.0; //rotation of branch relative to x (u, easting) in degrees
   // Nominal depth and width for linearized pressure term and wind stress term
   parameter SI.Distance nominal_depth[n_level_nodes + 1] = fill(1.0, n_level_nodes + 1);
   parameter SI.Distance nominal_width[n_level_nodes + 1] = fill(1.0, n_level_nodes + 1);
@@ -33,6 +36,7 @@ partial model PartialHomotopic
   // so that empty reaches won't immediately yield NaN errors.  
   parameter Real min_divisor = 1e-12;
 protected
+  parameter SI.Angle rotation_rad = (rotation_deg * Modelica.Constants.D2R); //conversion to rotation in radians
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Area[n_level_nodes] _cross_section;
   SI.Distance[n_level_nodes] _dxq;
@@ -48,6 +52,8 @@ equation
   _dxq[1] = dx / 2;
   _dxq[2:n_level_nodes - 1] = fill(dx, n_level_nodes - 2);
   _dxq[n_level_nodes] = dx / 2;
+  // calculate wind_stress
+  wind_stress = (wind_stress_u * cos(rotation_rad)) + (wind_stress_v * cos(0.5 * Modelica.Constants.pi - rotation_rad));
   // Momentum equation
   // Note that the equation is formulated without any divisions, to make collocation more robust.
   for section in 2:n_level_nodes loop
