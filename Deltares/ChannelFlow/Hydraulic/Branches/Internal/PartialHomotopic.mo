@@ -53,7 +53,7 @@ equation
   _dxq[2:n_level_nodes - 1] = fill(dx, n_level_nodes - 2);
   _dxq[n_level_nodes] = dx / 2;
   // calculate wind_stress
-  wind_stress = (wind_stress_u * cos(rotation_rad)) + (wind_stress_v * cos(0.5 * Modelica.Constants.pi - rotation_rad));
+  wind_stress = wind_stress_u * cos(rotation_rad) + wind_stress_v * sin(rotation_rad);
   // Momentum equation
   // Note that the equation is formulated without any divisions, to make collocation more robust.
   for section in 2:n_level_nodes loop
