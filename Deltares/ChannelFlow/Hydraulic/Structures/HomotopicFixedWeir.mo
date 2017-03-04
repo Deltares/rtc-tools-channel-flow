@@ -6,9 +6,13 @@ model HomotopicFixedWeir "Homotopic Two-way Fixed Weir For Both Free and Submerg
   parameter Modelica.SIunits.Position h;
   // Crest width
   parameter Modelica.SIunits.Distance width;
+  // Weir flow exponent
   parameter Real exponent(unit = "1") = 1.5;
-  parameter Real linearization_parameter = 0.5;
-  // parameter for tuning the flow over the weir
+  // Tunable parameter for the magnitude of the linear flow equation
+  parameter Real linear_magnitude_factor = 0.5;
+  // Paramenter describing the flow regime, used for the linear equation (1 for mostly free, 0 for mostly submerged)
+  parameter Real linear_free_to_submerged_factor = 1.0;
+  // parameter for tuning the non-linear flow over the weir
   parameter Real submerged_flow_factor = 1.0;
   // Homotopy Parameter
   parameter Real theta;
@@ -35,8 +39,7 @@ equation
   // Inflow equals outflow (no storage)
   HQUp.Q + HQDown.Q = 0.0;
   // Simple linear approximation equation
-  linear_Q_weir = (1 - theta) * linearization_parameter * (HQUp.H - HQDown.H) * width;
-
+  linear_Q_weir = (1 - theta) * linear_magnitude_factor * (HQUp.H - HQDown.H * (1.0 - linear_free_to_submerged_factor) - h * linear_free_to_submerged_factor) * width;
   // Helper variables
   //Max[Max[(HQDown.H- h) ,(HQUp.H- h) ],0] 
   higher_level_above_crest = sqrt((sqrt(((HQDown.H - h) - (HQUp.H - h)) ^ 2 + Modelica.Constants.eps) / 2 + ((HQDown.H - h) + (HQUp.H - h)) / 2) ^ 2 + Modelica.Constants.eps) / 2 + ((sqrt(((HQDown.H - h) - (HQUp.H - h)) ^ 2 + Modelica.Constants.eps) / 2 + ((HQDown.H - h) + (HQUp.H - h)) / 2)) / 2;

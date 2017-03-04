@@ -6,14 +6,13 @@ class HomotopicWeirGate "Gate in River that follows one-way submerged weir flow"
   parameter Modelica.SIunits.Position bottom_level;
   // Crest width
   parameter Modelica.SIunits.Distance width;
+  // parameter for tuning the linear flow over the weir
   parameter Real linearization_parameter = 0.5;
-  // parameter for tuning the flow over the weir
+  // parameter for tuning the non-linear flow over the weir
   parameter Real submerged_flow_factor = 1.0;
   // Homotopy Parameter
   parameter Real theta;
   Modelica.SIunits.VolumeFlowRate Q;
-  // Delineates where free weir flow becomes submerged weir flow
-  Real submerged_flow_ratio = 1.5;
 //protected
   Modelica.SIunits.VolumeFlowRate linear_Q_weir;
   // Non-linearized Submerged weir flow

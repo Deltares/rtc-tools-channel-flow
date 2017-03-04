@@ -1,5 +1,7 @@
 Pump
+BooleanOrifice
 BooleanSubmergedOrifice
 HomotopicFixedFreeWeir
 HomotopicFixedWeir
+HomotopicFixedWeir_flat
 HomotopicWeirGate
