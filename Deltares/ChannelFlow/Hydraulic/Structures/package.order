@@ -3,5 +3,5 @@ BooleanOrifice
 BooleanSubmergedOrifice
 HomotopicFixedFreeWeir
 HomotopicFixedWeir
-HomotopicFixedWeir_flat
 HomotopicWeirGate
+HomotopicControlledSubmergedOrifice
