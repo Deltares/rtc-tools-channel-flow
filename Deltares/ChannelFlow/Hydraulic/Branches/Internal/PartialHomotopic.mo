@@ -36,6 +36,7 @@ partial model PartialHomotopic
   // so that empty reaches won't immediately yield NaN errors.  
   parameter Real min_divisor = 1e-12;
 protected
+  SI.Stress wind_stress;
   parameter SI.Angle rotation_rad = (rotation_deg * Modelica.Constants.D2R); //conversion to rotation in radians
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Area[n_level_nodes] _cross_section;
