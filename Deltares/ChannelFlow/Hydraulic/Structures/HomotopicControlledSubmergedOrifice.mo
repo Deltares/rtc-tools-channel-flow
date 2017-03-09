@@ -1,15 +1,10 @@
 within Deltares.ChannelFlow.Hydraulic.Structures;
 
 model HomotopicControlledSubmergedOrifice "Rectangular Orifice element for one-way, optimized submerged orifice flow"
-  // This element is valid for h_up > h_b + d_max and for all h_down
-  // NOTE: In the python script, add a constraint so that Q = 0 where h_up < h_b + d_max (which requires a second boolean)
-  // This is a usually a valid assumption when the set point of h_up is greater than h_b + d_max
   extends Pump;
   import ContMax = Deltares.Functions.ContMax;
   // Orifice Width
   parameter Modelica.SIunits.Distance width;
-  // Orifice bottom elevation
-  parameter Modelica.SIunits.Distance h_b;
   // Orifice max gate opening
   parameter Modelica.SIunits.Distance d_max;
   // Orifice constant
