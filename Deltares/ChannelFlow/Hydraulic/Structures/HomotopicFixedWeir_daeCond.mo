@@ -2,9 +2,9 @@ within Deltares.ChannelFlow.Hydraulic.Structures;
 
 model HomotopicFixedWeir_daeCond "Homotopic Two-way Fixed Weir For Both Free and Submerged Flow Regimes"
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
-  import ContMax = Deltares.Functions.ContMax;
-  import ContMin = Deltares.Functions.ContMin;
-  import ContAbs = Deltares.Functions.ContAbs;
+  import SmoothMax = Deltares.Functions.SmoothMax;
+  import SmoothMin = Deltares.Functions.SmoothMin;
+  import SmoothAbs = Deltares.Functions.SmoothAbs;
   // Crest level
   parameter Modelica.SIunits.Position h;
   // Crest width
@@ -46,22 +46,22 @@ equation
   // Simple linear approximation equation
   linear_Q_weir = (1 - theta) * linear_magnitude_factor * (HQUp.H - HQDown.H * (1.0 - linear_free_to_submerged_factor) - h * linear_free_to_submerged_factor) * width;
   // Helper variables
-  _higher_level_above_crest = ContMax(ContMax((HQDown.H - h), (HQUp.H - h)), 0);
-  _lower_level_above_crest =  ContMax(ContMin((HQDown.H - h), (HQUp.H - h)), 0);
+  _higher_level_above_crest = SmoothMax(SmoothMax((HQDown.H - h), (HQUp.H - h)), 0);
+  _lower_level_above_crest = SmoothMax(SmoothMin((HQDown.H - h), (HQUp.H - h)), 0);
   // higher_level - submerged_flow_ratio * lower_level
-  _submerged_flow_test = ContMax((HQUp.H - h), (HQDown.H - h)) - submerged_flow_ratio * ContMin((HQUp.H - h), (HQDown.H - h));
+  _submerged_flow_test = SmoothMax((HQUp.H - h), (HQDown.H - h)) - submerged_flow_ratio * SmoothMin((HQUp.H - h), (HQDown.H - h));
   
   // Uses equation: QsubmergedWeir[HQUp.H, HQDown.H]:= width * (HQDown.H- h) * Sqrt[2.0 * g * submerged_flow_factor * (HQUp.H- HQDown.H)]
   // NOTE: modifies it to be accurate for what ever whatever side of the weir is higher
-  _nonlinear_Q_submerged_weir = width * _lower_level_above_crest * sqrt(2.0 * Modelica.Constants.g_n * submerged_flow_factor * ContAbs(HQUp.H - HQDown.H)) * (HQUp.H - HQDown.H) / ContAbs(HQUp.H - HQDown.H);
+  _nonlinear_Q_submerged_weir = width * _lower_level_above_crest * sqrt(2.0 * Modelica.Constants.g_n * submerged_flow_factor * SmoothAbs(HQUp.H - HQDown.H)) * (HQUp.H - HQDown.H) / SmoothAbs(HQUp.H - HQDown.H);
   
   // Uses equation: QfreeWeir[HQUp.H]:= 2.0 / 3.0 * width * (2.0 / 3.0 * g) ^ 0.5 * (HQUp.H - h) ^ exponent
   // NOTE: modifies the equation to be accurate for what ever whatever side of the weir is higher
-  _nonlinear_Q_free_weir = 2.0 / 3.0 * width * (2.0 / 3.0 * Modelica.Constants.g_n) ^ 0.5 * _higher_level_above_crest ^ exponent * (HQUp.H - HQDown.H) / ContAbs(HQUp.H - HQDown.H);
+  _nonlinear_Q_free_weir = 2.0 / 3.0 * width * (2.0 / 3.0 * Modelica.Constants.g_n) ^ 0.5 * _higher_level_above_crest ^ exponent * (HQUp.H - HQDown.H) / SmoothAbs(HQUp.H - HQDown.H);
 
   // Filter determining if flow is free or submerged
   //Embeds the logic for If[HQUp - h > submerged_flow_ratio * (HQDown - h), Freeweir, submergedWeir]... into a single function, e.g:
-  _one_if_free_flow = ContMax(_submerged_flow_test, 0.0) / ContAbs(_submerged_flow_test);
+  _one_if_free_flow = SmoothMax(_submerged_flow_test, 0.0) / SmoothAbs(_submerged_flow_test);
   // Combine both Nonlinear flows
   nonlinear_Q_weir = theta * (_nonlinear_Q_submerged_weir * (1 - _one_if_free_flow) + _nonlinear_Q_free_weir * _one_if_free_flow);
   // Combine Linear and Nonlinear Flows
