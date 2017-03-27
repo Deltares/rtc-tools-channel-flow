@@ -9,14 +9,14 @@ model HomotopicLinearZ
 equation
   //A*dc/dt + dz/dx=0, this equation is linearized
   for section in 1:n_level_nodes loop
-    theta * _cross_section[section] * der(C[section])+(1 - theta) * (nominal_width[section] * nominal_depth[section] * der(C[section])) + (Z[section + 1] - Z[section]) / dx = 0;    
+    theta * _cross_section[section] * der(C[section]) + (1 - theta) * (nominal_width[section] * nominal_depth[section] * der(C[section])) + (Z[section + 1] - Z[section]) / dx = 0;    
   end for; 
   //calculation of the salt mass flow rate at the internal boundary points
   for section in 2:n_level_nodes loop
     if(Q[section] > 0)then
-      Z[section] = theta*Q[section] * C[section - 1] + (1-theta) *(Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * (C[section - 1] - C_nominal));
+      Z[section] = theta * Q[section] * C[section - 1] + (1 - theta) *(Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * (C[section - 1] - C_nominal));
     else 
-      Z[section] = theta*Q[section] * C[section] + (1 - theta) *(-Q_nominal * C_nominal + C_nominal * (Q[section] + Q_nominal) - Q_nominal * (C[section] - C_nominal));
+      Z[section] = theta * Q[section] * C[section] + (1 - theta) * (-Q_nominal * C_nominal + C_nominal * (Q[section] + Q_nominal) - Q_nominal * (C[section] - C_nominal));
     end if;
   end for;
   //setting of the salt mass flow rate and the concentration of salt at the connections.
