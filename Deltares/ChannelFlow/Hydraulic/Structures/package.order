@@ -1,9 +1,4 @@
 Pump
-BooleanOrifice
 BooleanSubmergedOrifice
-HomotopicFixedFreeWeir
 HomotopicFixedWeir
 HomotopicFixedWeir_daeCond
-HomotopicWeirGate
-HomotopicControlledSubmergedOrifice
-ControlledSubmergedOrifice
