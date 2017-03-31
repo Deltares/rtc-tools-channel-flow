@@ -1,8 +1,8 @@
 within Deltares.ChannelFlow.Hydraulic.BoundaryConditions;
 
 model LevelZ
-  extends Deltares.ChannelFlow.Hydraulic.BoundaryConditions.Level(redeclare connector HQPort = Deltares.ChannelFlow.Interfaces.HQZCPort);
-  input Modelica.SIunits.MassFlowRate Z;
+  extends Deltares.ChannelFlow.Hydraulic.BoundaryConditions.Level(redeclare connector HQPort = Deltares.ChannelFlow.Interfaces.HQCMPort);
+  input Modelica.SIunits.MassFlowRate M;
 equation
-  HQ.Z + Z = 0;
+  HQ.M + M = 0;
 end LevelZ;
