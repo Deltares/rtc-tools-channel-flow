@@ -1,6 +1,6 @@
 within Deltares.ChannelFlow.Hydraulic.Branches;
 
-model HomotopicLinearZ
+model HomotopicLinearM
   import SI = Modelica.SIunits; 
   extends Deltares.ChannelFlow.Hydraulic.Branches.HomotopicLinear(redeclare connector HQPort = Deltares.ChannelFlow.Interfaces.HQCMPort);
   SI.VolumeFlowRate[n_level_nodes + 1] M;
@@ -27,4 +27,4 @@ equation
   M[n_level_nodes + 1] = -HQDown.M;
   HQDown.C = C[n_level_nodes];
   HQUp.C =C[1];
-end HomotopicLinearZ;
+end HomotopicLinearM;

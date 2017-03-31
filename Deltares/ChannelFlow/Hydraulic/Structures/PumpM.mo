@@ -1,6 +1,6 @@
 within Deltares.ChannelFlow.Hydraulic.Structures;
 
-model PumpZ
+model PumpM
   extends Deltares.ChannelFlow.Hydraulic.Structures.Pump(redeclare connector HQPort = Deltares.ChannelFlow.Interfaces.HQCMPort);
   parameter Modelica.SIunits.MassFlowRate Q_nominal = 1;
   parameter Modelica.SIunits.Density C_nominal = 1;
@@ -16,4 +16,4 @@ equation
   else
     HQUp.M = 0;
   end if;                               
-end PumpZ;
+end PumpM;
