@@ -11,9 +11,9 @@ equation
   //z=Q*C, this equation is linearized.
   if(Q > 0) then
     HQUp.M = theta * HQUp.C * Q + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q - Q_nominal) + Q_nominal * (HQUp.C - C_nominal));
-  elseif(Q < 0) then
-    HQUp.M = theta * HQDown.C * Q + (1 - theta) * (-Q_nominal * C_nominal + C_nominal * (Q + Q_nominal) - Q_nominal * (HQDown.C - C_nominal));
-  else
-    HQUp.M = 0;
+  else //if(Q < 0) then
+    HQUp.M = theta * HQDown.C * Q + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q - Q_nominal) + Q_nominal * (HQDown.C - C_nominal));
+  //else
+    //HQUp.M = 0;
   end if;                               
 end PumpM;
