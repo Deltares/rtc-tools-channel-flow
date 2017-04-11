@@ -1,9 +1,11 @@
 within Deltares.ChannelFlow.Hydraulic.BoundaryConditions;
 
 model Level "Defines absolute water level"
-  extends Deltares.ChannelFlow.Internal.HQOnePort;
+  extends Deltares.ChannelFlow.Internal.HQCMOnePort;
   input Modelica.SIunits.Position H;
+  input Modelica.SIunits.Density[HQCM.NOS] C;
 equation
-  HQ.H = H;
+  HQCM.H = H;
+  HQCM.C = C;
   annotation(__Wolfram(itemFlippingEnabled = true), Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10}), graphics = {Rectangle(visible = true, fillColor = {255, 0, 255}, fillPattern = FillPattern.Solid, extent = {{-50, -50}, {50, 50}})}));
 end Level;

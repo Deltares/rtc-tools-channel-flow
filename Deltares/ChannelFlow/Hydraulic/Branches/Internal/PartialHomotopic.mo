@@ -2,7 +2,7 @@ within Deltares.ChannelFlow.Hydraulic.Branches.Internal;
 
 partial model PartialHomotopic
   import SI = Modelica.SIunits;
-  extends Deltares.ChannelFlow.Internal.HQTwoPort;
+  extends Deltares.ChannelFlow.Internal.HQCMTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
   // Lateral inflow. A Matrix with n_QForcing, nQLateral rows and n_level_nodes columns. Each row corresponds to a QForcing, QLateral.Q and defines the distribution of that QForcing, QLateral.Q along the Branch.
@@ -45,10 +45,10 @@ protected
   SI.VolumeFlowRate[n_level_nodes] _QPerpendicular_distribution = transpose(QForcing_map) * QForcing .+ transpose(QLateral_map) * _lat;
 equation
   // Store boundary values into array for convenience
-  Q[1] = HQUp.Q;
-  Q[n_level_nodes + 1] = -HQDown.Q;
-  H[1] = HQUp.H;
-  H[n_level_nodes] = HQDown.H;
+  Q[1] = HQCMUp.Q;
+  Q[n_level_nodes + 1] = -HQCMDown.Q;
+  H[1] = HQCMUp.H;
+  H[n_level_nodes] = HQCMDown.H;
   // Compute q-segment lengths
   _dxq[1] = dx / 2;
   _dxq[2:n_level_nodes - 1] = fill(dx, n_level_nodes - 2);
