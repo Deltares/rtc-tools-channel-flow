@@ -10,7 +10,7 @@ model HomotopicLinearM
 equation
   //A*dc/dt + dz/dx=0, this equation is linearized
   for section in 1:n_level_nodes loop
-    theta * der(_cross_section[section] * C[section]) = -(1 - theta) * (nominal_width[section] * nominal_depth[section] * der(C[section,:]) + C_nominal * der(_cross_section[section]))- (M[section + 1,:] - M[section,:]) / dx2 ;    
+    theta * der(_cross_section[section] * C[section,:]) = -(1 - theta) * (nominal_width[section] * nominal_depth[section] * der(C[section,:]) + C_nominal * der(_cross_section[section]))- (M[section + 1,:] - M[section,:]) / dx2 ;    
   end for; 
   //calculation of the salt mass flow rate at the internal boundary points
   for section in 2:n_level_nodes loop
