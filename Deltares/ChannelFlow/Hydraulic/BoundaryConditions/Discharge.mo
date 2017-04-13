@@ -3,12 +3,12 @@ within Deltares.ChannelFlow.Hydraulic.BoundaryConditions;
 model Discharge "Defines a discharge"
   extends Deltares.ChannelFlow.Internal.HQCMOnePort;
   input Modelica.SIunits.VolumeFlowRate Q;
-  input Modelica.SIunits.MassFlowRate[HQCM.NOS] M;
-  parameter Boolean posflow = true;
+  input Modelica.SIunits.MassFlowRate M[HQCM.Mediumport.n_substances];
+  parameter Boolean upwind = true; //if true and there is outlfow from the system (inot the discharge boudnary) then the concentration of the connectpoint (system) is used.
 equation
   HQCM.Q + Q = 0;
-  if(posflow) then
-	if(Q>0) then
+  if upwind then
+	if Q > 0 then
 		HQCM.M = -M;
 	else
 		HQCM.M = -Q * HQCM.C;

@@ -1,7 +1,7 @@
 within Deltares.ChannelFlow.Hydraulic.Structures;
 
 class HomotopicWeirGate "Gate in River that follows one-way submerged weir flow"
-  extends Deltares.ChannelFlow.Internal.HQTwoPort;
+  extends Deltares.ChannelFlow.Internal.HQCMTwoPort;
   // Crest level
   parameter Modelica.SIunits.Position bottom_level;
   // Crest width
@@ -23,12 +23,12 @@ equation
   // max(a,b) = sqrt(((a) - (b)) ^ 2 + Modelica.Constants.eps) / 2 + ((a) + (b)) / 2
   // abs(a) = sqrt(a^2 + Modelica.Constants.eps)
 
-  HQUp.Q = Q;
+  HQCMUp.Q = Q;
   // Inflow equals outflow (no storage)
-  HQUp.Q + HQDown.Q = 0.0;
+  HQCMUp.Q + HQCMDown.Q = 0.0;
   // Simple linear approximation equation
-  linear_Q_weir = (1 - theta) * linear_magnitude_factor * (HQUp.H - HQDown.H) * width;
-  oneway_nonlinear_Q_submerged_weir = theta * width * (HQDown.H - bottom_level) * sqrt(2.0 * Modelica.Constants.g_n * submerged_flow_factor *  sqrt((HQUp.H - HQDown.H) ^ 2 + Modelica.Constants.eps)) * (sqrt(((HQUp.H - HQDown.H) / sqrt((HQUp.H - HQDown.H) ^ 2 + Modelica.Constants.eps)) ^ 2 + Modelica.Constants.eps) / 2 + ((HQUp.H - HQDown.H) / sqrt((HQUp.H - HQDown.H) ^ 2 + Modelica.Constants.eps)) / 2);
-  HQUp.Q = linear_Q_weir + oneway_nonlinear_Q_submerged_weir;
+  linear_Q_weir = (1 - theta) * linear_magnitude_factor * (HQCMUp.H - HQCMDown.H) * width;
+  oneway_nonlinear_Q_submerged_weir = theta * width * (HQCMDown.H - bottom_level) * sqrt(2.0 * Modelica.Constants.g_n * submerged_flow_factor *  sqrt((HQCMUp.H - HQCMDown.H) ^ 2 + Modelica.Constants.eps)) * (sqrt(((HQCMUp.H - HQCMDown.H) / sqrt((HQCMUp.H - HQCMDown.H) ^ 2 + Modelica.Constants.eps)) ^ 2 + Modelica.Constants.eps) / 2 + ((HQCMUp.H - HQCMDown.H) / sqrt((HQCMUp.H - HQCMDown.H) ^ 2 + Modelica.Constants.eps)) / 2);
+  HQCMUp.Q = linear_Q_weir + oneway_nonlinear_Q_submerged_weir;
   annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10}), graphics = {Polygon(visible = true, origin = {-0, -16.667}, fillColor = {128, 128, 128}, fillPattern = FillPattern.Solid, lineThickness = 2, points = {{0, 66.667}, {-50, -33.333}, {50, -33.333}})}), Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10})));
 end HomotopicWeirGate;
