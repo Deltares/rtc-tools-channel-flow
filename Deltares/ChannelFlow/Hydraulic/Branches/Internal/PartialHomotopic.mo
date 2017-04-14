@@ -74,9 +74,9 @@ equation
     (if use_inertia then 1 else 0) * der(Q[section]) + theta * Modelica.Constants.g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * Modelica.Constants.g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * _wind_stress + theta * (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ (min_divisor + friction_coefficient^2 * (0.5 * (_cross_section[section] + _cross_section[section - 1]))^2 / (nominal_width[section] + (H[section] + H[section-1]))) + (1 - theta) * (abs(Q_nominal) * Modelica.Constants.g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
     // Substance transport
     if Q[section] > 0 then
-      M[section, :] = theta * Q[section] .* C[section - 1, :] + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((C[section - 1, :] + C[section, :]) / 2 - C_nominal));
+      M[section, :] = theta * (Q[section] .* C[section - 1, :]) + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((C[section - 1, :] + C[section, :]) / 2 - C_nominal));
     else
-      M[section, :] = theta * Q[section] .* C[section, :] + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((C[section - 1, :] + C[section, :]) / 2 - C_nominal));
+      M[section, :] = theta * (Q[section] .* C[section, :]) + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((C[section - 1, :] + C[section, :]) / 2 - C_nominal));
     end if;
   end for;
   // Mass balance equations
