@@ -30,11 +30,19 @@ partial model PartialHomotopic
   // Discretization options
   parameter Boolean use_inertia = true;
   parameter Integer n_level_nodes = 2;
+  // Homotopy parameter
   parameter Real theta;
+  // Nominal flow used in linearization
   parameter SI.VolumeFlowRate Q_nominal = 1.0;
   // Minimum value of the divisor of the friction term.  This defaults to a nonzero value,
   // so that empty reaches won't immediately yield NaN errors.  
   parameter Real min_divisor = 1e-12;
+  // Substance flow rates
+  SI.VolumeFlowRate M[n_level_nodes + 1, HQUp.medium.n_substances];
+  // Substance concentrations
+  SI.Density C[n_level_nodes, HQUp.medium.n_substances](each min = 0);
+  // Nominal substance concentrations used in linearization
+  parameter Real C_nominal[HQUp.medium.n_substances] = fill(1, HQUp.medium.n_substances);
 protected
   SI.Stress _wind_stress;
   parameter SI.Angle rotation_rad = Modelica.Constants.D2R * rotation_deg; // Conversion to rotation in radians
@@ -49,6 +57,10 @@ equation
   Q[n_level_nodes + 1] = -HQDown.Q;
   H[1] = HQUp.H;
   H[n_level_nodes] = HQDown.H;
+  M[1, :] = HQUp.M;
+  M[n_level_nodes + 1, :] = -HQDown.M;
+  C[1, :] = HQUp.C;
+  C[n_level_nodes, :] = HQDown.C;
   // Compute q-segment lengths
   _dxq[1] = dx / 2;
   _dxq[2:n_level_nodes - 1] = fill(dx, n_level_nodes - 2);
@@ -58,13 +70,23 @@ equation
   // Momentum equation
   // Note that the equation is formulated without any divisions, to make collocation more robust.
   for section in 2:n_level_nodes loop
-      (if use_inertia then 1 else 0) * der(Q[section]) + theta * Modelica.Constants.g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * Modelica.Constants.g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * _wind_stress + theta * (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ (min_divisor + friction_coefficient^2 * (0.5 * (_cross_section[section] + _cross_section[section - 1]))^2 / (nominal_width[section] + (H[section] + H[section-1]))) + (1 - theta) * (abs(Q_nominal) * Modelica.Constants.g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
+    // Water momentum equation
+    (if use_inertia then 1 else 0) * der(Q[section]) + theta * Modelica.Constants.g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * Modelica.Constants.g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * _wind_stress + theta * (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ (min_divisor + friction_coefficient^2 * (0.5 * (_cross_section[section] + _cross_section[section - 1]))^2 / (nominal_width[section] + (H[section] + H[section-1]))) + (1 - theta) * (abs(Q_nominal) * Modelica.Constants.g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
+    // Substance transport
+    if Q[section] > 0 then
+      M[section, :] = theta * (Q[section] .* C[section - 1, :]) + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((C[section - 1, :] + C[section, :]) / 2 - C_nominal));
+    else
+      M[section, :] = theta * (Q[section] .* C[section, :]) + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((C[section - 1, :] + C[section, :]) / 2 - C_nominal));
+    end if;
   end for;
   // Mass balance equations
   // Mass balance equations for same height nodes result in relation between flows on connectors. We can therefore chain branch elements.
   // Note that every mass balance is over half of the element, the cross section of which varies linearly between the cross section at the boundary and the cross section in the middle.
   for node in 1:n_level_nodes loop
+    // Water mass balance
     der(_cross_section[node]) = (Q[node] - Q[node + 1] + _QPerpendicular_distribution[node]) / _dxq[node];
+    // Substance mass balance
+    theta * der(_cross_section[node] * C[node, :]) + (1 - theta) * (nominal_width[node] * nominal_depth[node] * der(C[node, :]) + C_nominal * der(_cross_section[node])) = (M[node, :] - M[node + 1, :]) / _dxq[node];  
   end for;
   annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10}), graphics = {Rectangle(visible = true, fillColor = {0, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-60, -20}, {60, 20}})}));
 end PartialHomotopic;
