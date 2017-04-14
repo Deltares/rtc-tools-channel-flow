@@ -17,9 +17,7 @@ model HomotopicLinear
   parameter SI.Position H_b_down;
   // Array of Bottom Levels
   parameter SI.Position H_b[n_level_nodes] = linspace(H_b_up, H_b_down, n_level_nodes); 
-
 equation
   // Compute cross sections
   _cross_section = width .* (H .- H_b);
-
 end HomotopicLinear;

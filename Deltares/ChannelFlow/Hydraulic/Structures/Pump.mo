@@ -7,12 +7,13 @@ model Pump "Pump"
   parameter Modelica.SIunits.Density C_nominal[HQCMUp.medium.n_substances] = fill(1 , HQCMUp.medium.n_substances);
   parameter Real theta;
 equation
+  // Water
   HQCMUp.Q + HQCMDown.Q = 0;
   HQCMUp.Q = Q;
-  
-  HQCMUp.M = -HQCMDown.M;
+  // Substances
+  HQCMUp.M + HQCMDown.M = 0;
   // Z depends on which direction the flow is, this decouples the concentration on both sides of the pump.
-  // z=Q*C, this equation is linearized.
+  // Z=Q*C, this equation is linearized.
   if Q > 0 then
     HQCMUp.M = theta * HQCMUp.C * Q + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q - Q_nominal) + Q_nominal * ((HQCMUp.C + HQCMDown.C) / 2 - C_nominal));
   else 
