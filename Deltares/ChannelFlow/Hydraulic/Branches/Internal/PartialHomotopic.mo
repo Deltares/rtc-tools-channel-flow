@@ -2,7 +2,7 @@ within Deltares.ChannelFlow.Hydraulic.Branches.Internal;
 
 partial model PartialHomotopic
   import SI = Modelica.SIunits;
-  extends Deltares.ChannelFlow.Internal.HQCMTwoPort;
+  extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
   // Lateral inflow. A Matrix with n_QForcing, nQLateral rows and n_level_nodes columns. Each row corresponds to a QForcing, QLateral.Q and defines the distribution of that QForcing, QLateral.Q along the Branch.
@@ -38,11 +38,11 @@ partial model PartialHomotopic
   // so that empty reaches won't immediately yield NaN errors.  
   parameter Real min_divisor = 1e-12;
   // Substance flow rates
-  SI.VolumeFlowRate M[n_level_nodes + 1, HQCMUp.medium.n_substances];
+  SI.VolumeFlowRate M[n_level_nodes + 1, HQUp.medium.n_substances];
   // Substance concentrations
-  SI.Density C[n_level_nodes, HQCMUp.medium.n_substances](each min = 0);
+  SI.Density C[n_level_nodes, HQUp.medium.n_substances](each min = 0);
   // Nominal substance concentrations used in linearization
-  parameter Real C_nominal[HQCMUp.medium.n_substances] = fill(1, HQCMUp.medium.n_substances);
+  parameter Real C_nominal[HQUp.medium.n_substances] = fill(1, HQUp.medium.n_substances);
 protected
   SI.Stress _wind_stress;
   parameter SI.Angle rotation_rad = Modelica.Constants.D2R * rotation_deg; // Conversion to rotation in radians
@@ -53,14 +53,14 @@ protected
   SI.VolumeFlowRate[n_level_nodes] _QPerpendicular_distribution = transpose(QForcing_map) * QForcing .+ transpose(QLateral_map) * _lat;
 equation
   // Store boundary values into array for convenience
-  Q[1] = HQCMUp.Q;
-  Q[n_level_nodes + 1] = -HQCMDown.Q;
-  H[1] = HQCMUp.H;
-  H[n_level_nodes] = HQCMDown.H;
-  M[1, :] = HQCMUp.M;
-  M[n_level_nodes + 1, :] = -HQCMDown.M;
-  C[1, :] = HQCMUp.C;
-  C[n_level_nodes, :] = HQCMDown.C;
+  Q[1] = HQUp.Q;
+  Q[n_level_nodes + 1] = -HQDown.Q;
+  H[1] = HQUp.H;
+  H[n_level_nodes] = HQDown.H;
+  M[1, :] = HQUp.M;
+  M[n_level_nodes + 1, :] = -HQDown.M;
+  C[1, :] = HQUp.C;
+  C[n_level_nodes, :] = HQDown.C;
   // Compute q-segment lengths
   _dxq[1] = dx / 2;
   _dxq[2:n_level_nodes - 1] = fill(dx, n_level_nodes - 2);
