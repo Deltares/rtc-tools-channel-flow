@@ -7,9 +7,7 @@ partial model PartialStorage
   // Homotopy parameter
   parameter Real theta;
   // Nominal values used in linearization
-    // Surface area
-  parameter Modelica.SIunits.Area A;
-  parameter Modelica.SIunits.Volume V_nominal = A * 2.0;
+  parameter Modelica.SIunits.Volume V_nominal;
   parameter Modelica.SIunits.Density C_nominal[HQCM.medium.n_substances] = fill(1, HQCM.medium.n_substances);
 equation
   der(V) = HQCM.Q + sum(QForcing);
