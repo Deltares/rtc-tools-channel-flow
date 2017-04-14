@@ -1,19 +1,19 @@
 within Deltares.ChannelFlow.Hydraulic.Structures;
 
-model Pump "Pump"  
+model Pump "Pump"
   extends Deltares.ChannelFlow.Internal.HQCMTwoPort;
   input Modelica.SIunits.VolumeFlowRate Q;
   parameter Modelica.SIunits.MassFlowRate Q_nominal = 1;
-  parameter Modelica.SIunits.Density C_nominal[HQCMUp.Mediumport.n_substances]  = fill(1,HQCMUp.Mediumport.n_substances);
-  parameter Real theta  = 1;
+  parameter Modelica.SIunits.Density C_nominal[HQCMUp.medium.n_substances] = fill(1 , HQCMUp.medium.n_substances);
+  parameter Real theta;
 equation
   HQCMUp.Q + HQCMDown.Q = 0;
   HQCMUp.Q = Q;
   
   HQCMUp.M = -HQCMDown.M;
-  //Z depends on which direction the flow is, this decouples the concentration on both sides of the pump.
-  //z=Q*C, this equation is linearized.
-  if(Q > 0) then
+  // Z depends on which direction the flow is, this decouples the concentration on both sides of the pump.
+  // z=Q*C, this equation is linearized.
+  if Q > 0 then
     HQCMUp.M = theta * HQCMUp.C * Q + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q - Q_nominal) + Q_nominal * ((HQCMUp.C + HQCMDown.C) / 2 - C_nominal));
   else 
     HQCMUp.M = theta * HQCMDown.C * Q + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q - Q_nominal) + Q_nominal * ((HQCMUp.C + HQCMDown.C) / 2 - C_nominal));

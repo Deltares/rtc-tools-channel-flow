@@ -36,9 +36,9 @@ partial model PartialHomotopic
   // so that empty reaches won't immediately yield NaN errors.  
   parameter Real min_divisor = 1e-12;
   
-  SI.VolumeFlowRate M[n_level_nodes + 1,HQCMUp.Mediumport.n_substances];
-  SI.Density C[n_level_nodes,HQCMUp.Mediumport.n_substances](each min = 0);
-  parameter Real C_nominal[HQCMUp.Mediumport.n_substances] = fill(1,HQCMUp.Mediumport.n_substances);
+  SI.VolumeFlowRate M[n_level_nodes + 1 , HQCMUp.medium.n_substances];
+  SI.Density C[n_level_nodes , HQCMUp.medium.n_substances](each min = 0);
+  parameter Real C_nominal[HQCMUp.medium.n_substances] = fill(1,HQCMUp.medium.n_substances);
   parameter SI.Distance dx2 = length / (n_level_nodes);
 protected
   SI.Stress _wind_stress;
@@ -56,7 +56,7 @@ equation
   H[n_level_nodes] = HQCMDown.H;
   // Compute q-segment lengths
   _dxq[1] = dx / 2;
-  _dxq[2:n_level_nodes - 1] = fill(dx, n_level_nodes - 2);
+  _dxq[2:n_level_nodes - 1] = fill(dx , n_level_nodes - 2);
   _dxq[n_level_nodes] = dx / 2;
   // calculate wind_stress
   _wind_stress = wind_stress_u * cos(rotation_rad) + wind_stress_v * sin(rotation_rad);
@@ -64,11 +64,11 @@ equation
   // Note that the equation is formulated without any divisions, to make collocation more robust.
   for section in 2:n_level_nodes loop
       (if use_inertia then 1 else 0) * der(Q[section]) + theta * Modelica.Constants.g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * Modelica.Constants.g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * _wind_stress + theta * (Modelica.Constants.g_n * Q[section] * abs(Q[section]))/ (min_divisor + friction_coefficient^2 * (0.5 * (_cross_section[section] + _cross_section[section - 1]))^2 / (nominal_width[section] + (H[section] + H[section-1]))) + (1 - theta) * (abs(Q_nominal) * Modelica.Constants.g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
-      //substance transport part
-  if(Q[section] > 0)then
-      M[section,:] = theta .* Q[section] .* C[section - 1,:] + (1 - theta) *(Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((C[section - 1,:] + C[section,:]) / 2 - C_nominal));
+      // substance transport part
+    if Q[section] > 0 then
+      M[section,:] = theta .* Q[section] .* C[section - 1 , :] + (1 - theta) *(Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((C[section - 1 , :] + C[section , :]) / 2 - C_nominal));
     else
-      M[section,:] = theta * Q[section] .* C[section,:] + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((C[section - 1,:] + C[section,:]) / 2 - C_nominal));
+      M[section,:] = theta * Q[section] .* C[section , :] + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((C[section - 1 , :] + C[section , :]) / 2 - C_nominal));
     end if;
       
       
@@ -78,11 +78,11 @@ equation
   // Note that every mass balance is over half of the element, the cross section of which varies linearly between the cross section at the boundary and the cross section in the middle.
   for node in 1:n_level_nodes loop
     der(_cross_section[node]) = (Q[node] - Q[node + 1] + _QPerpendicular_distribution[node]) / _dxq[node];
-    //substance transport part
-        theta * der(_cross_section[node] * C[node,:]) = -(1 - theta) * (nominal_width[node] * nominal_depth[node] * der(C[node,:]) + C_nominal * der(_cross_section[node]))- (M[node + 1,:] - M[node,:]) / dx2 ;  
+    // substance transport part
+        theta * der(_cross_section[node] * C[node , :]) = -(1 - theta) * (nominal_width[node] * nominal_depth[node] * der(C[node , :]) + C_nominal * der(_cross_section[node]))- (M[node + 1 , :] - M[node , :]) / dx2 ;  
   end for;    
 
-  //setting of the salt mass flow rate and the concentration of salt at the connections.
+  // setting of the salt mass flow rate and the concentration of salt at the connections.
   M[1,:] = HQCMUp.M;
   M[n_level_nodes + 1,:] = -HQCMDown.M;
   HQCMDown.C = C[n_level_nodes,:];
