@@ -13,7 +13,7 @@ equation
   HQCMUp.Q + HQCMDown.Q = 0;
   HQCMUp.Q = Q;
   // Substances
-  HQCMUp.M + HQCMDown.M = 0;
+  HQCMUp.M = -HQCMDown.M;
   // Z depends on which direction the flow is, this decouples the concentration on both sides of the pump.
   // Z=Q*C, this equation is linearized.
   if Q > 0 then
