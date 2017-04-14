@@ -64,7 +64,7 @@ equation
   C[n_level_nodes, :] = HQCMDown.C;
   // Compute q-segment lengths
   _dxq[1] = dx / 2;
-  _dxq[2:n_level_nodes - 1] = fill(dx , n_level_nodes - 2);
+  _dxq[2:n_level_nodes - 1] = fill(dx, n_level_nodes - 2);
   _dxq[n_level_nodes] = dx / 2;
   // calculate wind_stress
   _wind_stress = wind_stress_u * cos(rotation_rad) + wind_stress_v * sin(rotation_rad);
