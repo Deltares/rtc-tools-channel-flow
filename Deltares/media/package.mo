@@ -1,4 +1,4 @@
 within Deltares;
 
-package media
-end media;
+package Media
+end Media;

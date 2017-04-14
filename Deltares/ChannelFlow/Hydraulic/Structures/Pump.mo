@@ -2,10 +2,12 @@ within Deltares.ChannelFlow.Hydraulic.Structures;
 
 model Pump "Pump"
   extends Deltares.ChannelFlow.Internal.HQCMTwoPort;
-  input Modelica.SIunits.VolumeFlowRate Q;
-  parameter Modelica.SIunits.MassFlowRate Q_nominal = 1;
-  parameter Modelica.SIunits.Density C_nominal[HQCMUp.medium.n_substances] = fill(1 , HQCMUp.medium.n_substances);
+  input Modelica.SIunits.VolumeFlowRate Q; 
+  // Homotopy parameter
   parameter Real theta;
+  // Nominal values used in linearization
+  parameter Modelica.SIunits.MassFlowRate Q_nominal = 1;
+  parameter Modelica.SIunits.Density C_nominal[HQCMUp.medium.n_substances] = fill(1, HQCMUp.medium.n_substances);
 equation
   // Water
   HQCMUp.Q + HQCMDown.Q = 0;

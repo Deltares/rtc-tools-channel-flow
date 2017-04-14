@@ -30,7 +30,9 @@ partial model PartialHomotopic
   // Discretization options
   parameter Boolean use_inertia = true;
   parameter Integer n_level_nodes = 2;
+  // Homotopy parameter
   parameter Real theta;
+  // Nominal flow used in linearization
   parameter SI.VolumeFlowRate Q_nominal = 1.0;
   // Minimum value of the divisor of the friction term.  This defaults to a nonzero value,
   // so that empty reaches won't immediately yield NaN errors.  
