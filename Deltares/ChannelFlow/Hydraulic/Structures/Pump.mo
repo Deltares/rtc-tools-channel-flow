@@ -2,6 +2,7 @@ within Deltares.ChannelFlow.Hydraulic.Structures;
 
 model Pump "Pump"
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
+  function smoothswitch = Deltares.Functions.SmoothSwitch;
   input Modelica.SIunits.VolumeFlowRate Q; 
   // Homotopy parameter
   parameter Real theta = 1.0;
@@ -16,10 +17,8 @@ equation
   HQUp.M = -HQDown.M;
   // Z depends on which direction the flow is, this decouples the concentration on both sides of the pump.
   // Z=Q*C, this equation is linearized.
-  if Q > 0 then
-    HQUp.M = theta * (HQUp.C * Q) + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q - Q_nominal) + Q_nominal * ((HQUp.C + HQDown.C) / 2 - C_nominal));
-  else 
-    HQUp.M = theta * (HQDown.C * Q) + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q - Q_nominal) + Q_nominal * ((HQUp.C + HQDown.C) / 2 - C_nominal));
-  end if; 
+  
+    HQUp.M = smoothswitch(Q)*(theta * (HQUp.C * Q)) + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q - Q_nominal) + Q_nominal * ((HQUp.C + HQDown.C) / 2 - C_nominal)) - (smoothswitch(Q) - 1) * theta * (HQDown.C * Q) 
+ 
   annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10}), graphics = {Polygon(visible = true, origin = {0, -16.667}, fillColor = {255, 128, 0}, fillPattern = FillPattern.Solid, lineThickness = 2, points = {{0, 66.667}, {-50, -33.333}, {50, -33.333}})}), Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10})));
 end Pump;
