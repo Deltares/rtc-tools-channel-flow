@@ -2,14 +2,14 @@ within Deltares.ChannelFlow.Hydraulic.BoundaryConditions;
 
 model Discharge "Defines a discharge"
   extends Deltares.ChannelFlow.Internal.HQOnePort;
-  function smoothswitch = Deltares.Functions.SmoothSwitch;
+  function smooth_switch = Deltares.Functions.SmoothSwitch;
   input Modelica.SIunits.VolumeFlowRate Q;
   input Modelica.SIunits.MassFlowRate M[HQ.medium.n_substances];
   parameter Boolean upwind = true; // If true and there is outlfow from the system (into the discharge boudnary) then the concentration of the connected element is used.
 equation
   HQ.Q + Q = 0;
   if upwind then
-    HQ.M = -smoothswitch(Q) * M + (smoothswitch(Q) - 1) * Q * HQ.C;
+    HQ.M = -smooth_switch(Q) * M - (1 - smooth_switch(Q)) * Q * HQ.C;
   else
     HQ.M = -M;
   end if;
