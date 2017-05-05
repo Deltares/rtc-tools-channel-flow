@@ -1,5 +1,5 @@
 within Deltares.Media;
 
-partial package FreshWater
+record FreshWater
   constant Integer n_substances = 0;
 end FreshWater;
