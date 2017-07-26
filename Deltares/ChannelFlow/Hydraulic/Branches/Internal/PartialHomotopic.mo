@@ -83,7 +83,7 @@ equation
     // Water mass balance
     der(_cross_section[node]) = (Q[node] - Q[node + 1] + _QPerpendicular_distribution[node]) / _dxq[node];
     // Substance mass balance
-    theta * der(_cross_section[node] * C[node, :]) + (1 - theta) * (nominal_width[node] * nominal_depth[node] * der(C[node, :]) + C_nominal * der(_cross_section[node])) = (M[node, :] - M[node + 1, :]) / _dxq[node];  
+    theta * der(_cross_section[node] * C[node, :]) + (1 - theta) * (0.5 * (nominal_width[node + 1] * nominal_depth[node + 1] + nominal_width[node] * nominal_depth[node]) * der(C[node, :]) + C_nominal * der(_cross_section[node])) = (M[node, :] - M[node + 1, :]) / _dxq[node];
   end for;
   annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10}), graphics = {Rectangle(visible = true, fillColor = {0, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-60, -20}, {60, 20}})}));
 end PartialHomotopic;
