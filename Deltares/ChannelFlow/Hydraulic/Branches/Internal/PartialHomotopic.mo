@@ -8,8 +8,8 @@ partial model PartialHomotopic
   function smooth_switch = Deltares.Functions.SmoothSwitch;
   // Lateral inflow. A Matrix with n_QForcing, nQLateral rows and n_level_nodes columns. Each row corresponds to a QForcing, QLateral.Q and defines the distribution of that QForcing, QLateral.Q along the Branch.
   // NOTE: To preserve mass, each row should sum to 1.0
-  parameter Real QForcing_map[n_QForcing, n_level_nodes] = fill(1 / n_level_nodes, n_QForcing, n_level_nodes);
-  parameter Real QLateral_map[n_QLateral, n_level_nodes] = fill(1 / n_level_nodes, n_QLateral, n_level_nodes);
+  parameter Real QForcing_map[n_QForcing, n_level_nodes] = fill(1.0 / n_level_nodes, n_QForcing, n_level_nodes);
+  parameter Real QLateral_map[n_QLateral, n_level_nodes] = fill(1.0 / n_level_nodes, n_QLateral, n_level_nodes);
   // Wind stress
   input SI.Stress wind_stress_u(nominal = 1e-1) = 0.0; // Wind stress in x (u, easting) direction (= 0 radians, 0 degrees)
   input SI.Stress wind_stress_v(nominal = 1e-1) = 0.0; // Wind stress in y (v, northing) direction (= 0.5*pi radians, 90 degrees)
