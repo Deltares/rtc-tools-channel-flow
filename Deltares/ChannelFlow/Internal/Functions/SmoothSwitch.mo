@@ -1,4 +1,4 @@
-within Deltares.Functions;
+within Deltares.ChannelFlow.Internal.Functions;
 
 function SmoothSwitch
   input Real x;

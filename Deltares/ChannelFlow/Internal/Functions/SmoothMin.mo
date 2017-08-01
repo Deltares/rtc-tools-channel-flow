@@ -1,4 +1,4 @@
-within Deltares.Functions;
+within Deltares.ChannelFlow.Internal.Functions;
 
 function SmoothMin "Smooth Approximation of a Min() Function"
   input Real a;

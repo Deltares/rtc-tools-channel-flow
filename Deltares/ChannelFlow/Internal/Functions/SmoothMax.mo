@@ -1,4 +1,4 @@
-within Deltares.Functions;
+within Deltares.ChannelFlow.Internal.Functions;
 
 function SmoothMax "Smooth Approximation of a Max() Function"
   input Real a;

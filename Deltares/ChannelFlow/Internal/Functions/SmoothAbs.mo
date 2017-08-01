@@ -1,4 +1,4 @@
-within Deltares.Functions;
+within Deltares.ChannelFlow.Internal.Functions;
 
 function SmoothAbs "Smooth Approximation of an Abs() Function"
   input Real a;
