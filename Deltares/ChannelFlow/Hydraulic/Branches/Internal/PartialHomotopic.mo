@@ -5,7 +5,7 @@ partial model PartialHomotopic
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
-  function smooth_switch = Deltares.Functions.SmoothSwitch;
+  function smooth_switch = Deltares.ChannelFlow.Internal.Functions.SmoothSwitch;
   // Lateral inflow. A Matrix with n_QForcing, nQLateral rows and n_level_nodes columns. Each row corresponds to a QForcing, QLateral.Q and defines the distribution of that QForcing, QLateral.Q along the Branch.
   // NOTE: To preserve mass, each row should sum to 1.0
   parameter Real QForcing_map[n_QForcing, n_level_nodes] = fill(1.0 / n_level_nodes, n_QForcing, n_level_nodes);
