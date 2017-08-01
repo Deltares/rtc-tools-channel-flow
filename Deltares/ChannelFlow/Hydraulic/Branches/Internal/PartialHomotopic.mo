@@ -43,7 +43,7 @@ partial model PartialHomotopic
   // Substance concentrations
   SI.Density C[n_level_nodes, HQUp.medium.n_substances](each min = fill(0, HQUp.medium.n_substances), each nominal = C_nominal);
   // Nominal substance concentrations used in linearization
-  parameter Real C_nominal[HQUp.medium.n_substances] = fill(1, HQUp.medium.n_substances);
+  parameter Real C_nominal[HQUp.medium.n_substances] = fill(1e-3, HQUp.medium.n_substances);
 protected
   SI.Stress _wind_stress;
   parameter SI.Angle rotation_rad = Modelica.Constants.D2R * rotation_deg; // Conversion to rotation in radians

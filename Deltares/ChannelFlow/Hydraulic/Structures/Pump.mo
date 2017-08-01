@@ -8,7 +8,7 @@ model Pump "Pump"
   parameter Real theta = 1.0;
   // Nominal values used in linearization
   parameter Modelica.SIunits.MassFlowRate Q_nominal = 1;
-  parameter Modelica.SIunits.Density C_nominal[HQUp.medium.n_substances] = fill(1, HQUp.medium.n_substances);
+  parameter Modelica.SIunits.Density C_nominal[HQUp.medium.n_substances] = fill(1e-3, HQUp.medium.n_substances);
 equation
   // Water
   HQUp.Q + HQDown.Q = 0;
