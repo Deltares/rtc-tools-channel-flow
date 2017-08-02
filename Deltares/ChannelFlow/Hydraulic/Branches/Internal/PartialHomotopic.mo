@@ -41,7 +41,7 @@ partial model PartialHomotopic
   // Substance flow rates
   SI.VolumeFlowRate M[n_level_nodes + 1, HQUp.medium.n_substances](each nominal = 10);
   // Substance concentrations
-  SI.Density C[n_level_nodes, HQUp.medium.n_substances](each min = fill(0, HQUp.medium.n_substances), each nominal = 1e-3);
+  SI.Density C[n_level_nodes, HQUp.medium.n_substances](each min = 0, each nominal = 1e-3);
   // Nominal substance concentrations used in linearization
   parameter Real C_nominal[HQUp.medium.n_substances] = fill(1e-3, HQUp.medium.n_substances);
 protected

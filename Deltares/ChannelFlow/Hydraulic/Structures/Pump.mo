@@ -3,7 +3,7 @@ within Deltares.ChannelFlow.Hydraulic.Structures;
 model Pump "Pump"
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   function smooth_switch = Deltares.Functions.SmoothSwitch;
-  input Modelica.SIunits.VolumeFlowRate Q(nominal = Q_nominal);
+  input Modelica.SIunits.VolumeFlowRate Q;
   // Homotopy parameter
   parameter Real theta = 1.0;
   // Nominal values used in linearization
