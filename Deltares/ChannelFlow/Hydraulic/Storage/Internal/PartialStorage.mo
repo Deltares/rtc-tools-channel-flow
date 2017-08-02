@@ -1,7 +1,7 @@
 within Deltares.ChannelFlow.Hydraulic.Storage.Internal;
 
 partial model PartialStorage
-  extends Deltares.ChannelFlow.Internal.HQOnePort(HQ.C(nominal = C_nominal));
+  extends Deltares.ChannelFlow.Internal.HQOnePort;
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.Volume;
   // Homotopy parameter

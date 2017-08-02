@@ -1,7 +1,7 @@
 within Deltares.ChannelFlow.Hydraulic.Structures;
 
 model Pump "Pump"
-  extends Deltares.ChannelFlow.Internal.HQTwoPort(HQUp.C(nominal = C_nominal), HQDown.C(nominal = C_nominal));
+  extends Deltares.ChannelFlow.Internal.HQTwoPort;
   function smooth_switch = Deltares.Functions.SmoothSwitch;
   input Modelica.SIunits.VolumeFlowRate Q(nominal = Q_nominal);
   // Homotopy parameter
