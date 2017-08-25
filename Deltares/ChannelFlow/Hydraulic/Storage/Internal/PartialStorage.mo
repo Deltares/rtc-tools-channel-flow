@@ -11,6 +11,5 @@ partial model PartialStorage
   parameter Modelica.SIunits.Density C_nominal[HQ.medium.n_substances] = fill(1e-3, HQ.medium.n_substances);
 equation
   der(V) = HQ.Q + sum(QForcing);
-  // der(V*HQ.C) = HQ.M, this equation is linearized.
-  HQ.M = theta * der(V * HQ.C) + (1 - theta) * (C_nominal * der(V) + V_nominal * der(HQ.C));
+  HQ.M = theta * der(V * HQ.C) + (1 - theta) * V_nominal * der(HQ.C);
 end PartialStorage;
