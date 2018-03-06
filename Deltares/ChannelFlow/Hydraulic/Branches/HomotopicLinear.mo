@@ -20,4 +20,6 @@ model HomotopicLinear
 equation
   // Compute cross sections
   _cross_section = width .* (H .- H_b);
+  // Compute Wetted Perimeter
+  _wetted_perimeter = width .+ 2.0 * (H .- H_b);
 end HomotopicLinear;
