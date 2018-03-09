@@ -51,7 +51,7 @@ protected
   parameter SI.Angle rotation_rad = D2R * rotation_deg; // Conversion to rotation in radians
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Area[n_level_nodes] _cross_section;
-  SI.Area[n_level_nodes] _wetted_perimeter;
+  SI.Distance[n_level_nodes] _wetted_perimeter;
   SI.Distance[n_level_nodes] _dxq;
   SI.VolumeFlowRate[n_QLateral] _lat = QLateral.Q;
   SI.VolumeFlowRate[n_level_nodes] _QPerpendicular_distribution = transpose(QForcing_map) * QForcing .+ transpose(QLateral_map) * _lat;
