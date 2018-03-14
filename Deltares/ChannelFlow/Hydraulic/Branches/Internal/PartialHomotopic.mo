@@ -77,7 +77,7 @@ equation
     // Water momentum equation
     (if use_inertia then 1 else 0) * der(Q[section]) + theta * g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * _wind_stress + theta * (g_n * Q[section] * abs(Q[section])) / (min_divisor + friction_coefficient^2 * (0.5 * (_cross_section[section] + _cross_section[section - 1]))^2 / (0.5 * (_wetted_perimeter[section] + _wetted_perimeter[section - 1]))) + (1 - theta) * (abs(Q_nominal) * g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
     // Substance transport
-    M[section, :] = theta * (smooth_switch(Q[section]) * (Q[section] .* C[section - 1, :]) + (1 - smooth_switch(Q[section])) * (Q[section] .* C[section, :])) + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((if Q_nominal > 0 then C[section - 1, :] else C[section, :]) - C_nominal));
+    M[section, :] = theta * (smooth_switch(Q[section]) * (Q[section] .* C[section - 1, :]) + (1 - smooth_switch(Q[section])) * (Q[section] .* C[section, :])) + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((if Q_nominal > 0 then C[section - 1, :] - C_nominal else C[section, :]) - C_nominal));
   end for;
   // Mass balance equations
   // Mass balance equations for same height nodes result in relation between flows on connectors. We can therefore chain branch elements.
