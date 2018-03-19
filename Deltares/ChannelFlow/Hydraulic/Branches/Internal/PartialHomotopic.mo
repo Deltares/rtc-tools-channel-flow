@@ -52,7 +52,7 @@ protected
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Area[n_level_nodes] _cross_section;
   SI.Distance[n_level_nodes] _wetted_perimeter;
-  SI.Distance[n_level_nodes] _dxq;
+  SI.Distance[n_level_nodes] _dxq = cat(1, {dx / 2}, fill(dx, n_level_nodes - 2), {dx / 2});
   SI.VolumeFlowRate[n_QLateral] _lat = QLateral.Q;
   SI.VolumeFlowRate[n_level_nodes] _QPerpendicular_distribution = transpose(QForcing_map) * QForcing .+ transpose(QLateral_map) * _lat;
 equation
@@ -65,10 +65,6 @@ equation
   M[n_level_nodes + 1, :] = -HQDown.M;
   C[1, :] = HQUp.C;
   C[n_level_nodes, :] = HQDown.C;
-  // Compute q-segment lengths
-  _dxq[1] = dx / 2;
-  _dxq[2:n_level_nodes - 1] = fill(dx, n_level_nodes - 2);
-  _dxq[n_level_nodes] = dx / 2;
   // calculate wind_stress
   _wind_stress = wind_stress_u * cos(rotation_rad) + wind_stress_v * sin(rotation_rad);
   // Momentum equation
