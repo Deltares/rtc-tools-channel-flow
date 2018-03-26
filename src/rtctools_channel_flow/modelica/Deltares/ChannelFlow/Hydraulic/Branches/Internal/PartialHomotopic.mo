@@ -38,6 +38,12 @@ partial model PartialHomotopic
   // Minimum value of the divisor of the friction term.  This defaults to a nonzero value,
   // so that empty reaches won't immediately yield NaN errors.  
   parameter Real min_divisor = 1e-12;
+  // Minimum value of the sabs(Q) part of the friction term.  This defaults to a nonzero value,
+  // so that sabs(Q) = sqrt(Q^2 + min_abs_Q^2) is continuously differentiable for all Q.
+  parameter SI.VolumeFlowRate min_abs_Q = 1e-12;
+  // Time step size used to create a semi-implicit discretization of the friction term.
+  // Zero by default, which means that a fully implicit discretization is used.
+  input SI.Duration semi_implicit_step_size = 0.0;
   // Substance flow rates
   SI.VolumeFlowRate M[n_level_nodes + 1, HQUp.medium.n_substances](each nominal = 10);
   // Substance concentrations
@@ -71,7 +77,7 @@ equation
   // Note that the equation is formulated without any divisions, to make collocation more robust.
   for section in 2:n_level_nodes loop
     // Water momentum equation
-    (if use_inertia then 1 else 0) * der(Q[section]) + theta * g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * _wind_stress + theta * (g_n * Q[section] * abs(Q[section])) / (min_divisor + friction_coefficient^2 * (0.5 * (_cross_section[section] + _cross_section[section - 1]))^2 / (0.5 * (_wetted_perimeter[section] + _wetted_perimeter[section - 1]))) + (1 - theta) * (abs(Q_nominal) * g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
+    (if use_inertia then 1 else 0) * der(Q[section]) + theta * g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * _wind_stress + theta * (g_n * Q[section] * sqrt(Q[section]^2 + min_abs_Q^2)) / (min_divisor + friction_coefficient^2 * (0.5 * (delay(_cross_section[section], semi_implicit_step_size) + delay(_cross_section[section - 1], semi_implicit_step_size)))^2 / (0.5 * (delay(_wetted_perimeter[section], semi_implicit_step_size) + delay(_wetted_perimeter[section - 1], semi_implicit_step_size)))) + (1 - theta) * (sqrt(Q_nominal^2 + min_abs_Q^2) * g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
     // Substance transport
     M[section, :] = theta * (smooth_switch(Q[section]) * (Q[section] .* C[section - 1, :]) + (1 - smooth_switch(Q[section])) * (Q[section] .* C[section, :])) + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((if Q_nominal > 0 then C[section - 1, :] else C[section, :]) - C_nominal));
   end for;
