@@ -4,6 +4,8 @@ RTC-Tools is the Deltares toolbox for control and optimization of water systems.
 """
 from setuptools import setup, find_packages
 
+import versioneer
+
 DOCLINES = __doc__.split("\n")
 
 CLASSIFIERS = """\
@@ -23,7 +25,7 @@ Operating System :: MacOS
 
 setup(
     name="rtc-tools-channel-flow",
-    version="0.0.1",
+    version=versioneer.get_version(),
     author='Matthijs den Toom, Jorn Baayen, et al.',
     maintainer='Jack Vreeken',
     description=DOCLINES[0],
@@ -36,6 +38,7 @@ setup(
     package_dir={"": "src"},
     install_requires=["rtc-tools"],
     include_package_data=True,
+    cmdclass=versioneer.get_cmdclass(),
     entry_points={
         'rtctools.libraries.modelica': [
             'library_folder = rtctools_channel_flow:modelica',

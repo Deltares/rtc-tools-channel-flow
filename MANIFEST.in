@@ -1,1 +1,3 @@
 recursive-include src/rtctools_channel_flow/modelica/Deltares *
+include versioneer.py
+include src/rtctools_channel_flow/_version.py
