@@ -26,7 +26,7 @@ partial model PartialHomotopic
   parameter SI.Distance nominal_width[n_level_nodes + 1] = fill(1.0, n_level_nodes + 1);
   // Water density
   parameter SI.Density density_water = 1000.0;
-  // Bottom friction coefficient for linearized friction term
+  // Chézy bottom friction coefficient
   parameter Internal.BottomFrictionCoefficient friction_coefficient = 0.0;
   // Discretization options
   parameter Boolean use_inertia = true;
