@@ -1,6 +1,11 @@
 within Deltares.ChannelFlow.Hydraulic.Branches.Internal;
 
 partial model PartialHomotopic
+  // Note:  Homotopic path stability can only be guaranteed if semi_implicit_step_size
+  // is set to the optimization step size, and if use_convective_acceleration is set
+  // to false.  Consult Baayen and Piovesan, A continuation approach to nonlinear
+  // model predictive control of open channel systems, 2018 for details:
+  // https://arxiv.org/abs/1801.06507
   import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
@@ -30,6 +35,8 @@ partial model PartialHomotopic
   parameter Internal.BottomFrictionCoefficient friction_coefficient = 0.0;
   // Discretization options
   parameter Boolean use_inertia = true;
+  parameter Boolean use_convective_acceleration = false;
+  parameter Boolean use_upwind = true;
   parameter Integer n_level_nodes = 2;
   // Homotopy parameter
   parameter Real theta;
@@ -52,9 +59,11 @@ partial model PartialHomotopic
   parameter Real C_nominal[HQUp.medium.n_substances] = fill(1e-3, HQUp.medium.n_substances);
 protected
   SI.Stress _wind_stress;
+  Real[n_level_nodes] _dQ_sq_div_Adx(each unit = "m^3/s^2");
   parameter SI.Angle rotation_rad = Deltares.Constants.D2R * rotation_deg; // Conversion to rotation in radians
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Area[n_level_nodes] _cross_section;
+  SI.Area[n_level_nodes + 1] _cross_sectionq;
   SI.Distance[n_level_nodes] _wetted_perimeter;
   SI.Distance[n_level_nodes] _dxq = cat(1, {dx / 2}, fill(dx, n_level_nodes - 2), {dx / 2});
   SI.VolumeFlowRate[n_QLateral] _lat = QLateral.Q;
@@ -69,13 +78,71 @@ equation
   M[n_level_nodes + 1, :] = -HQDown.M;
   C[1, :] = HQUp.C;
   C[n_level_nodes, :] = HQDown.C;
-  // calculate wind_stress
+  // Calculate wind_stress
   _wind_stress = wind_stress_u * cos(rotation_rad) + wind_stress_v * sin(rotation_rad);
+  // Compute cross sections for q nodes
+  _cross_sectionq[1] = _cross_section[1];
+  _cross_sectionq[2:n_level_nodes] = 0.5 * (_cross_section[1:n_level_nodes - 1] .+ _cross_section[2:n_level_nodes]);
+  _cross_sectionq[n_level_nodes + 1] = _cross_section[n_level_nodes];
+  // Compute dQ/dx for advection term
+  _dQ_sq_div_Adx[1] = 0;
+  if (use_inertia and use_convective_acceleration) then
+    for section in 2:n_level_nodes loop
+      if use_upwind then
+        _dQ_sq_div_Adx[section] = theta * (
+            smooth_switch(Q[section])
+            * (
+                Q[section] ^ 2 / (min_divisor + _cross_sectionq[section])
+                - Q[section - 1] ^ 2 / (min_divisor + _cross_sectionq[section - 1])
+            )
+            / _dxq[section - 1]
+            + (1 - smooth_switch(Q[section]))
+            * (
+                Q[section + 1] ^ 2 / (min_divisor + _cross_sectionq[section + 1])
+                - Q[section] ^ 2 / (min_divisor + _cross_sectionq[section])
+            )
+            / _dxq[section]
+        ) + (1 - theta) * (
+            (
+                Q[section + 1]
+                * Q_nominal
+                / (nominal_width[section + 1] * nominal_depth[section + 1])
+                - Q[section - 1]
+                * Q_nominal
+                / (nominal_width[section - 1] * nominal_depth[section - 1])
+            )
+            / (_dxq[section - 1] + _dxq[section])
+        );
+      else
+        _dQ_sq_div_Adx[section] = theta * (
+            (
+                Q[section + 1] ^ 2 / (min_divisor + _cross_sectionq[section + 1])
+                - Q[section - 1] ^ 2 / (min_divisor + _cross_sectionq[section - 1])
+            )
+            / (_dxq[section - 1] + _dxq[section])
+        ) + (1 - theta) * (
+            (
+                Q[section + 1]
+                * Q_nominal
+                / (nominal_width[section + 1] * nominal_depth[section + 1])
+                - Q[section - 1]
+                * Q_nominal
+                / (nominal_width[section - 1] * nominal_depth[section - 1])
+            )
+            / (_dxq[section - 1] + _dxq[section])
+        );
+      end if;
+    end for;
+  else
+    for section in 2:n_level_nodes loop
+      _dQ_sq_div_Adx[section] = 0.0;
+    end for;
+  end if;
   // Momentum equation
   // Note that the equation is formulated without any divisions, to make collocation more robust.
   for section in 2:n_level_nodes loop
     // Water momentum equation
-    (if use_inertia then 1 else 0) * der(Q[section]) + theta * Deltares.Constants.g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * Deltares.Constants.g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * _wind_stress + theta * (Deltares.Constants.g_n * Q[section] * sqrt(Q[section]^2 + min_abs_Q^2) * (0.5 * (delay(_wetted_perimeter[section], semi_implicit_step_size) + delay(_wetted_perimeter[section - 1], semi_implicit_step_size))) / (min_divisor + friction_coefficient^2 * (0.5 * (delay(_cross_section[section], semi_implicit_step_size) + delay(_cross_section[section - 1], semi_implicit_step_size)))^2)) + (1 - theta) * (sqrt(Q_nominal^2 + min_abs_Q^2) * Deltares.Constants.g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
+    (if use_inertia then 1 else 0) * (der(Q[section]) + _dQ_sq_div_Adx[section]) + theta * Deltares.Constants.g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * Deltares.Constants.g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * _wind_stress + theta * (Deltares.Constants.g_n * Q[section] * sqrt(Q[section]^2 + min_abs_Q^2) * (0.5 * (delay(_wetted_perimeter[section], semi_implicit_step_size) + delay(_wetted_perimeter[section - 1], semi_implicit_step_size))) / (min_divisor + friction_coefficient^2 * (0.5 * (delay(_cross_section[section], semi_implicit_step_size) + delay(_cross_section[section - 1], semi_implicit_step_size)))^2)) + (1 - theta) * (sqrt(Q_nominal^2 + min_abs_Q^2) * Deltares.Constants.g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
     // Substance transport
     M[section, :] = theta * (smooth_switch(Q[section]) * (Q[section] .* C[section - 1, :]) + (1 - smooth_switch(Q[section])) * (Q[section] .* C[section, :])) + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((if Q_nominal > 0 then C[section - 1, :] else C[section, :]) - C_nominal));
   end for;
