@@ -75,18 +75,107 @@ equation
   // Note that the equation is formulated without any divisions, to make collocation more robust.
   for section in 2:n_level_nodes loop
     // Water momentum equation
-    (if use_inertia then 1 else 0) * der(Q[section]) + theta * Deltares.Constants.g_n * 0.5 * (_cross_section[section] + _cross_section[section - 1]) * (H[section] - H[section - 1]) / dx + (1 - theta) * Deltares.Constants.g_n * (nominal_width[section] * nominal_depth[section]) * (H[section] - H[section - 1]) / dx - nominal_width[section] / density_water * _wind_stress + theta * (Deltares.Constants.g_n * Q[section] * sqrt(Q[section]^2 + min_abs_Q^2) * (0.5 * (delay(_wetted_perimeter[section], semi_implicit_step_size) + delay(_wetted_perimeter[section - 1], semi_implicit_step_size))) / (min_divisor + friction_coefficient^2 * (0.5 * (delay(_cross_section[section], semi_implicit_step_size) + delay(_cross_section[section - 1], semi_implicit_step_size)))^2)) + (1 - theta) * (sqrt(Q_nominal^2 + min_abs_Q^2) * Deltares.Constants.g_n) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2 / (nominal_depth[section] * 2 + nominal_width[section])) * Q[section] = 0;
+    (if use_inertia then 1 else 0) * der(Q[section])
+    +
+    theta
+    * Deltares.Constants.g_n
+    * 0.5
+    * (_cross_section[section] + _cross_section[section - 1])
+    * (H[section] - H[section - 1])
+    / dx
+    +
+    (1 - theta)
+    * Deltares.Constants.g_n
+    * (nominal_width[section] * nominal_depth[section])
+    * (H[section] - H[section - 1])
+    / dx
+    -
+    nominal_width[section] / density_water * _wind_stress
+    +
+    theta
+    * (
+      Deltares.Constants.g_n
+      * Q[section]
+      * sqrt(Q[section] ^ 2 + min_abs_Q ^ 2)
+      * (
+        0.5
+        * (
+          delay(_wetted_perimeter[section], semi_implicit_step_size)
+          +
+          delay(_wetted_perimeter[section - 1], semi_implicit_step_size)
+          )
+        )
+      / (
+        min_divisor
+        +
+        friction_coefficient ^ 2
+        * (
+          0.5
+          * (
+            delay(_cross_section[section], semi_implicit_step_size)
+            +
+            delay(_cross_section[section - 1], semi_implicit_step_size)
+            )
+          ) ^ 2
+        )
+      )
+    +
+    (1 - theta)
+    * sqrt(Q_nominal ^ 2 + min_abs_Q ^ 2)
+    * Deltares.Constants.g_n
+    / (
+      friction_coefficient ^ 2
+      * (nominal_width[section] * nominal_depth[section]) ^ 2
+      / (nominal_depth[section] * 2 + nominal_width[section])
+      )
+    * Q[section]
+    =
+    0
+    ;
     // Substance transport
-    M[section, :] = theta * (smooth_switch(Q[section]) * (Q[section] .* C[section - 1, :]) + (1 - smooth_switch(Q[section])) * (Q[section] .* C[section, :])) + (1 - theta) * (Q_nominal * C_nominal + C_nominal * (Q[section] - Q_nominal) + Q_nominal * ((if Q_nominal > 0 then C[section - 1, :] else C[section, :]) - C_nominal));
+    M[section, :]
+    =
+    theta
+    * (
+      smooth_switch(Q[section]) * (Q[section] .* C[section - 1, :])
+      +
+      (1 - smooth_switch(Q[section])) * (Q[section] .* C[section, :])
+      )
+    +
+    (1 - theta)
+    * (
+      Q_nominal * C_nominal
+      +
+      C_nominal * (Q[section] - Q_nominal)
+      +
+      Q_nominal
+      * ((if Q_nominal > 0 then C[section - 1, :] else C[section, :]) - C_nominal)
+      )
+    ;
   end for;
   // Mass balance equations
   // Mass balance equations for same height nodes result in relation between flows on connectors. We can therefore chain branch elements.
   // Note that every mass balance is over half of the element, the cross section of which varies linearly between the cross section at the boundary and the cross section in the middle.
   for node in 1:n_level_nodes loop
     // Water mass balance
-    der(_cross_section[node]) = (Q[node] - Q[node + 1] + _QPerpendicular_distribution[node]) / _dxq[node];
+    der(_cross_section[node])
+    =
+    (Q[node] - Q[node + 1] + _QPerpendicular_distribution[node])
+    / _dxq[node]
+    ;
     // Substance mass balance
-    theta * der(_cross_section[node] * C[node, :]) + (1 - theta) * 0.5 * (nominal_width[node + 1] * nominal_depth[node + 1] + nominal_width[node] * nominal_depth[node]) * der(C[node, :]) = (M[node, :] - M[node + 1, :]) / _dxq[node];
+    theta * der(_cross_section[node]* C[node, :])
+    +
+    (1 - theta)
+    * 0.5
+    * (
+      nominal_width[node + 1] * nominal_depth[node + 1]
+      +
+      nominal_width[node] * nominal_depth[node])
+    * der(C[node, :])
+    =
+    (M[node, :] - M[node + 1, :]) / _dxq[node]
+    ;
   end for;
   annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10}), graphics = {Rectangle(visible = true, fillColor = {0, 255, 255}, fillPattern = FillPattern.Solid, extent = {{-60, -20}, {60, 20}})}));
 end PartialHomotopic;
