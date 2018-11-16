@@ -2,7 +2,7 @@ within Deltares.ChannelFlow.Hydraulic.Branches;
 
 model HomotopicTrapezoidal
   import SI = Modelica.SIunits;
-  extends Internal.PartialHomotopic(nominal_depth = fill(uniform_nominal_depth, n_level_nodes + 1), nominal_width = nominal_depth ./ tan(Deltares.Constants.D2R * linspace(left_slope_angle_up, left_slope_angle_down, n_level_nodes + 1)) .+ linspace(bottom_width_up, bottom_width_down, n_level_nodes + 1) .+ nominal_depth ./ tan(Deltares.Constants.D2R * linspace(right_slope_angle_up, right_slope_angle_down, n_level_nodes + 1)), H(min = H_b));
+  extends Internal.PartialHomotopic(nominal_depth = fill(uniform_nominal_depth, n_level_nodes + 1), nominal_width = 0.5 * nominal_depth ./ tan(Deltares.Constants.D2R * linspace(left_slope_angle_up, left_slope_angle_down, n_level_nodes + 1)) .+ linspace(bottom_width_up, bottom_width_down, n_level_nodes + 1) .+ 0.5 * nominal_depth ./ tan(Deltares.Constants.D2R * linspace(right_slope_angle_up, right_slope_angle_down, n_level_nodes + 1)), H(min = H_b));
   // Nominal depth
   parameter SI.Distance uniform_nominal_depth;
   // Upstream Bottom Width (same 'Up' as HQUp)
@@ -38,7 +38,7 @@ equation
   sin(Deltares.Constants.D2R .* left_slope_angle) .* _left_slope_length = H .- H_b;
   sin(Deltares.Constants.D2R .* right_slope_angle) .* _right_slope_length = H .- H_b;
   // Compute cross sections
-  _cross_section = (theta * (0.5 * (cos(Deltares.Constants.D2R * left_slope_angle) .* _left_slope_length) .+ bottom_width .+ 0.5 * (cos(Deltares.Constants.D2R * right_slope_angle) .* _right_slope_length)) + (1 - theta) * (uniform_nominal_depth ./ tan(Deltares.Constants.D2R * left_slope_angle) .+ bottom_width .+ uniform_nominal_depth ./ tan(Deltares.Constants.D2R * right_slope_angle))) .* (H .- H_b);
+  _cross_section = (theta * (0.5 * (cos(Deltares.Constants.D2R * left_slope_angle) .* _left_slope_length) .+ bottom_width .+ 0.5 * (cos(Deltares.Constants.D2R * right_slope_angle) .* _right_slope_length)) + (1 - theta) * (0.5 * uniform_nominal_depth ./ tan(Deltares.Constants.D2R * left_slope_angle) .+ bottom_width .+ 0.5 * uniform_nominal_depth ./ tan(Deltares.Constants.D2R * right_slope_angle))) .* (H .- H_b);
   // Compute Wetted Perimeter
   _wetted_perimeter = _left_slope_length .+ bottom_width .+ _right_slope_length;
 end HomotopicTrapezoidal;
