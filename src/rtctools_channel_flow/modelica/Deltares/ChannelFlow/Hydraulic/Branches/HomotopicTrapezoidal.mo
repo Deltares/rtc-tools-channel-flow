@@ -38,7 +38,13 @@ equation
   sin(Deltares.Constants.D2R .* left_slope_angle) .* _left_slope_length = H .- H_b;
   sin(Deltares.Constants.D2R .* right_slope_angle) .* _right_slope_length = H .- H_b;
   // Compute cross sections
-  _cross_section = (theta * (0.5 * (cos(Deltares.Constants.D2R * left_slope_angle) .* _left_slope_length) .+ bottom_width .+ 0.5 * (cos(Deltares.Constants.D2R * right_slope_angle) .* _right_slope_length)) + (1 - theta) * (0.5 * uniform_nominal_depth ./ tan(Deltares.Constants.D2R * left_slope_angle) .+ bottom_width .+ 0.5 * uniform_nominal_depth ./ tan(Deltares.Constants.D2R * right_slope_angle))) .* (H .- H_b);
+  _cross_section = (
+      theta * (
+        0.5 * (cos(Deltares.Constants.D2R * left_slope_angle) .* _left_slope_length) .+ bottom_width .+ 0.5 * (cos(Deltares.Constants.D2R * right_slope_angle) .* _right_slope_length)
+      ) + (1 - theta) * (
+        0.5 * uniform_nominal_depth ./ tan(Deltares.Constants.D2R * left_slope_angle) .+ bottom_width .+ 0.5 * uniform_nominal_depth ./ tan(Deltares.Constants.D2R * right_slope_angle)
+      )
+    ) .* (H .- H_b);
   // Compute Wetted Perimeter
   _wetted_perimeter = _left_slope_length .+ bottom_width .+ _right_slope_length;
 end HomotopicTrapezoidal;
