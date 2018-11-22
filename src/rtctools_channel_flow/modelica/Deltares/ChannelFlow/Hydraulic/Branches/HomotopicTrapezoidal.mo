@@ -23,10 +23,6 @@ model HomotopicTrapezoidal
   parameter Real right_slope_angle_down(unit = "deg", min = 0.0, max = 90.0) = 90.0;
   // Array of Left Slope Angles.  Right slope = slope right when facing along the positive flow direction.
   parameter Real[n_level_nodes] right_slope_angle(each unit = "deg") = linspace(right_slope_angle_up, right_slope_angle_down, n_level_nodes);
-  // Array of Left Slope Lengths.
-  SI.Distance[n_level_nodes] _left_slope_length;
-  // Array of Right Slope Lengths.
-  SI.Distance[n_level_nodes] _right_slope_length;
   // Upstream Bottom Level (same 'Up' as HQUp)
   parameter SI.Position H_b_up;
   // Downstream Bottom Level (same 'Down' as HQDown)
@@ -34,17 +30,14 @@ model HomotopicTrapezoidal
   // Array of Bottom Levels
   parameter SI.Position[n_level_nodes] H_b = linspace(H_b_up, H_b_down, n_level_nodes);
 equation
-  // Slope lengths
-  sin(Deltares.Constants.D2R .* left_slope_angle) .* _left_slope_length = H .- H_b;
-  sin(Deltares.Constants.D2R .* right_slope_angle) .* _right_slope_length = H .- H_b;
   // Compute cross sections
   _cross_section = (
       theta * (
-        0.5 * (cos(Deltares.Constants.D2R * left_slope_angle) .* _left_slope_length) .+ bottom_width .+ 0.5 * (cos(Deltares.Constants.D2R * right_slope_angle) .* _right_slope_length)
+        0.5 * (H .- H_b) ./ tan(Deltares.Constants.D2R * left_slope_angle) .+ bottom_width .+ 0.5 * (H .- H_b) ./ tan(Deltares.Constants.D2R * right_slope_angle)
       ) + (1 - theta) * (
         0.5 * uniform_nominal_depth ./ tan(Deltares.Constants.D2R * left_slope_angle) .+ bottom_width .+ 0.5 * uniform_nominal_depth ./ tan(Deltares.Constants.D2R * right_slope_angle)
       )
     ) .* (H .- H_b);
   // Compute Wetted Perimeter
-  _wetted_perimeter = _left_slope_length .+ bottom_width .+ _right_slope_length;
+  _wetted_perimeter = (H .- H_b) ./ sin(Deltares.Constants.D2R .* left_slope_angle) .+ bottom_width .+ (H .- H_b) ./ sin(Deltares.Constants.D2R .* right_slope_angle);
 end HomotopicTrapezoidal;
