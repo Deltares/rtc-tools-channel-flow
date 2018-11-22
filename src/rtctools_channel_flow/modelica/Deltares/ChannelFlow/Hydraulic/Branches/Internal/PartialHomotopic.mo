@@ -68,7 +68,7 @@ protected
   SI.Area[n_level_nodes] _cross_section;
   SI.Area[n_level_nodes + 1] _cross_sectionq;
   SI.Distance[n_level_nodes] _wetted_perimeter;
-  SI.Distance[n_level_nodes] _dxq = cat(1, {dx / 2}, fill(dx, n_level_nodes - 2), {dx / 2});
+  parameter SI.Distance[n_level_nodes] _dxq = cat(1, {dx / 2}, fill(dx, n_level_nodes - 2), {dx / 2});
   SI.VolumeFlowRate[n_QLateral] _lat = QLateral.Q;
   SI.VolumeFlowRate[n_level_nodes] _QPerpendicular_distribution = transpose(QForcing_map) * QForcing .+ transpose(QLateral_map) * _lat;
 equation
