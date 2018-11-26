@@ -148,14 +148,14 @@ equation
     if use_manning then
       _friction[section] = friction_coefficient^2 * (
         theta * (
-          Q[section] * sqrt(Q[section]^2 + min_abs_Q^2) * (min_divisor + 0.5 * (delay(_wetted_perimeter[section], semi_implicit_step_size) + delay(_wetted_perimeter[section - 1], semi_implicit_step_size)))^(8.0 / 6.0) / (min_divisor + 0.5 * (delay(_cross_section[section], semi_implicit_step_size) + delay(_cross_section[section - 1], semi_implicit_step_size)))^(14.0 / 6.0)
+          Q[section] * sqrt(Q[section]^2 + min_abs_Q^2) * (min_divisor + 0.5 * (_wetted_perimeter[section] - semi_implicit_step_size * der(_wetted_perimeter[section]) + _wetted_perimeter[section - 1] - semi_implicit_step_size * der(_wetted_perimeter[section - 1])))^(8.0 / 6.0) / (min_divisor + 0.5 * (_cross_section[section] - semi_implicit_step_size * der(_cross_section[section]) + _cross_section[section - 1] - semi_implicit_step_size * der(_cross_section[section - 1])))^(14.0 / 6.0)
         ) + (1 - theta) * (
           Q[section] * sqrt(Q_nominal^2 + min_abs_Q^2) * (nominal_depth[section] * 2 + nominal_width[section])^(8.0 / 6.0) / (nominal_width[section] * nominal_depth[section])^(14.0 / 6.0)
       ));
     else
       _friction[section] =
         theta * (
-          Q[section] * sqrt(Q[section]^2 + min_abs_Q^2) * (0.5 * (delay(_wetted_perimeter[section], semi_implicit_step_size) + delay(_wetted_perimeter[section - 1], semi_implicit_step_size))) / (min_divisor + friction_coefficient^2 * (0.5 * (delay(_cross_section[section], semi_implicit_step_size) + delay(_cross_section[section - 1], semi_implicit_step_size)))^2)
+          Q[section] * sqrt(Q[section]^2 + min_abs_Q^2) * (0.5 * (_wetted_perimeter[section] - semi_implicit_step_size * der(_wetted_perimeter[section]) + _wetted_perimeter[section - 1] - semi_implicit_step_size * der(_wetted_perimeter[section - 1]))) / (min_divisor + friction_coefficient^2 * (0.5 * (_cross_section[section] - semi_implicit_step_size * der(_cross_section[section]) + _cross_section[section - 1] - semi_implicit_step_size * der(_cross_section[section - 1])))^2)
         ) + (1 - theta) * (
           Q[section] * sqrt(Q_nominal^2 + min_abs_Q^2) * (nominal_depth[section] * 2 + nominal_width[section]) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2)
         );
