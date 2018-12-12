@@ -21,7 +21,9 @@ partial model PartialHomotopic
   // Flow
   SI.VolumeFlowRate[n_level_nodes + 1] Q;
   // Water level
-  SI.Position[n_level_nodes] H;
+  SI.Position[n_level_nodes] H(min = H_b);
+  // Array of Bottom Levels
+  parameter SI.Position[n_level_nodes] H_b;
   // Length
   parameter SI.Distance length = 1.0;
   // Rotation
@@ -89,8 +91,8 @@ equation
   _cross_sectionq[n_level_nodes + 1] = _cross_section[n_level_nodes];
   // Compute dQ/dx for advection term
   _dQ_sq_div_Adx[1] = 0;
-  if (use_inertia and use_convective_acceleration) then
-    for section in 2:n_level_nodes loop
+  for section in 2:n_level_nodes loop
+    if (use_inertia and use_convective_acceleration) then
       if use_upwind then
         _dQ_sq_div_Adx[section] = theta * (
             smooth_switch(Q[section])
@@ -135,12 +137,10 @@ equation
             / (_dxq[section - 1] + _dxq[section])
         );
       end if;
-    end for;
-  else
-    for section in 2:n_level_nodes loop
+    else
       _dQ_sq_div_Adx[section] = 0.0;
-    end for;
-  end if;
+    end if;
+  end for;
   // Momentum equation
   // Note that the equation is formulated without any divisions, to make collocation more robust.
   _friction[1] = 0.0;
@@ -170,7 +170,7 @@ equation
   // Note that every mass balance is over half of the element, the cross section of which varies linearly between the cross section at the boundary and the cross section in the middle.
   for node in 1:n_level_nodes loop
     // Water mass balance
-    der(_cross_section[node]) = (Q[node] - Q[node + 1] + _QPerpendicular_distribution[node]) / _dxq[node];
+    theta * der(_cross_section[node]) + (1 - theta) * 0.5 * (nominal_width[node + 1] + nominal_width[node]) * der(H[node]) = (Q[node] - Q[node + 1] + _QPerpendicular_distribution[node]) / _dxq[node];
     // Substance mass balance
     theta * der(_cross_section[node] * C[node, :]) + (1 - theta) * 0.5 * (nominal_width[node + 1] * nominal_depth[node + 1] + nominal_width[node] * nominal_depth[node]) * der(C[node, :]) = (M[node, :] - M[node + 1, :]) / _dxq[node];
   end for;
