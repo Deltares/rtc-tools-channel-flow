@@ -19,7 +19,7 @@ partial model PartialHomotopic
   input SI.Stress wind_stress_u(nominal = 1e-1) = 0.0; // Wind stress in x (u, easting) direction (= 0 radians, 0 degrees)
   input SI.Stress wind_stress_v(nominal = 1e-1) = 0.0; // Wind stress in y (v, northing) direction (= 0.5*pi radians, 90 degrees)
   // Flow
-  SI.VolumeFlowRate[n_level_nodes + 1] Q;
+  SI.VolumeFlowRate[n_level_nodes + 1] Q(each nominal = abs(Q_nominal));
   // Water level
   SI.Position[n_level_nodes] H(min = H_b);
   // Array of Bottom Levels
