@@ -9,6 +9,6 @@ model Linear
   parameter SI.Position H_b;
 equation
   // Volume - forebay relation
-  V = A * (H - H_b);
+  V / A = H - H_b;
   annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10})));
 end Linear;
