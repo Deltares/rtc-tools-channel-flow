@@ -1,6 +1,7 @@
 within Deltares.ChannelFlow.SimpleRouting.Branches;
 
 block Delay
+  import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.QSISO;
   parameter SI.Duration duration = 0.0;
 equation
