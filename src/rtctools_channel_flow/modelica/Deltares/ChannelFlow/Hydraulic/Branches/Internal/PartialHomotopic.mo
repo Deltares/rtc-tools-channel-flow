@@ -157,7 +157,7 @@ equation
         theta * (
           Q[section] * sqrt(Q[section]^2 + min_abs_Q^2) * (0.5 * (_wetted_perimeter[section] - semi_implicit_step_size * der(_wetted_perimeter[section]) + _wetted_perimeter[section - 1] - semi_implicit_step_size * der(_wetted_perimeter[section - 1]))) / (min_divisor + friction_coefficient^2 * (0.5 * (_cross_section[section] - semi_implicit_step_size * der(_cross_section[section]) + _cross_section[section - 1] - semi_implicit_step_size * der(_cross_section[section - 1])))^2)
         ) + (1 - theta) * (
-          Q[section] * sqrt(Q_nominal^2 + min_abs_Q^2) * (nominal_depth[section] * 2 + nominal_width[section]) / (friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2)
+          Q[section] * sqrt(Q_nominal^2 + min_abs_Q^2) * (nominal_depth[section] * 2 + nominal_width[section]) / (min_divisor + friction_coefficient^2 * (nominal_width[section] * nominal_depth[section])^2)
         );
     end if;
     // Water momentum equation
