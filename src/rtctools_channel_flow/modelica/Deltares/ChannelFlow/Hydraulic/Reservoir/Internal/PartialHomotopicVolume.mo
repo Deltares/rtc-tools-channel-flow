@@ -7,6 +7,7 @@ partial model PartialHomotopicVolume
   extends Deltares.ChannelFlow.Internal.QLateral;
   extends Deltares.ChannelFlow.Internal.Reservoir(HQDown.Q(nominal=Q_nominal));
   // Parameters
+  parameter Real Q_nominal=1.0;
   parameter SI.Area A;
   // Bed level
   parameter SI.Position H_b;
