@@ -4,7 +4,7 @@ block NodeHQPort "Block with multiple inflows and multiple outflows, where alloc
   import SI = Modelica.SIunits;
   extends Internal.PartialNode;
   extends Deltares.ChannelFlow.Internal.HQOnePort;
-  input SI.VolumeFlowRate QOut_control[nout];
+  input SI.VolumeFlowRate QOut_control[nout](each nominal=Q_nominal);
   output SI.Position H;
 equation
   QInSum = sum(QIn.Q);

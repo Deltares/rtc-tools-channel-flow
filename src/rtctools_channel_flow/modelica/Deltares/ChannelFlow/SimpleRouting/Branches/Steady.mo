@@ -1,10 +1,12 @@
 within Deltares.ChannelFlow.SimpleRouting.Branches;
 
 block Steady
-  extends Deltares.ChannelFlow.Internal.QSISO;
-  extends Deltares.ChannelFlow.Internal.QForcing;
-  extends Deltares.ChannelFlow.Internal.QLateral;
+  import SI = Modelica.SIunits;
+  extends Deltares.ChannelFlow.Internal.QSISO(QIn.Q(nominal=Q_nominal), QOut.Q(nominal=Q_nominal));
+  extends Deltares.ChannelFlow.Internal.QForcing(QForcing(nominal=Q_nominal));
+  extends Deltares.ChannelFlow.Internal.QLateral(QLateral.Q(nominal=Q_nominal));
+  parameter SI.VolumeFlowRate Q_nominal = 1.0;
 equation
-  QOut.Q = QIn.Q + sum(QForcing) + sum(QLateral.Q);
+  QOut.Q / Q_nominal = (QIn.Q + sum(QForcing) + sum(QLateral.Q)) / Q_nominal;
   annotation(Icon(coordinateSystem( initialScale = 0.1, grid = {10, 10}), graphics = {Line(points = {{-50, 0}, {50, 0}})}));
 end Steady;

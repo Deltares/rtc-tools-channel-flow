@@ -7,5 +7,5 @@ model Linear "Storage with linear level-storage relation"
   // Bed level
   parameter Modelica.SIunits.Position H_b;
 equation
-  V = A * (HQ.H - H_b);
+  V / V_nominal = A * (HQ.H - H_b) / V_nominal;
 end Linear;
