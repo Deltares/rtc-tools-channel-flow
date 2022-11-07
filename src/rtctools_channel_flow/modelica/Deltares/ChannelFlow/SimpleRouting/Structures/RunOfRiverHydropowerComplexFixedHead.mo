@@ -1,10 +1,10 @@
 within Deltares.ChannelFlow.SimpleRouting.Structures;
 
-block RunoffRiverComplexFixedHead "Node for a simple complex of a runoff-river power plant and a weir. Head difference for power production is constant."
+block RunOfRiverHydropowerComplexFixedHead "Node for a simple complex of a runoff-river power plant and a weir. Head difference for power production is constant."
   import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.QSISO;
     // Head difference
-  parameter SI.position dH;
+  parameter SI.Position dH;
   // Turbine efficiency
   parameter real nu;
   // Water density
@@ -19,4 +19,4 @@ block RunoffRiverComplexFixedHead "Node for a simple complex of a runoff-river p
     QOut.Q = Q_turbine + Q_spill;
     QOut.Q = QIn.Q;
     P = nu * ro * Deltares.Constants.g_n * dH * Q_turbine;
-end RunoffRiverComplexFixedHead;
+end RunOfRiverHydropowerComplexFixedHead;
