@@ -36,7 +36,7 @@ setup(
     license="LGPL",
     packages=find_packages("src"),
     package_dir={"": "src"},
-    install_requires=["rtc-tools",
+    install_requires=["rtc-tools>=2.0.0",
                       "pymoca >= 0.4.2"],
     include_package_data=True,
     cmdclass=versioneer.get_cmdclass(),
