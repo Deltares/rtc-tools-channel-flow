@@ -6,10 +6,10 @@ partial block PartialKLag
   // Note: correct formulation guaranteed only if implicit_step_size is set to the input step size.
   input SI.Duration implicit_step_size(fixed = true);
 
-  parameter KLagNonlinearityParameterNumerator k_internal_num = 1 "Nonlinearity parameter numerator";
-  parameter KLagNonlinearityParameterNumerator k_internal_den = 1 "Nonlinearity parameter denominator";
-  parameter KLagAlpha alpha_internal = 36 "Routing parameter";
-  parameter SI.Position L = 100;
+  parameter KLagNonlinearityParameterNumerator k_internal_num "Nonlinearity parameter numerator";
+  parameter KLagNonlinearityParameterNumerator k_internal_den "Nonlinearity parameter denominator";
+  parameter KLagAlpha alpha_internal "Routing parameter";
+  parameter SI.Position L;
 
   input SI.VolumeFlowRate q_out_prev;
   parameter Real min_divisor = Deltares.Constants.eps;
