@@ -1,2 +1,7 @@
 PartialMuskingum
 MuskingumWeightingFactor
+PartialKLag
+KLagAlpha
+KLagNonlinearityParameter
+KLagNonlinearityParameterDenominator
+KLagNonlinearityParameterNumerator
