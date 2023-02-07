@@ -9,7 +9,6 @@ import versioneer
 DOCLINES = __doc__.split("\n")
 
 CLASSIFIERS = """\
-Development Status :: 4 - Beta
 Intended Audience :: Science/Research
 Intended Audience :: Information Technology
 License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)
