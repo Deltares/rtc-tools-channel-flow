@@ -26,8 +26,8 @@ Operating System :: MacOS
 setup(
     name="rtc-tools-channel-flow",
     version=versioneer.get_version(),
-    author='Matthijs den Toom, Jorn Baayen, et al.',
-    maintainer='Jack Vreeken',
+    author='Deltares',
+    maintainer='Deltares',
     description=DOCLINES[0],
     url='http://www.deltares.nl/en/software/rtc-tools/',
     download_url='http://gitlab.com/deltares/rtc-tools-channel-flow/',
