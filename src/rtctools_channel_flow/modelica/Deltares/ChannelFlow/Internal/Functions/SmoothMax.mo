@@ -7,5 +7,5 @@ function SmoothMax "Smooth Approximation of a Max() Function"
   input Real eps = Deltares.Constants.eps;
   output Real smooth_max;
 algorithm
-  smooth_max := sqrt((a - b) ^ 2 + eps) / 2 + (a + b) / 2;
+  smooth_max := sqrt((a - b)^2 + eps)/2 + (a + b)/2;
 end SmoothMax;

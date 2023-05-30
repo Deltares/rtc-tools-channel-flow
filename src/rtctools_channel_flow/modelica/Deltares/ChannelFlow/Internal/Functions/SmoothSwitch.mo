@@ -6,5 +6,5 @@ function SmoothSwitch
 protected
   Real k = 50;
 algorithm
-  y := if x < -1 then 0 elseif x > 1 then 1 else 0 + (1 - 0) / (1 + exp(-k * x));
+  y := if x < -1 then 0 elseif x > 1 then 1 else 0 + (1 - 0)/(1 + exp(-k*x));
 end SmoothSwitch;

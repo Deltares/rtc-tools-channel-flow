@@ -1,7 +1,7 @@
 within Deltares.ChannelFlow.SimpleRouting.Branches;
 
 block Integrator
-  import SI = Modelica.SIunits;
+  import Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.QSISO;
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
@@ -9,8 +9,8 @@ block Integrator
   // Inputs
   input SI.VolumeFlowRate QOut_control;
 equation
-  // Mass balance
+// Mass balance
   der(V) = QIn.Q - QOut.Q + sum(QForcing) + sum(QLateral.Q);
-  // Outflow equals release
+// Outflow equals release
   QOut.Q = QOut_control;
 end Integrator;

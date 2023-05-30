@@ -1,17 +1,18 @@
-within Deltares.ChannelFlow.SimpleRouting.Storage; 
+within Deltares.ChannelFlow.SimpleRouting.Storage;
 
 block Storage "DEPRECATED, use Branches.Integrator instead"
-  import SI = Modelica.SIunits;
+  import Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.QSISO;
   extends Deltares.ChannelFlow.Internal.QForcing;
   // Inputs
   input SI.VolumeFlowRate Q_release;
   // States
-  SI.Volume V(min=0, nominal = 1e6);
+  SI.Volume V(min = 0, nominal = 1e6);
 equation
-  // Mass balance
+// Mass balance
   der(V) = QIn.Q - QOut.Q + sum(QForcing);
-  // Outflow equals release
+// Outflow equals release
   QOut.Q = Q_release;
-  annotation(Icon(coordinateSystem(initialScale = 0.1, grid = {10, 10}), graphics = {Rectangle(fillColor = {255, 0, 0}, fillPattern = FillPattern.Solid, extent = {{-50, 50}, {50, -50}})}));
+  annotation(
+    Icon(coordinateSystem(initialScale = 0.1, grid = {10, 10}), graphics = {Rectangle(fillColor = {255, 0, 0}, fillPattern = FillPattern.Solid, extent = {{-50, 50}, {50, -50}})}));
 end Storage;

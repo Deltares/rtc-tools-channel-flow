@@ -5,6 +5,6 @@ block QSI
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.Volume;
 equation
-  // Mass balance
+// Mass balance
   der(V) = QIn.Q + sum(QForcing);
 end QSI;
