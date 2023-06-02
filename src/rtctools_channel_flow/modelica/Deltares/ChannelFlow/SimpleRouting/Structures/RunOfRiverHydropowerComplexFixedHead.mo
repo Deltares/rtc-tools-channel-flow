@@ -6,7 +6,7 @@ block RunOfRiverHydropowerComplexFixedHead "Node for a simple complex of a run-o
     // Head difference
   parameter SI.Position dH;
   // Turbine efficiency
-  parameter real nu;
+  parameter Real nu;
   // Water density
   parameter SI.Density ro;
   // Turbine flow
