@@ -1,15 +1,15 @@
 within Deltares.ChannelFlow.SimpleRouting.Branches.Internal;
 
-partial block PartialKLag
+partial block PartialKNNonlinear
   import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.QSISO;
 
   // Note: correct formulation guaranteed only if implicit_step_size is set to the input step size.
   input SI.Duration implicit_step_size(fixed = true);
 
-  parameter Internal.KLagNonlinearityParameterNumerator k_internal_num "Nonlinearity parameter numerator";
-  parameter Internal.KLagNonlinearityParameterNumerator k_internal_den "Nonlinearity parameter denominator";
-  parameter Internal.KLagAlpha alpha_internal "Routing parameter";
+  parameter Internal.KNNonlinearityParameterNumerator k_internal_num "Nonlinearity parameter numerator";
+  parameter Internal.KNNonlinearityParameterNumerator k_internal_den "Nonlinearity parameter denominator";
+  parameter Internal.KNAlpha alpha_internal "Routing parameter";
   parameter SI.Position L;
 
   input Modelica.SIunits.VolumeFlowRate q_out_prev;
@@ -31,4 +31,4 @@ initial equation
 
   QIn.Q - QOut.Q = 0.0;
 
-end PartialKLag;
+end PartialKNNonlinear;

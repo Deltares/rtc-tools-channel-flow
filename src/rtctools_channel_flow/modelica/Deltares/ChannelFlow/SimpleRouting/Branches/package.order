@@ -2,7 +2,7 @@ Internal
 Delay
 EmptyBranch
 Integrator
-KLag
+KNNonlinear
 Muskingum
 Steady
 LagAndK
