@@ -2,6 +2,7 @@ within Deltares.ChannelFlow.SimpleRouting.Branches.Internal;
 
 partial block PartialMuskingum
   extends Deltares.ChannelFlow.Internal.QSISO;
+  import SI = Modelica.SIunits;
   // Note: correct formulation guaranteed only if step_size is set to the optimization step size.
   input SI.Duration step_size = 0.0;
   parameter Modelica.SIunits.Time K_internal "Storage constant";
