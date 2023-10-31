@@ -3,6 +3,7 @@ Delay
 EmptyBranch
 Integrator
 KNNonlinear
+KNNonlinearVForm
 Muskingum
 Steady
 LagAndK

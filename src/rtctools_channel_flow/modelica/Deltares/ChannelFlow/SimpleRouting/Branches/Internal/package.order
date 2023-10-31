@@ -1,6 +1,7 @@
 PartialMuskingum
 MuskingumWeightingFactor
 PartialKNNonlinear
+PartialKNNonlinearVForm
 KNAlpha
 KNNonlinearityParameter
 KNNonlinearityParameterDenominator
