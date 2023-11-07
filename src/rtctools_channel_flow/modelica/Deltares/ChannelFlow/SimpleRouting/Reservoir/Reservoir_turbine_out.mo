@@ -9,7 +9,7 @@ block Reservoir_turbine_out
   parameter SI.VolumeFlowRate Q_nominal = 1.0;
 equation
   // Mass balance
-  der(V) / Q_nominal = (QIn.Q - QOut.Q + sum(QForcing) + sum(QLateral.Q)) / Q_nominal;
+  der(V) / Q_nominal = (QIn.Q - QOut.Q + sum(QForcing) + sum(QLateral.Q) + Q_spill) / Q_nominal;
   // Outflow is only from the turbine
   QOut.Q = Q_turbine;
 end Reservoir_turbine_out;
