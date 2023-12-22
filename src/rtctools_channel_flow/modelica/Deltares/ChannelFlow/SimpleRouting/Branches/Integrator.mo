@@ -4,7 +4,7 @@ block Integrator
   import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.QSISO(QIn.Q(nominal=Q_nominal), QOut.Q(nominal=Q_nominal));
   extends Deltares.ChannelFlow.Internal.QForcing(QForcing(each nominal = Q_nominal));
-  extends Deltares.ChannelFlow.Internal.QLateral(QLateral.Q(nominal=Q_nominal));
+  extends Deltares.ChannelFlow.Internal.QLateral(QLateral.Q(each nominal=Q_nominal));
   extends Deltares.ChannelFlow.Internal.Volume;
   // Inputs
   input SI.VolumeFlowRate QOut_control(nominal=Q_nominal);

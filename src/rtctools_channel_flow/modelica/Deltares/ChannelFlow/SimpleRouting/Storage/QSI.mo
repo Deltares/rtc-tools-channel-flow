@@ -3,7 +3,7 @@ within Deltares.ChannelFlow.SimpleRouting.Storage;
 block QSI
   import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.QSI(QIn.Q(nominal=Q_nominal));
-  extends Deltares.ChannelFlow.Internal.QForcing(QForcing(nominal=Q_nominal));
+  extends Deltares.ChannelFlow.Internal.QForcing(QForcing(each nominal=Q_nominal));
   extends Deltares.ChannelFlow.Internal.Volume;
   parameter SI.VolumeFlowRate Q_nominal = 1.0;
 equation

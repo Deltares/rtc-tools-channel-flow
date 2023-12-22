@@ -3,8 +3,8 @@ within Deltares.ChannelFlow.SimpleRouting.Reservoir;
 block Reservoir
   import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.QSISO(QIn.Q(nominal=Q_nominal), QOut.Q(nominal=Q_nominal));
-  extends Deltares.ChannelFlow.Internal.QForcing(QForcing(nominal=Q_nominal));
-  extends Deltares.ChannelFlow.Internal.QLateral(QLateral.Q(nominal=Q_nominal));
+  extends Deltares.ChannelFlow.Internal.QForcing(QForcing(each nominal=Q_nominal));
+  extends Deltares.ChannelFlow.Internal.QLateral(QLateral.Q(each nominal=Q_nominal));
   extends Deltares.ChannelFlow.Internal.Reservoir(Q_turbine(nominal=Q_nominal), Q_spill(nominal=Q_nominal));
   parameter SI.VolumeFlowRate Q_nominal = 1.0;
 equation
