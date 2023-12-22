@@ -1,6 +1,7 @@
 within Deltares.ChannelFlow.Hydraulic.Storage.Internal;
 
 partial model PartialStorage
+  import SI = Modelica.SIunits;
   extends Deltares.ChannelFlow.Internal.HQOnePort(HQ.Q(nominal = Q_nominal), HQ.M(nominal = Q_nominal * C_nominal));
   extends Deltares.ChannelFlow.Internal.QForcing(QForcing(each nominal = Q_nominal));
   extends Deltares.ChannelFlow.Internal.Volume;
