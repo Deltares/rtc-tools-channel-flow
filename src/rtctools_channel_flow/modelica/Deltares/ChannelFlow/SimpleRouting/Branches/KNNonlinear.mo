@@ -7,4 +7,5 @@ block KNNonlinear "K-N non-inear routing"
   parameter Internal.KNNonlinearityParameterDenominator k_den "Nonlinearity parameter denominator";
   parameter Internal.KNAlpha alpha "Routing parameter";
   parameter SI.Position L;
+  annotation(Icon(coordinateSystem( initialScale = 0.1, grid = {10, 10}), graphics = {Rectangle( extent={{-10,10},{10,-10}}, lineColor={0,0,255}, fillColor={85,170,255}, fillPattern=FillPattern.Solid), Line(points = {{-50, 0}, {50, 0}})}));
 end KNNonlinear;
