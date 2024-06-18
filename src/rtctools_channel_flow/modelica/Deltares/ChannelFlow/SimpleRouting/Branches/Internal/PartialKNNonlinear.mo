@@ -10,7 +10,7 @@ partial block PartialKNNonlinear
   parameter Internal.KNNonlinearityParameterNumerator k_internal_num "Nonlinearity parameter numerator";
   parameter Internal.KNNonlinearityParameterNumerator k_internal_den "Nonlinearity parameter denominator";
   parameter Internal.KNAlpha alpha_internal "Routing parameter";
-  parameter SI.Position L;
+  parameter SI.Position L_internal;
 
   input Modelica.SIunits.VolumeFlowRate q_out_prev(nominal=Q_nominal);
   parameter Real min_divisor = Deltares.Constants.eps;
@@ -19,11 +19,11 @@ partial block PartialKNNonlinear
   parameter SI.VolumeFlowRate Q_nominal = 1.0;
 equation
   // We express the storage in terms of the corresponding flows.
-  // Note that: V = L * alpha * Q_out ^ k and Q_in - Q_out = der(V).
+  // Note that: V = L_internal * alpha * Q_out ^ k and Q_in - Q_out = der(V).
 
 // Use same trick as Muskingum
 
-  implicit_step_size * (QIn.Q - QOut.Q) / (L * alpha_internal) = (QOut.Q + min_divisor) ^ (k_internal_num / k_internal_den) - (q_out_prev + min_divisor) ^ (k_internal_num / k_internal_den);
+  implicit_step_size * (QIn.Q - QOut.Q) / (L_internal * alpha_internal) = (QOut.Q + min_divisor) ^ (k_internal_num / k_internal_den) - (q_out_prev + min_divisor) ^ (k_internal_num / k_internal_den);
 
   q_out_prev / Q_nominal = (QOut.Q - implicit_step_size * der(QOut.Q)) / Q_nominal;
 
