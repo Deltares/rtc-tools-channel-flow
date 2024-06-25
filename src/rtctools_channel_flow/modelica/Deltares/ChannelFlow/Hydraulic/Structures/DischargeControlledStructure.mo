@@ -3,12 +3,12 @@ within Deltares.ChannelFlow.Hydraulic.Structures;
 model DischargeControlledStructure "DischargeControlledStructure"
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   function smooth_switch = Deltares.ChannelFlow.Internal.Functions.SmoothSwitch;
-  input Modelica.SIunits.VolumeFlowRate Q(nominal=Q_nominal);
+  input Modelica.Units.SI.VolumeFlowRate Q(nominal=Q_nominal);
   // Homotopy parameter
   parameter Real theta = 1.0;
   // Nominal values used in linearization
-  parameter Modelica.SIunits.MassFlowRate Q_nominal = 1;
-  parameter Modelica.SIunits.Density C_nominal[HQUp.medium.n_substances] = fill(1e-3, HQUp.medium.n_substances);
+  parameter Modelica.Units.SI.MassFlowRate Q_nominal = 1;
+  parameter Modelica.Units.SI.Density C_nominal[HQUp.medium.n_substances] = fill(1e-3, HQUp.medium.n_substances);
 equation
   // Water
   HQUp.Q + HQDown.Q = 0;

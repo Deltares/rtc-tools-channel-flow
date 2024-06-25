@@ -1,7 +1,7 @@
 within Deltares.ChannelFlow.SimpleRouting.Nodes;
 
 block Node "Block with multiple inflows and multiple outflows and forcing, where allocation is based on explicitly specified outflows."
-  import SI = Modelica.SIunits;
+  import SI = Modelica.Units.SI;
   extends Internal.PartialNode(redeclare parameter Integer nout(min = 1) = 1);
   extends Deltares.ChannelFlow.Internal.QForcing(QForcing(each nominal=Q_nominal));
   input SI.VolumeFlowRate QOut_control[nout - 1](each nominal=Q_nominal);

@@ -1,7 +1,7 @@
 within Deltares.ChannelFlow.SimpleRouting.Structures;
 
 block RunOfRiverHydropowerComplexFixedHead "Node for a simple complex of a run-of-river hydropower plant and a weir. Head difference for power production is constant."
-  import SI = Modelica.SIunits;
+  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.QSISO(QIn.Q(nominal=Q_nominal), QOut.Q(nominal=Q_nominal));
   parameter SI.VolumeFlowRate Q_nominal = 1.0;
     // Head difference

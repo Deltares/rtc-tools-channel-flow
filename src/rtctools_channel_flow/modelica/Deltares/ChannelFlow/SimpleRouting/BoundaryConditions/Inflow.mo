@@ -1,7 +1,7 @@
 within Deltares.ChannelFlow.SimpleRouting.BoundaryConditions;
 
 block Inflow
-  import SI = Modelica.SIunits;
+  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.QSO(QOut.Q(nominal=Q_nominal));
   // Inputs
   input SI.VolumeFlowRate Q(nominal=Q_nominal);

@@ -1,7 +1,7 @@
 within Deltares.ChannelFlow.SimpleRouting.Branches.Internal;
 
 partial block PartialKNNonlinear
-  import SI = Modelica.SIunits;
+  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.QSISO(QIn.Q(nominal=Q_nominal), QOut.Q(nominal=Q_nominal));
 
   // Note: correct formulation guaranteed only if implicit_step_size is set to the input step size.
@@ -12,7 +12,7 @@ partial block PartialKNNonlinear
   parameter Internal.KNAlpha alpha_internal "Routing parameter";
   parameter SI.Position L_internal;
 
-  input Modelica.SIunits.VolumeFlowRate q_out_prev(nominal=Q_nominal);
+  input Modelica.Units.SI.VolumeFlowRate q_out_prev(nominal=Q_nominal);
   parameter Real min_divisor = Deltares.Constants.eps;
 
   // Nominal values for scaling

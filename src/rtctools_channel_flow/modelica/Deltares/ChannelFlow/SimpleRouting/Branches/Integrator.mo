@@ -1,7 +1,7 @@
 within Deltares.ChannelFlow.SimpleRouting.Branches;
 
 block Integrator
-  import SI = Modelica.SIunits;
+  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.QSISO(QIn.Q(nominal=Q_nominal), QOut.Q(nominal=Q_nominal));
   extends Deltares.ChannelFlow.Internal.QForcing(QForcing(each nominal = Q_nominal));
   extends Deltares.ChannelFlow.Internal.QLateral(QLateral.Q(each nominal=Q_nominal));

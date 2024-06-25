@@ -1,7 +1,7 @@
 within Deltares.ChannelFlow.SimpleRouting.Structures;
 
 block DischargeControlledStructure "DischargeControlledStructure"
-  import SI = Modelica.SIunits;
+  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.QSISO(QIn.Q(nominal=Q_nominal), QOut.Q(nominal=Q_nominal));
   // Inputs
   input SI.VolumeFlowRate Q;

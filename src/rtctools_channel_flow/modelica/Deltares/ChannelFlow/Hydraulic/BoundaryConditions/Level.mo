@@ -2,8 +2,8 @@ within Deltares.ChannelFlow.Hydraulic.BoundaryConditions;
 
 model Level "Defines absolute water level"
   extends Deltares.ChannelFlow.Internal.HQOnePort;
-  input Modelica.SIunits.Position H;
-  input Modelica.SIunits.Density C[HQ.medium.n_substances];
+  input Modelica.Units.SI.Position H;
+  input Modelica.Units.SI.Density C[HQ.medium.n_substances];
 equation
   HQ.H = H;
   HQ.C = C;

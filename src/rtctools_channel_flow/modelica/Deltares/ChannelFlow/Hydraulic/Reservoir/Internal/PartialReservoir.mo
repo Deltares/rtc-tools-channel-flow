@@ -6,7 +6,7 @@ partial model PartialReservoir
   extends Deltares.ChannelFlow.Internal.QLateral;
   extends Deltares.ChannelFlow.Internal.Reservoir;
   // States
-  Modelica.SIunits.Position H;
+  Modelica.Units.SI.Position H;
 equation
   // Water level
   H = HQUp.H;

@@ -10,7 +10,7 @@ package Constants
 
   // Constants of nature
   // (name, value, description from http://physics.nist.gov/cuu/Constants/index.html, data from 2014)
-  final constant Modelica.SIunits.Acceleration g_n=9.80665;
+  final constant Modelica.Units.SI.Acceleration g_n=9.80665;
 
   // Numerical tuning constants
   constant Real eps=1e-12 "Small number used to guard against singularities";
