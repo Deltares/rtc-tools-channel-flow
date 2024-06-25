@@ -13,8 +13,6 @@ build:
     paths:
       - dist/
     expire_in: 1 week
-  tags:
-    - docker
 
 # deploy
 deploy:
@@ -29,5 +27,4 @@ deploy:
   except:
     # Do not deploy tags that do not start with 1.
     - /^(?!1\.).*$
-  tags:
-    - docker
+
