@@ -12,5 +12,5 @@ protected
   SI.VolumeFlowRate QOutSum(nominal=Q_nominal);
 equation
 
-  annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10}), graphics = {Text(visible = true, origin = {-80, 40}, extent = {{-20, -20}, {20, 20}}, textString = "%nin"), Text(visible = true, origin = {80, 40}, extent = {{-20, -20}, {20, 20}}, textString = "%nout")}));
+  annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10}), graphics = {Text(visible = true, origin = {-80, 40}, extent = {{-20, -20}, {20, 20}}, textString = "%nin"), Text(visible = true, origin = {80, 40}, extent = {{-20, -20}, {20, 20}}, textString = "%nout"), Text(origin = {0, -80}, extent = {{-70, 20}, {70, -20}}, textString = "%name", fontName = "MS Shell Dlg 2")}));
 end PartialNode;
