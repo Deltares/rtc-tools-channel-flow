@@ -1,6 +1,6 @@
 within Deltares.ChannelFlow.Hydraulic.Storage.Internal;
 
-partial model PartialStorage
+partial model PartialStorageSaline
   import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.HQOnePort(HQ.Q(nominal = Q_nominal), HQ.M(nominal = Q_nominal * C_nominal));
   extends Deltares.ChannelFlow.Internal.QForcing(QForcing(each nominal = Q_nominal));
@@ -14,5 +14,5 @@ partial model PartialStorage
   parameter SI.VolumeFlowRate Q_nominal = 1.0;
 equation
   der(V) / Q_nominal = (HQ.Q + sum(QForcing)) / Q_nominal;
-  //HQ.M / (Q_nominal * C_nominal) = (theta * der(V * HQ.C) + (1 - theta) * Q_nominal * der(HQ.C))  / (Q_nominal * C_nominal);
-end PartialStorage;
+  HQ.M / (Q_nominal * C_nominal) = (theta * der(V * HQ.C) + (1 - theta) * Q_nominal * der(HQ.C))  / (Q_nominal * C_nominal);
+end PartialStorageSaline;
