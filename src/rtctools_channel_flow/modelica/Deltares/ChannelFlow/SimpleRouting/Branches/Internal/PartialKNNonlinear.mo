@@ -11,6 +11,7 @@ partial block PartialKNNonlinear
   parameter Internal.KNNonlinearityParameterNumerator k_internal_den "Nonlinearity parameter denominator";
   parameter Internal.KNAlpha alpha_internal "Routing parameter";
   parameter SI.Position L_internal;
+  parameter Boolean set_initial_outflow_to_inflow = true;
 
   input Modelica.Units.SI.VolumeFlowRate q_out_prev(nominal=Q_nominal);
   parameter Real min_divisor = Deltares.Constants.eps;
@@ -31,6 +32,12 @@ equation
 initial equation
   // Steady state inizialization
 
-  QIn.Q - QOut.Q = 0.0;
+  if set_initial_outflow_to_inflow then
+    QIn.Q - QOut.Q = 0;
+  else
+    // The else statement seems necessary,
+    // since otherwise the compilation with pymoca fails.
+    0 * (QIn.Q - QOut.Q) = 0;
+  end if;
 
 end PartialKNNonlinear;
