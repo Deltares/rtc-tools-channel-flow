@@ -2,7 +2,7 @@ within Deltares.ChannelFlow.Hydraulic.Reservoir.Internal;
 
 partial model PartialHomotopicVolume
   import SI = Modelica.Units.SI;
-  extends Deltares.ChannelFlow.Internal.HQTwoPort;
+  extends Deltares.ChannelFlow.Internal.HQTwoPort(HQDown.Q(nominal = Q_nominal));
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
   extends Deltares.ChannelFlow.Internal.Reservoir;
@@ -10,7 +10,7 @@ partial model PartialHomotopicVolume
   parameter Real Q_nominal=1.0;
   parameter SI.Area A;
   // Water level
-  Modelica.Units.SI.Position H = HQUp.H;
+  Modelica.Units.SI.Position H(min = H_b) = HQUp.H;
   // Bed level
   parameter SI.Position H_b;
   // Homotopy parameter
