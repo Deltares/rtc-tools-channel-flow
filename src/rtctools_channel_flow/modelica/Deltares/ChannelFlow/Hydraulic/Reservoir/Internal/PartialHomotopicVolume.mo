@@ -10,7 +10,7 @@ partial model PartialHomotopicVolume
   parameter Real Q_nominal=1.0;
   parameter SI.Area A;
   // Water level
-  Modelica.Units.SI.Position H(min = H_b) = HQUp.H;
+  SI.Position H(min = H_b) = HQUp.H;
   // Bed level
   parameter SI.Position H_b;
   // Homotopy parameter
