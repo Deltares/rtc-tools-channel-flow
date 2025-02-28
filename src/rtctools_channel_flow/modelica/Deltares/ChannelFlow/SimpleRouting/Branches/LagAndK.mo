@@ -1,6 +1,7 @@
 within Deltares.ChannelFlow.SimpleRouting.Branches;
-
+  
 block LagAndK
+  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.QSISO(QIn.Q(nominal=Q_nominal), QOut.Q(nominal=Q_nominal));
   parameter Modelica.Units.SI.Time Lag_parameter = 3600;
   parameter Modelica.Units.SI.Time K_parameter = 1;
