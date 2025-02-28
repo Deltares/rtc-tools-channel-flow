@@ -5,10 +5,12 @@ partial model PartialHomotopicVolume
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
-  extends Deltares.ChannelFlow.Hydraulic.Reservoir.Internal.PartialReservoir(HQDown.Q(nominal=Q_nominal));
+  extends Deltares.ChannelFlow.Internal.Reservoir;
   // Parameters
   parameter Real Q_nominal=1.0;
   parameter SI.Area A;
+  // Water level
+  Modelica.Units.SI.Position H = HQUp.H;
   // Bed level
   parameter SI.Position H_b;
   // Homotopy parameter
