@@ -9,7 +9,7 @@ partial model PartialStorage
   parameter Real theta = 1.0;
   // Nominal values used in linearization
   parameter Modelica.Units.SI.Volume V_nominal;
-  parameter Modelica.Units.SI.Density C_nominal[HQ.medium.n_substances] = fill(1e-3, HQ.medium.n_substances);
+  parameter Modelica.Units.SI.Density C_nominal[medium.n_substances] = fill(1e-3, medium.n_substances);
   // Nominal values for scaling
   parameter SI.VolumeFlowRate Q_nominal = 1.0;
 equation

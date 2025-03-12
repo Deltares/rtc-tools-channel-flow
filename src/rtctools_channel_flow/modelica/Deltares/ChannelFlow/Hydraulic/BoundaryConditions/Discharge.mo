@@ -1,10 +1,16 @@
 within Deltares.ChannelFlow.Hydraulic.BoundaryConditions;
 
 model Discharge "Defines a discharge"
+  /*
+  Note: The default medium is FreshWater.
+  To use a different medium, decalre the choice in your model file, for example
+  replaceable package MyMedium = Deltares.ChannelFlow.Media.SalineWater;
+  Pass this as an argument to the Discharge block (redeclare package medium=MyMedium)
+  */
   extends Deltares.ChannelFlow.Internal.HQOnePort;
   function smooth_switch = Deltares.ChannelFlow.Internal.Functions.SmoothSwitch;
   input Modelica.Units.SI.VolumeFlowRate Q;
-  input Modelica.Units.SI.MassFlowRate M[0];
+  input Modelica.Units.SI.MassFlowRate M[medium.n_substances];
   parameter Boolean upwind = true; // If true and there is outlfow from the system (into the discharge boudnary) then the concentration of the connected element is used.
 equation
   HQ.Q + Q = 0;

@@ -56,11 +56,11 @@ partial model PartialHomotopic
   // Zero by default, which means that a fully implicit discretization is used.
   input SI.Duration semi_implicit_step_size = 0.0;
   // Substance flow rates
-  SI.VolumeFlowRate M[n_level_nodes + 1, HQUp.medium.n_substances](each nominal = 10);
+  SI.VolumeFlowRate M[n_level_nodes + 1, medium.n_substances](each nominal = 10);
   // Substance concentrations
-  SI.Density C[n_level_nodes, HQUp.medium.n_substances](each min = 0, each nominal = 1);
+  SI.Density C[n_level_nodes, medium.n_substances](each min = 0, each nominal = 1);
   // Nominal substance concentrations used in linearization
-  parameter Real C_nominal[HQUp.medium.n_substances] = fill(1e-3, HQUp.medium.n_substances);
+  parameter Real C_nominal[medium.n_substances] = fill(1e-3, medium.n_substances);
 protected
   SI.Stress _wind_stress;
   Real[n_level_nodes] _dQ_sq_div_Adx(each unit = "m^3/s^2");

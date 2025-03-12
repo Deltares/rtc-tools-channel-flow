@@ -1,6 +1,12 @@
 within Deltares.ChannelFlow.Hydraulic.Branches;
 
 model HomotopicTrapezoidal
+  /*
+  Note: The default medium is FreshWater.
+  To use a different medium, decalre the choice in your model file, for example
+  replaceable package MyMedium = Deltares.ChannelFlow.Media.SalineWater;
+  Pass this as an argument to the HomotopicTrapezoidal block (redeclare package medium=MyMedium)
+  */
   import SI = Modelica.Units.SI;
   extends Internal.PartialHomotopic(nominal_depth = fill(uniform_nominal_depth, n_level_nodes + 1), nominal_width = 0.5 * nominal_depth ./ tan(Deltares.Constants.D2R * linspace(left_slope_angle_up, left_slope_angle_down, n_level_nodes + 1)) .+ linspace(bottom_width_up, bottom_width_down, n_level_nodes + 1) .+ 0.5 * nominal_depth ./ tan(Deltares.Constants.D2R * linspace(right_slope_angle_up, right_slope_angle_down, n_level_nodes + 1)), H_b = linspace(H_b_up, H_b_down, n_level_nodes));
   // Nominal depth
