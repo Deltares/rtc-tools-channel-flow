@@ -1,6 +1,12 @@
 within Deltares.ChannelFlow.Hydraulic.Structures;
 
 model DischargeControlledStructure "DischargeControlledStructure"
+  /*
+  Note: The default medium is FreshWater.
+  To use a different medium, decalre the choice in your model file, for example
+  replaceable package MyMedium = Deltares.ChannelFlow.Media.SalineWater;
+  Pass this as an argument to the DischargeControlledStructure block (redeclare package medium=MyMedium)
+  */
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   function smooth_switch = Deltares.ChannelFlow.Internal.Functions.SmoothSwitch;
   input Modelica.Units.SI.VolumeFlowRate Q(nominal=Q_nominal);
@@ -8,7 +14,7 @@ model DischargeControlledStructure "DischargeControlledStructure"
   parameter Real theta = 1.0;
   // Nominal values used in linearization
   parameter Modelica.Units.SI.MassFlowRate Q_nominal = 1;
-  parameter Modelica.Units.SI.Density C_nominal[HQUp.medium.n_substances] = fill(1e-3, HQUp.medium.n_substances);
+  parameter Modelica.Units.SI.Density C_nominal[medium.n_substances] = fill(1e-3, medium.n_substances);
 equation
   // Water
   HQUp.Q + HQDown.Q = 0;
