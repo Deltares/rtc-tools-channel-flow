@@ -65,7 +65,7 @@ partial model PartialHomotopic
   parameter Real C_nominal[medium.n_substances] = fill(1e-3, medium.n_substances);
 protected
   SI.Stress _wind_stress;
-  Real[n_level_nodes] _dQ_sq_div_Adx(each unit = "m^3/s^2");
+  Real[n_level_nodes] _dQ_sq_div_Adx;
   parameter SI.Angle rotation_rad = Deltares.Constants.D2R * rotation_deg; // Conversion to rotation in radians
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Area[n_level_nodes] _friction;
