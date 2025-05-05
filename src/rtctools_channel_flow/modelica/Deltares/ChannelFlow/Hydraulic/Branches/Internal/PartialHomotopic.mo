@@ -21,7 +21,9 @@ partial model PartialHomotopic
   // Flow
   SI.VolumeFlowRate[n_level_nodes + 1] Q(each nominal = abs(Q_nominal));
   // Water level
-  SI.Position[n_level_nodes] H(min = cat(1, max(H_b[1], H_b[2]), max(H_b[1:n_level_nodes - 2], max(H_b[2:n_level_nodes - 1], H_b[3:n_level_nodes])), max(H_b[n_level_nodes - 1], H_b[n_level_nodes])));
+  SI.Position[n_level_nodes] H(min = H_b
+//  cat(1, max(H_b[1], H_b[2]), max(H_b[1:n_level_nodes - 2], max(H_b[2:n_level_nodes - 1], H_b[3:n_level_nodes])), max(H_b[n_level_nodes - 1], H_b[n_level_nodes]))
+  );
   // Array of Bottom Levels
   parameter SI.Position[n_level_nodes] H_b;
   // Length
@@ -63,7 +65,7 @@ partial model PartialHomotopic
   parameter Real C_nominal[medium.n_substances] = fill(1e-3, medium.n_substances);
 protected
   SI.Stress _wind_stress;
-  Real[n_level_nodes] _dQ_sq_div_Adx(each unit = "m^3/s^2");
+  Real[n_level_nodes] _dQ_sq_div_Adx(each unit = "m3/s2");
   parameter SI.Angle rotation_rad = Deltares.Constants.D2R * rotation_deg; // Conversion to rotation in radians
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Area[n_level_nodes] _friction;
