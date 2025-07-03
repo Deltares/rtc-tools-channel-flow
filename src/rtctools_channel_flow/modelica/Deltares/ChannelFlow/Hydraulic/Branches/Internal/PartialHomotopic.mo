@@ -40,7 +40,6 @@ partial model PartialHomotopic
   // Discretization options
   parameter Boolean use_inertia = true;
   parameter Boolean use_convective_acceleration = false;
-  parameter Boolean use_upwind = true;
   parameter Integer n_level_nodes = 2;
   // Homotopy parameter
   parameter Real theta;
@@ -93,50 +92,20 @@ equation
   _dQ_sq_div_Adx[1] = 0;
   for section in 2:n_level_nodes loop
     if (use_inertia and use_convective_acceleration) then
-      if use_upwind then
-        _dQ_sq_div_Adx[section] = theta * (
-            smooth_switch(Q[section])
-            * (
-                Q[section] ^ 2 / (min_divisor + _cross_sectionq[section])
-                - Q[section - 1] ^ 2 / (min_divisor + _cross_sectionq[section - 1])
-            )
-            / _dxq[section - 1]
-            + (1 - smooth_switch(Q[section]))
-            * (
-                Q[section + 1] ^ 2 / (min_divisor + _cross_sectionq[section + 1])
-                - Q[section] ^ 2 / (min_divisor + _cross_sectionq[section])
-            )
-            / _dxq[section]
-        ) + (1 - theta) * (
-            (
-                Q[section + 1]
-                * Q_nominal
-                / (nominal_width[section + 1] * nominal_depth[section + 1])
-                - Q[section - 1]
-                * Q_nominal
-                / (nominal_width[section - 1] * nominal_depth[section - 1])
-            )
-            / (_dxq[section - 1] + _dxq[section])
-        );
-      else
-        _dQ_sq_div_Adx[section] = theta * (
-            (
-                Q[section + 1] ^ 2 / (min_divisor + _cross_sectionq[section + 1])
-                - Q[section - 1] ^ 2 / (min_divisor + _cross_sectionq[section - 1])
-            )
-            / (_dxq[section - 1] + _dxq[section])
-        ) + (1 - theta) * (
-            (
-                Q[section + 1]
-                * Q_nominal
-                / (nominal_width[section + 1] * nominal_depth[section + 1])
-                - Q[section - 1]
-                * Q_nominal
-                / (nominal_width[section - 1] * nominal_depth[section - 1])
-            )
-            / (_dxq[section - 1] + _dxq[section])
-        );
-      end if;
+      _dQ_sq_div_Adx[section] = theta * (
+          smooth_switch(Q[section])
+          * (
+              (Q[section] - semi_implicit_step_size * der(Q[section])) ^ 2 / (min_divisor + _cross_sectionq[section] - semi_implicit_step_size * der(_cross_sectionq[section]))
+              - (Q[section - 1] - semi_implicit_step_size * der(Q[section - 1])) ^ 2 / (min_divisor + _cross_sectionq[section - 1] - semi_implicit_step_size * der(_cross_sectionq[section - 1]))
+          )
+          / _dxq[section - 1]
+          + (1 - smooth_switch(Q[section]))
+          * (
+              (Q[section + 1] - semi_implicit_step_size * der(Q[section + 1])) ^ 2 / (min_divisor + _cross_sectionq[section + 1] - semi_implicit_step_size * der(_cross_sectionq[section + 1]))
+              - (Q[section] - semi_implicit_step_size * der(Q[section])) ^ 2 / (min_divisor + _cross_sectionq[section] - semi_implicit_step_size * der(_cross_sectionq[section]))
+          )
+          / _dxq[section]
+      );
     else
       _dQ_sq_div_Adx[section] = 0.0;
     end if;
