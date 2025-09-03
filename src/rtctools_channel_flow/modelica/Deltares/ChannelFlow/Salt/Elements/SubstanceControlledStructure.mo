@@ -7,24 +7,22 @@ model SubstanceControlledStructure "SubstanceControlledStructure"
   function smooth_min = Deltares.ChannelFlow.Internal.Functions.SmoothMin;
   function smooth_abs = Deltares.ChannelFlow.Internal.Functions.SmoothAbs;
 
-  //input Modelica.SIunits.VolumeFlowRate Q(nominal=Q_nominal);
   // Homotopy parameter
   parameter Real theta = 1.0;
   // Nominal values used in linearization
   parameter Modelica.SIunits.MassFlowRate Q_nominal = 1;
   parameter Modelica.SIunits.Density C_nominal[HQUp.medium.n_substances] = fill(1e-3, HQUp.medium.n_substances);
   
-  SI.Concentration salinity_psu_up(nominal=34.7);
-  SI.Concentration salinity_psu_down(nominal=34.7);
+  SI.Concentration salinity_psu_up(nominal=34.7, start = 34.7);
+  SI.Concentration salinity_psu_down(nominal=34.7, start = 34.7);
 
-  SI.Temperature temperature_up(nominal=25);
-  SI.Temperature temperature_down(nominal=25);
+  parameter SI.Temperature temperature_up;// = 16.0;
+  parameter SI.Temperature temperature_down; // = 16.0;
 
-  SI.Density rho_up(nominal=1000);
-  SI.Density rho_down(nominal=1000);
-  //SI.Density rho_prime(nominal=1000);
-  //SI.Velocity celerity(nominal=1);
-  SI.Height width = 2000;
+  SI.Density rho_up(nominal=1000, start = 1000.0);
+  SI.Density rho_down(nominal=1000, start = 1000.0);
+
+  parameter SI.Height width = 2000;
   
   Real a_up;
   Real b_up;
@@ -37,14 +35,9 @@ model SubstanceControlledStructure "SubstanceControlledStructure"
   SI.Density rho_ref_down;
   
   Real flux_q1_s1;
-  //Real flux_q1_s2;
-
   Real epsilon_abs = 0.000001;
 
 equation
-  
-  temperature_up = 16.0;
-  temperature_down = 16.0;
   
   salinity_psu_up = HQUp.C[1] / rho_up * 1000.0;
   salinity_psu_down = HQDown.C[1] / rho_down * 1000.0;
