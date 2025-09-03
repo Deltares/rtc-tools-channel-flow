@@ -48,54 +48,31 @@ equation
   rho_ref_up = (999.842594 + 6.793952E-2 * temperature_up - 9.095290E-3 * temperature_up^2.0 +1.001685E-4 * temperature_up^3.0 - 1.120083E-6 *temperature_up^4.0 +6.536332E-9 * temperature_up^5.0);
   rho_up = rho_ref_up + a_up * salinity_psu_up + b_up * salinity_psu_up^1.5 + c_up * salinity_psu_up^2.0;
   
-  //rho_up = rho_ref_up /2 +(rho_ref_up^2+4*a_up * HQUp.C[1]  * 1000 )^0.5 /2;
-
-  
   a_down = 8.24493E-1 - 4.0899E-3 * temperature_down + 7.6438E-5 * temperature_down^2.0;// - 8.2467E-7 * temperature_down^3.0 + 5.3875E-9 * temperature_down^4.0;
   b_down = -5.72466E-3 + 1.0227E-4 * temperature_down - 1.6546E-6 * temperature_down^2.0;
   c_down = 4.8314E-4;
   rho_ref_down = (999.842594 + 6.793952E-2 * temperature_down - 9.095290E-3 * temperature_down^2.0 +1.001685E-4 * temperature_down^3.0 - 1.120083E-6 *temperature_down^4.0 +6.536332E-9 * temperature_down^5.0); 
   rho_down = rho_ref_down + a_down * salinity_psu_down + b_down * salinity_psu_down^1.5 + c_down * salinity_psu_down^2.0;
 
-  //rho_down = rho_ref_down /2 +(rho_ref_down^2+4*a_down * HQDown.C[1]  * 1000 )^0.5 /2;
-
   flux_q1_s1 =  (2*9.81)^0.5 * width / 2 * min(HQUp.H, HQDown.H)^1.5*(smooth_abs(rho_up-rho_down, epsilon_abs)/(rho_up+rho_down))^0.5;
-  //flux_q1_s2 = -0.5 *HQDown.C[1] * (2*9.81)^0.5 * width / 4 * min(HQUp.H, HQDown.H)^1.5*(smooth_abs(rho_up-rho_down, epsilon_abs)/(rho_up+rho_down))^0.5;
 
-    
+  /*
   if HQUp.Q  > flux_q1_s1 then
       HQUp.M = HQUp.Q * HQUp.C[1];
   else
       HQUp.M =0.5 * HQUp.Q * (HQUp.C[1]+ HQDown.C[1]) + (HQUp.C[1]-HQDown.C[1])* 0.5 * (2*9.81)^0.5 * width / 2 * min(HQUp.H, HQDown.H)^1.5*(smooth_abs(rho_up-rho_down, epsilon_abs)/(rho_up+rho_down))^0.5;
   end if;
-  
-  
-  /*
-  if HQUp.Q / 2 - flux_q1_s1 > -0.1 then
-      HQUp.M = HQUp.Q * HQUp.C[1];
-  else	  
-      if HQUp.Q / 2 - flux_q1_s1 < 0.1 then
-          HQUp.M =-0.5 * HQUp.Q * (HQUp.C[1]+ HQDown.C[1]) + (HQUp.C[1]-HQDown.C[1])*0.5 *  (2*9.81)^0.5 * width / 4 * min(HQUp.H, HQDown.H)^1.5*(smooth_abs(rho_up-rho_down, epsilon_abs)/(rho_up+rho_down))^0.5;
-      else
-        HQUp.M =HQUp.Q * HQUp.C[1] + (-0.5 * HQUp.Q * (HQUp.C[1]+ HQDown.C[1]) + (HQUp.C[1]-HQDown.C[1])*0.5 *  (2*9.81)^0.5 * width / 4 * min(HQUp.H, HQDown.H)^1.5*(smooth_abs(rho_up-rho_down, epsilon_abs)/(rho_up+rho_down))^0.5 -  HQUp.Q * HQUp.C[1]) / (1 + exp(-50 * HQUp.Q / 2 - flux_q1_s1));
-      end if;
-  end if;
   */
   
-  //HQUp.M = ModelicaReference.Operators.smooth(0, if HQUp.Q / 2 - flux_q1_s1 > 0 then HQUp.Q * HQUp.C[1] else -0.5 * HQUp.Q * (HQUp.C[1]+ HQDown.C[1]) + (HQUp.C[1]-HQDown.C[1])*0.5 *  (2*9.81)^0.5 * width / 4 * min(HQUp.H, HQDown.H)^1.5*(smooth_abs(rho_up-rho_down, epsilon_abs)/(rho_up+rho_down))^0.5);
   
-  
-  //HQUp.M = 0.05;
+  if HQUp.Q < -flux_q1_s1 then
+     HQUp.M = HQUp.Q * HQDown.C[1];
+  elseif HQUp.Q  > flux_q1_s1 then
+      HQUp.M = HQUp.Q * HQUp.C[1];
+  else
+      HQUp.M =0.5 * HQUp.Q * (HQUp.C[1]+ HQDown.C[1]) + (HQUp.C[1]-HQDown.C[1])* 0.5 * (2*9.81)^0.5 * width / 2 * min(HQUp.H, HQDown.H)^1.5*(smooth_abs(rho_up-rho_down, epsilon_abs)/(rho_up+rho_down))^0.5;
+  end if;
 
-  
-  
-
-
-
-  
-  
-
-
-  
+ 
   annotation(Icon(coordinateSystem( initialScale = 0.1, grid = {10, 10}), graphics = {Polygon(origin = {0, -16.67}, fillColor = {255, 128, 0}, fillPattern = FillPattern.Solid, points = {{0, 66.667}, {-50, -33.333}, {50, -33.333}, {0, 66.667}})}), Diagram(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10})));
 end SubstanceControlledStructure;
