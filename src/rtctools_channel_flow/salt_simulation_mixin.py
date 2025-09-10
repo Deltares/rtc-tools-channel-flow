@@ -30,7 +30,11 @@ def set_mid_q_wl_closing(self, net_q_storages, net_q_system):
                     "{} has negative downstream discharge, check the laterals.".format(
                         storage_name))
                 #raise Exception
-            self.set_var('connector_' + str(idx + 1) + '_middle_discharge', q_mid_set)
+            if self.upstream_open_boundary:
+                connector_name  = self.connector_names[idx + 1]
+            else:
+                connector_name = self.connector_names[idx]
+            self.set_var(connector_name + '_middle_discharge', q_mid_set)
             print('Q mid set for {} at {}: {}'.format(storage_name, self.get_current_time(), q_mid_set))
 
 def set_mid_q_q_closing(self, net_q_storages, net_q_system):
@@ -50,7 +54,11 @@ def set_mid_q_q_closing(self, net_q_storages, net_q_system):
                     "{} has negative downstream discharge, check the laterals.".format(
                         storage_name))
                 raise Exception
-            self.set_var('connector_' + str(idx + 1) + '_middle_discharge', q_mid_set)
+            if self.upstream_open_boundary:
+                connector_name  = self.connector_names[idx + 1]
+            else:
+                connector_name = self.connector_names[idx]
+            self.set_var(connector_name + '_middle_discharge', q_mid_set)
             print('Q mid set for {} at {}: {}'.format(storage_name, self.get_current_time(), q_mid_set))
 
 
@@ -286,10 +294,10 @@ class SaltSimulationMixin():
            axarr[1].plot(times, results[storage_name + '.V'] / self.parameters()[storage_name + '.A'],
                       linewidth=2,  color=color_list[idx], linestyle='-')#, label='H_' +storage_name)
         if self.upstream_open_boundary:
-           axarr[1].plot(times, results['storage0.V'] / self.parameters()['storage0.A'], label='meer',
+           axarr[1].plot(times, results[self.storage_names[0] + '.V'] / self.parameters()[self.storage_names[0] + '.A'], label='meer',
                       linewidth=2, color='b')
         if self.downstream_open_boundary:
-           axarr[1].plot(times, results['storage4.V'] /  self.parameters()['storage4.A'], label='zee',
+           axarr[1].plot(times, results[self.storage_names[-1] + '.V'] /  self.parameters()[self.storage_names[-1] + '.A'], label='zee',
                       linewidth=2, color='r', linestyle='--')
         axarr[1].set_ylabel('Water level\n[m]')
         ymin, ymax = axarr[1].get_ylim()
@@ -443,6 +451,6 @@ class SaltSimulationMixin():
         plt.savefig(os.path.join(self._output_folder, 'overall_results.png'), bbox_inches='tight', pad_inches=0.1, dpi=300)
 
         df = pd.read_csv('..\\output\\timeseries_export.csv')
-        small_df = df[['concentration_storage1', 'concentration_storage1', 'concentration_storage3', 'connector_1.HQUp.Q', 'connector_2.HQUp.Q','storage3_qforcing_advective']].copy()
-        small_df=small_df.rename(columns = {'storage3_qforcing_advective':'downstream_sluiting_q'})
-        small_df.to_csv('..\\output\\timeseries_export_short.csv')
+        #small_df = df[['concentration_storage1', 'concentration_storage1', 'concentration_storage3', 'connector_1.HQUp.Q', 'connector_2.HQUp.Q','storage3_qforcing_advective']].copy()
+        #small_df=small_df.rename(columns = {'storage3_qforcing_advective':'downstream_sluiting_q'})
+        #small_df.to_csv('..\\output\\timeseries_export_short.csv')
