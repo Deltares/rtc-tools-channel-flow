@@ -270,7 +270,7 @@ class SaltSimulationMixin():
         np.set_printoptions(suppress=True)
 
         color_list=['darkviolet','orange','green','magenta', 'yellow','deepskyblue','black','forestgreen','brown','pink']
-        f, axarr = plt.subplots(9, sharex=True)
+        f, axarr = plt.subplots(10, sharex=True)
         plt.subplots_adjust(left=0.1, bottom=0.1,
                     top=0.95, wspace=0.4, hspace=0.85)
         times= self.times()/3600
@@ -437,6 +437,18 @@ class SaltSimulationMixin():
         plt.sca(axarr[8])
         plt.yticks([0.0, np.round(ymax/2,-1)])
 
+        # Plot 8
+        axarr[9].plot(times, self.io.get_timeseries('upstream_discharge')[1], label='up',
+                      linewidth=2, color='b')
+        axarr[9].plot(times, self.io.get_timeseries('downstream_discharge')[1], label='down',
+                      linewidth=2, color='r', linestyle='--')
+        axarr[9].set_ylabel('Discharge\n[m3/s]')
+        ymin, ymax = axarr[9].get_ylim()
+        axarr[9].set_ylim(ymin - 0.1, ymax + 0.1)
+        axarr[9].legend()
+        axarr[9].set_title('Discharge boundaries', fontsize=10)
+        plt.sca(axarr[9])
+        plt.yticks([0.0, np.round(ymax/2,-1)])
 
         axarr[-1].set_xlabel('Time [h]')
         f.autofmt_xdate()
