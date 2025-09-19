@@ -110,6 +110,11 @@ class SaltSimulationMixin():
 
         super().initialize()
 
+    def read(self):
+        input_database = pd.read_csv(self._input_folder + "/timeseries_import.csv", parse_dates=True, index_col=[0])
+        input_database.to_csv(self._input_folder + "/timeseries_import.csv", date_format='%Y-%m-%d %H:%M:%S')
+        print("Changed timeseries input format.")
+        super().read()
 
     def update(self, dt):
         # Get the time step
