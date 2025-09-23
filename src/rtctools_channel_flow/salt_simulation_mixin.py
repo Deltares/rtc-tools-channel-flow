@@ -1,4 +1,6 @@
 import logging
+from symbol import parameters
+
 logger = logging.getLogger("rtctools")
 import pandas as pd
 import numpy as np
@@ -107,6 +109,11 @@ class SaltSimulationMixin():
 
         for name in self.connector_names:
             self.set_var(name + '_middle_discharge', 0.0)
+        
+        parameters = self.parameters()
+        for storage_name in self.storage_names:    
+           level = self._CSVMixin__initial_state[ storage_name + '_level']
+           self._CSVMixin__initial_state[storage_name + '.V'] = (level - parameters[storage_name + '.H_b']) * parameters[storage_name + '.A']
 
         super().initialize()
 
@@ -296,13 +303,13 @@ class SaltSimulationMixin():
 
         #Plot 2
         for idx, storage_name in enumerate(self.active_storage_names):
-           axarr[1].plot(times, results[storage_name + '.V'] / self.parameters()[storage_name + '.A'],
+           axarr[1].plot(times, results[storage_name + '.V'] / self.parameters()[storage_name + '.A']+self.parameters()[storage_name + '.H_b'],
                       linewidth=2,  color=color_list[idx], linestyle='-', label='H_' +storage_name)
         if self.upstream_open_boundary:
-           axarr[1].plot(times, results[self.storage_names[0] + '.V'] / self.parameters()[self.storage_names[0] + '.A'], label='meer',
+           axarr[1].plot(times, results[self.storage_names[0] + '.V'] / (self.parameters()[self.storage_names[0] + '.A'])+self.parameters()[self.storage_names[0] + '.H_b'], label='meer',
                       linewidth=2, color='b')
         if self.downstream_open_boundary:
-           axarr[1].plot(times, results[self.storage_names[-1] + '.V'] /  self.parameters()[self.storage_names[-1] + '.A'], label='zee',
+           axarr[1].plot(times, results[self.storage_names[-1] + '.V'] /  (self.parameters()[self.storage_names[-1] + '.A'])+self.parameters()[self.storage_names[-1] + '.H_b'], label='zee',
                       linewidth=2, color='r', linestyle='--')
         axarr[1].set_ylabel('Water level\n[m]')
         ymin, ymax = axarr[1].get_ylim()
@@ -489,11 +496,8 @@ class SaltSimulationMixin():
         
 
         # Output Plot
-        f.set_size_inches(8, 9)
+        f.set_size_inches(8, 12)
 
         plt.savefig(os.path.join(self._output_folder, 'overall_results.png'), bbox_inches='tight', pad_inches=0.1, dpi=300)
 
         df = pd.read_csv('..\\output\\timeseries_export.csv')
-        #small_df = df[['concentration_storage1', 'concentration_storage1', 'concentration_storage3', 'connector_1.HQUp.Q', 'connector_2.HQUp.Q','storage3_qforcing_advective']].copy()
-        #small_df=small_df.rename(columns = {'storage3_qforcing_advective':'downstream_sluiting_q'})
-        #small_df.to_csv('..\\output\\timeseries_export_short.csv')
