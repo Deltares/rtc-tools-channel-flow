@@ -270,7 +270,7 @@ class SaltSimulationMixin():
         np.set_printoptions(suppress=True)
 
         color_list=['darkviolet','orange','green','magenta', 'yellow','deepskyblue','black','forestgreen','brown','pink']
-        f, axarr = plt.subplots(10, sharex=True)
+        f, axarr = plt.subplots(12, sharex=True)
         plt.subplots_adjust(left=0.1, bottom=0.1,
                     top=0.95, wspace=0.4, hspace=0.85)
         times= self.times()/3600
@@ -285,7 +285,7 @@ class SaltSimulationMixin():
                       linewidth=2, color=color_list[idx])
 
         if self.downstream_open_boundary:
-           axarr[0].plot(times, results['concentration_' + self.storage_names[-1]], label= storage_name + 'C',
+           axarr[0].plot(times, results['concentration_' + self.storage_names[-1]], label= self.storage_names[-1] + 'C',
                       linewidth=2, color='red')
 
         axarr[0].set_ylabel('Concentration\n[kg/m3]')
@@ -297,7 +297,7 @@ class SaltSimulationMixin():
         #Plot 2
         for idx, storage_name in enumerate(self.active_storage_names):
            axarr[1].plot(times, results[storage_name + '.V'] / self.parameters()[storage_name + '.A'],
-                      linewidth=2,  color=color_list[idx], linestyle='-')#, label='H_' +storage_name)
+                      linewidth=2,  color=color_list[idx], linestyle='-', label='H_' +storage_name)
         if self.upstream_open_boundary:
            axarr[1].plot(times, results[self.storage_names[0] + '.V'] / self.parameters()[self.storage_names[0] + '.A'], label='meer',
                       linewidth=2, color='b')
@@ -449,6 +449,32 @@ class SaltSimulationMixin():
         axarr[9].set_title('Discharge boundaries', fontsize=10)
         plt.sca(axarr[9])
         plt.yticks([0.0, np.round(ymax/2,-1)])
+
+        # Plot 10
+        axarr[10].plot(times, self.io.get_timeseries('head_sea_upstream_zsf')[1], label='up',
+                      linewidth=2, color='b')
+        axarr[10].plot(times, self.io.get_timeseries('head_sea_downstream_zsf')[1], label='down',
+                      linewidth=2, color='r', linestyle='--')
+        axarr[10].set_ylabel('Head\n[m]')
+        ymin, ymax = axarr[10].get_ylim()
+        axarr[10].set_ylim(ymin - 0.1, ymax + 0.1)
+        axarr[10].legend()
+        axarr[10].set_title('ZSF discharge boundaries', fontsize=10)
+        plt.sca(axarr[10])
+        plt.yticks([0.0, np.round(ymax/2,0)])
+
+        # Plot 10
+        axarr[11].plot(times, self.io.get_timeseries('salinity_sea_upstream_zsf')[1], label='up',
+                      linewidth=2, color='b')
+        axarr[11].plot(times, self.io.get_timeseries('salinity_sea_downstream_zsf')[1], label='down',
+                      linewidth=2, color='r', linestyle='--')
+        axarr[11].set_ylabel('Salinity\n[-]')
+        ymin, ymax = axarr[11].get_ylim()
+        axarr[11].set_ylim(ymin - 0.1, ymax + 0.1)
+        axarr[11].legend()
+        axarr[11].set_title('ZSF concentration boundaries', fontsize=10)
+        plt.sca(axarr[11])
+        plt.yticks([0.0, np.round(ymax/2,0)])
 
         axarr[-1].set_xlabel('Time [h]')
         f.autofmt_xdate()
