@@ -6,7 +6,7 @@ partial model PartialHomotopic
   // to false.  Consult Baayen and Piovesan, A continuation approach to nonlinear
   // model predictive control of open channel systems, 2018 for details:
   // https://arxiv.org/abs/1801.06507
-  import SI = Modelica.SIunits;
+  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
@@ -21,7 +21,13 @@ partial model PartialHomotopic
   // Flow
   SI.VolumeFlowRate[n_level_nodes + 1] Q(each nominal = abs(Q_nominal));
   // Water level
-  SI.Position[n_level_nodes] H(min = cat(1, max(H_b[1], H_b[2]), max(H_b[1:n_level_nodes - 2], max(H_b[2:n_level_nodes - 1], H_b[3:n_level_nodes])), max(H_b[n_level_nodes - 1], H_b[n_level_nodes])));
+    SI.Position[n_level_nodes] H(
+  min = cat(1,
+            {max(H_b[1], H_b[2])},
+            { max(H_b[1 + i], max(H_b[2 + i], H_b[3 + i])) for i in 0:n_level_nodes - 3 },
+            {max(H_b[n_level_nodes - 1], H_b[n_level_nodes])}
+  )
+  );
   // Array of Bottom Levels
   parameter SI.Position[n_level_nodes] H_b;
   // Length
@@ -56,14 +62,14 @@ partial model PartialHomotopic
   // Zero by default, which means that a fully implicit discretization is used.
   input SI.Duration semi_implicit_step_size = 0.0;
   // Substance flow rates
-  SI.VolumeFlowRate M[n_level_nodes + 1, HQUp.medium.n_substances](each nominal = 10);
+  SI.VolumeFlowRate M[n_level_nodes + 1, medium.n_substances](each nominal = 10);
   // Substance concentrations
-  SI.Density C[n_level_nodes, HQUp.medium.n_substances](each min = 0, each nominal = 1);
+  SI.Density C[n_level_nodes, medium.n_substances](each min = 0, each nominal = 1);
   // Nominal substance concentrations used in linearization
-  parameter Real C_nominal[HQUp.medium.n_substances] = fill(1e-3, HQUp.medium.n_substances);
+  parameter Real C_nominal[medium.n_substances] = fill(1e-3, medium.n_substances);
 protected
   SI.Stress _wind_stress;
-  Real[n_level_nodes] _dQ_sq_div_Adx(each unit = "m^3/s^2");
+  Real[n_level_nodes] _dQ_sq_div_Adx(each unit = "m3/s2");
   parameter SI.Angle rotation_rad = Deltares.Constants.D2R * rotation_deg; // Conversion to rotation in radians
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Area[n_level_nodes] _friction;

@@ -1,7 +1,13 @@
 within Deltares.ChannelFlow.Hydraulic.Branches;
 
 model HomotopicLinear
-  import SI = Modelica.SIunits;
+  /*
+  Note: The default medium is FreshWater.
+  To use a different medium, decalre the choice in your model file, for example
+  replaceable package MyMedium = Deltares.ChannelFlow.Media.SalineWater;
+  Pass this as an argument to the HomotopicLinear block (redeclare package medium=MyMedium)
+  */
+  import SI = Modelica.Units.SI;
   extends Internal.PartialHomotopic(nominal_depth = fill(uniform_nominal_depth, n_level_nodes + 1), nominal_width = linspace(width_up, width_down, n_level_nodes + 1), H_b = linspace(H_b_up, H_b_down, n_level_nodes));
   // Nominal depth
   parameter SI.Distance uniform_nominal_depth;

@@ -1,9 +1,15 @@
 within Deltares.ChannelFlow.Hydraulic.BoundaryConditions;
 
 model Level "Defines absolute water level"
+  /*
+  Note: The default medium is FreshWater.
+  To use a different medium, decalre the choice in your model file, for example
+  replaceable package MyMedium = Deltares.ChannelFlow.Media.SalineWater;
+  Pass this as an argument to the Level block (redeclare package medium=MyMedium)
+  */
   extends Deltares.ChannelFlow.Internal.HQOnePort;
-  input Modelica.SIunits.Position H;
-  input Modelica.SIunits.Density C[HQ.medium.n_substances];
+  input Modelica.Units.SI.Position H;
+  input Modelica.Units.SI.Density C[medium.n_substances];
 equation
   HQ.H = H;
   HQ.C = C;
