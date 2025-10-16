@@ -14,8 +14,6 @@ partial model PartialStorage
   parameter SI.VolumeFlowRate Q_nominal = 1.0;
 equation
   der(V) / Q_nominal = (HQ.Q + sum(QForcing)) / Q_nominal;
-  for substance in 1:medium.n_substances loop
-    HQ.M[substance] / (Q_nominal * C_nominal[substance]) = (theta * der(V * HQ.C[substance]) + (1 - theta) * Q_nominal * der(HQ.C[substance]))  / (Q_nominal * C_nominal[substance]);
-  end for;
+  HQ.M[:] / (Q_nominal * C_nominal[:]) = (theta * der(V * HQ.C[:]) + (1 - theta) * Q_nominal * der(HQ.C[:]))  / (Q_nominal * C_nominal[:]);
 
 end PartialStorage;
