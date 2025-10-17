@@ -1,8 +1,7 @@
-//within Deltares.ChannelFlow.Hydraulic.Reservoir;
 within Deltares.ChannelFlow.Salt.Elements;
 
 model SaltyLinearReservoirBnd
-  import SI = Modelica.SIunits;
+  import SI = Modelica.Units.SI;
   extends SaltyPartialReservoirBnd(H(min = H_b));
   // Parameters
   parameter SI.Area A;
