@@ -1,8 +1,12 @@
-//within Deltares.ChannelFlow.Hydraulic.Structures;
 within Deltares.ChannelFlow.Salt.Elements;
 
 model SubstanceControlledStructure "SubstanceControlledStructure"
+  /*
+  This block is designed to be used together with the "salt_simulation_mixin" to calculate dispersive and advective transport
+   between salty reservoir elements, do not user in optimization.
+  */
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
+  import SI = Modelica.Units.SI;
   function smooth_switch = Deltares.ChannelFlow.Internal.Functions.SmoothSwitch;
   function smooth_min = Deltares.ChannelFlow.Internal.Functions.SmoothMin;
   function smooth_abs = Deltares.ChannelFlow.Internal.Functions.SmoothAbs;
@@ -10,8 +14,8 @@ model SubstanceControlledStructure "SubstanceControlledStructure"
   // Homotopy parameter
   parameter Real theta = 1.0;
   // Nominal values used in linearization
-  parameter Modelica.SIunits.MassFlowRate Q_nominal = 1;
-  parameter Modelica.SIunits.Density C_nominal[HQUp.medium.n_substances] = fill(1e-3, HQUp.medium.n_substances);
+  parameter SI.MassFlowRate Q_nominal = 1;
+  parameter SI.Density C_nominal = 1e-3;
   
   SI.Concentration salinity_psu_up(nominal=34.7, start = 34.7);
   SI.Concentration salinity_psu_down(nominal=34.7, start = 34.7);
@@ -42,7 +46,7 @@ model SubstanceControlledStructure "SubstanceControlledStructure"
 
 equation
   
-  salinity_psu_up = HQUp.C[1] / rho_up * 1000.0;
+salinity_psu_up = HQUp.C[1] / rho_up * 1000.0;
   salinity_psu_down = HQDown.C[1] / rho_down * 1000.0;
 
   a_up = 8.24493E-1 - 4.0899E-3 * temperature_up + 7.6438E-5 * temperature_up^2.0;// - 8.2467E-7 * temperature_up^3.0 + 5.3875E-9 * temperature_up^4.0;
@@ -69,11 +73,11 @@ equation
   
   
   if HQUp.Q < -flux_q1_s1 then
-     HQUp.M = HQUp.Q * HQDown.C[1];
+     HQUp.M[1] = HQUp.Q * HQDown.C[1];
   elseif HQUp.Q  > flux_q1_s1 then
-      HQUp.M = HQUp.Q * HQUp.C[1];
+      HQUp.M[1] = HQUp.Q * HQUp.C[1];
   else
-      HQUp.M =0.5 * HQUp.Q * (HQUp.C[1]+ HQDown.C[1]) + (HQUp.C[1]-HQDown.C[1])* 0.5 * (2*9.81)^0.5 * width / 2 * min(HQUp.H-H_b_up, HQDown.H-H_b_down)^1.5*(smooth_abs(rho_up-rho_down, epsilon_abs)/(rho_up+rho_down))^0.5;
+      HQUp.M[1] =0.5 * HQUp.Q * (HQUp.C[1]+ HQDown.C[1]) + (HQUp.C[1]-HQDown.C[1])* 0.5 * (2*9.81)^0.5 * width / 2 * min(HQUp.H-H_b_up, HQDown.H-H_b_down)^1.5*(smooth_abs(rho_up-rho_down, epsilon_abs)/(rho_up+rho_down))^0.5;
   end if;
 
  
