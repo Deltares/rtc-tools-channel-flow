@@ -6,5 +6,5 @@ model PumpPower
   Real dH;
 equation  
   dH = HQUp.H - HQDown.H;
-  PowerDemand = Q * 1.0/efficiency * dH *1000;
+  PowerDemand = Q * 1.0/efficiency * dH * 1000;
 end PumpPower;
