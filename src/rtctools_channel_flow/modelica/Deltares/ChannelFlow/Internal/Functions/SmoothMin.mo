@@ -7,5 +7,5 @@ function SmoothMin "Smooth Approximation of a Min() Function"
   input Real eps = Deltares.Constants.eps;
   output Real smooth_min;
 algorithm
-  smooth_min := -1.0 * Deltares.Functions.SmoothMax(a=-1.0 * a, b=-1.0 * b, eps=eps);
+  smooth_min := -1.0 * SmoothMax(a=-1.0 * a, b=-1.0 * b, eps=eps);
 end SmoothMin;
