@@ -2,7 +2,7 @@ within Deltares.ChannelFlow.Hydraulic.Structures;
 
 model PumpUserEquationdH "PumpUserEquationdH"
   extends DischargeControlledStructure;
-  Modelica.SIunits.Position HW;
+  Modelica.Units.SI.Position HW;
   // Note: This block introduces a new state (HW).
   // This must be set via an equation. The choice of equation is up to the user.
   // Note: This block can be extended to support other head options
