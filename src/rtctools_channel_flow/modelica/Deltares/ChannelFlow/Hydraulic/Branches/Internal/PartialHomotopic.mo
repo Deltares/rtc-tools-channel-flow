@@ -20,16 +20,9 @@ partial model PartialHomotopic
   input SI.Stress wind_stress_v(nominal = 1e-1) = 0.0; // Wind stress in y (v, northing) direction (= 0.5*pi radians, 90 degrees)
   // Flow
   SI.VolumeFlowRate[n_level_nodes + 1] Q(each nominal = abs(Q_nominal));
-  // Water level new master
-//    SI.Position[n_level_nodes] H(
-//  min = cat(1,
-//            {max(H_b[1], H_b[2])},
-//            { max(H_b[1 + i], max(H_b[2 + i], H_b[3 + i])) for i in 0:n_level_nodes - 3 },
-//            {max(H_b[n_level_nodes - 1], H_b[n_level_nodes])}
-//  )
-//  );
-            //Old working commit
-  SI.Position[n_level_nodes] H(min = cat(1, max(H_b[1], H_b[2]), max(H_b[1:n_level_nodes - 2], max(H_b[2:n_level_nodes - 1], H_b[3:n_level_nodes])), max(H_b[n_level_nodes - 1], H_b[n_level_nodes])));
+  //Assumption: the minimum water level in the channel is at least the maximum bottom level at any part of the channel,
+  // thus for steep channels this assumption might be a bit restrictive, but operatinally still reasonable.
+  SI.Position[n_level_nodes] H(each min=max(H_b[1],H_b[n_level_nodes]));
   // Array of Bottom Levels
   parameter SI.Position[n_level_nodes] H_b;
   // Length
