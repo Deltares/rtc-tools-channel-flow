@@ -11,7 +11,7 @@ model NodeSalty
 equation
   
   HQUp.Q + HQDown.Q + sum(QForcing) = 0;
-  HQUp.M[1] + HQDown.M[1] + sum(MForcing)  = 0;
+  HQUp.M[1] + HQDown.M[1] + sum(MForcing)  = 0; //Mass balance, can be used for one substance, like salt.
     
   HQDown.H = HQUp.H;
   HQUp.C = HQDown.C;

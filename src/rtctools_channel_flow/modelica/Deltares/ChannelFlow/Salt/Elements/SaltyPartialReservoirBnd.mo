@@ -10,25 +10,23 @@ partial model SaltyPartialReservoirBnd
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
   extends Deltares.ChannelFlow.Internal.Reservoir;
-  // States
+
   SI.Position H;
   SI.Density C[medium.n_substances](each min = 0, each nominal = 1);
 
-  parameter Real theta = 1.0;
   parameter SI.VolumeFlowRate Q_nominal = 1.0;
   parameter SI.VolumeFlowRate C_nominal = 1.0;
   parameter SI.Volume V_nominal;
 
 equation
-  // Water level
+  
   H = HQUp.H;
   H = HQDown.H;
 
   C = HQUp.C;
   C = HQDown.C;
-
-  // Mass balance
-  der(V) = 0; // + sum(QForcing) + sum(QLateral.Q);
+  
+  der(V) = 0;
   der(V * C) = fill(0.0, medium.n_substances);
 
 end SaltyPartialReservoirBnd;
