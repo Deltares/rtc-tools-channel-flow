@@ -1,5 +1,8 @@
 import logging
+import numpy as np
 from rtctools_channel_flow.calculate_parameters import GetLinearSVVariables
+from rtctools._internal.caching import cached
+
 
 logger = logging.getLogger("rtctools")
 
@@ -11,14 +14,38 @@ class ChannelFlowParameterSettingOpimizationMixin:
     Supported blocks:
     Deltares.ChannelFlow.Hydraulic.Branches.LinearisedSV
 
-    :cvar LinearisedSV: True if LinearisedSV branch is used.
+    :cvar linearised_sv: True if LinearisedSV branch is used.
                         Default is ``None``.
-    :cvar sv_branches:  List of LinearisedSV branches to set parameters for.
+    :cvar linearised_sv_branches:  List of LinearisedSV branches to set parameters for.
                         Default is ``None``.
+    :cvar linearised_sv_use_dynamic_nominals: True if dynamic nominal water levels
+                        should be used for LinearisedSV branches.
+                        Default is ``False``.
+    :cvar linearised_sv_nominal_levels: dict
+        A dictionary with nominal water levels for each branch.
+        For each branch, nominals can be provided for up and down.
+        values can be a fixed value or a timeseries.
+
+        key: branch name,
+            key: "H_b_up" or "H_b_down":
+            value: nominal water levels. Can be a fixed value or a timeseries.
+
+                - fixed value: float
+                - timeseries name: str, name of the timeseries to use for nominal levels.
+                    Note that the value at the start of the optimization run will be
+                    used as the nominal level.
+
+        example:
+            {my_branch_name: {
+                "H_b_up": 2.5,
+                "H_b_down": 'H_nominal_down_timeseries',
+            }}
     """
 
-    LinearisedSV = None
-    sv_branches = None
+    linearised_sv = None
+    linearised_sv_branches = None
+    linearised_sv_use_dynamic_nominals = False
+    linearised_sv_nominal_levels = None
 
     def parameters(self, ensemble_member):
         """
@@ -26,28 +53,64 @@ class ChannelFlowParameterSettingOpimizationMixin:
         """
         p = super().parameters(ensemble_member)
 
-        if self.LinearisedSV:
+        if self.linearised_sv:
+            # check if linearised_sv_branches is set
+            if self.linearised_sv_branches is None:
+                raise ValueError(
+                    "List of linearised_sv_branches is not provided while linearised_sv "
+                    "is True. Cannot set parameters for LinearisedSV block."
+                )
             p = self.set_linear_sv_parameters(p=p)
-            if self.use_dynamic_nominals:
+            if self.linearised_sv_use_dynamic_nominals:
+                # check if linearised_sv_nominal_levels is set
+                if self.linearised_sv_nominal_levels is None:
+                    raise ValueError(
+                        "Dictionary of linearised_sv_nominal_levels is not provided "
+                        "while linearised_sv_use_dynamic_nominals is True. Cannot set "
+                        "dynamic nominal water levels for LinearisedSV block."
+                    )
                 p = self.set_linear_sv_dynamic_nominal(p=p)
         return p
 
+    # @cached
     def set_linear_sv_parameters(self, p):
         """
         Set the parameters for the block:
         Deltares.ChannelFlow.Hydraulic.Branches.LinearisedSV.
 
         :param p: The parameters of the model.
+        :return: Updated parameters with LinearisedSV parameters.
         """
-        p["step_size"] = 0.0
 
-        use_semi_implicit = False
-        use_convective_acceleration = True
-        use_upwind = False
+        # TODO: expand this method to accept the following parameters:
+        # p["step_size"] = 0.0
+        # use_semi_implicit = False
+        # use_convective_acceleration = True
+        # use_upwind = False
 
-        for channel in self.sv_branches:
-            p[channel + ".use_convective_acceleration"] = use_convective_acceleration
-            p[channel + ".use_upwind"] = use_upwind
+        required_params = [
+            ".n_level_nodes",
+            ".length",
+            ".H_b_up",
+            ".H_b_down",
+            ".Q_nominal",
+            ".width",
+            ".H_nominal",
+            ".H_nominal_down",
+            ".friction_coefficient",
+        ]
+
+        for channel in self.linearised_sv_branches:
+            # check if all required parameters are present
+            for param in required_params:
+                if channel + param not in p:
+                    raise ValueError(
+                        f"Parameter {channel + param} is required to set "
+                        "LinearisedSV parameters but is missing. "
+                        "This parameter can be set via the declaration of "
+                        f"the LinearisedSV branch, {channel}, in the model "
+                        ".mo file."
+                    )
             variableGetter = GetLinearSVVariables(
                 n_level_nodes=int(p[channel + ".n_level_nodes"]),
                 length=float(p[channel + ".length"]),
@@ -77,30 +140,90 @@ class ChannelFlowParameterSettingOpimizationMixin:
 
         return p
 
+    # @cached
     def set_linear_sv_dynamic_nominal(self, p):
         """
         Set the dynamic nominal water levels for the block:
         Deltares.ChannelFlow.Hydraulic.Branches.LinearisedSV.
+        If the required nominal data is not provided, the
+        default nominal levels are used.
 
         :param p: The parameters of the model.
+
+        :return: Updated parameters with dynamic nominal water levels.
         """
-        for channel in self.sv_branches:
-            reach_number = int(channel.split("reach_", 1)[1])
-            nominal_level = self.get_timeseries("H_reach_" + str(reach_number)).values[
-                self.timeseries_import.forecast_index
-            ]
+        # TODO this method should be generalized
+        for channel in self.linearised_sv_branches:
+            if channel not in self.linearised_sv_nominal_levels:
+                logger.warning(
+                    f"Nominal water levels for channel {channel} are not provided "
+                    "while linearised_sv_use_dynamic_nominals is True. Cannot set "
+                    "dynamic nominal water levels for LinearisedSV block. Using "
+                    "default nominal levels."
+                )
+                continue
+            for key in ["H_b_up", "H_b_down"]:
+                # check if nominal is a float
+                if isinstance(self.linearised_sv_nominal_levels[channel][key], float):
+                    nominal_level = self.linearised_sv_nominal_levels[channel][key]
+                # check if nominal is a timeseries name
+                elif isinstance(self.linearised_sv_nominal_levels[channel][key], str):
+                    # check if timeseries exists
+                    ts_name = self.linearised_sv_nominal_levels[channel][key]
+                    if ts_name not in self.io.get_timeseries_names():
+                        logger.warning(
+                            f"Nominal water level timeseries {ts_name} for channel "
+                            f"{channel} and key {key} does not exist. Cannot set "
+                            "dynamic nominal water levels for LinearisedSV block."
+                        )
+                        continue
+                    nominal_level = self.get_timeseries(
+                        ts_name
+                    ).values[self.timeseries_import.forecast_index]
+                    # check if timeseries has a value at forecast_index
+                    if np.isnan(nominal_level):
+                        logger.warning(
+                            f"Nominal water level timeseries {ts_name} "
+                            f"does not have a value at forecast index "
+                            f"{self.timeseries_import.forecast_index}. Cannot set "
+                            "dynamic nominal water levels for LinearisedSV block."
+                        )
+                        continue
+                else:
+                    logger.warning(
+                        f"Nominal water level for channel {channel} and key {key} is "
+                        "not a float or a timeseries name. Cannot set dynamic nominal "
+                        "water levels for LinearisedSV block."
+                    )
+                    continue
 
-            value = nominal_level - p[channel + ".H_b_up"]
-            p[channel + ".H_nominal"] = value
+                if key == "H_b_up":
+                    depth = nominal_level - p[channel + ".H_b_up"]
+                    # nominal should be positive and non-zero
+                    # if value is zero net nominal to 1
+                    if depth <= 0:
+                        depth = 1
+                        raise ValueError(
+                            f"Calculated dynamic nominal water level for channel {channel} is non-positive. Setting to 1."
+                        )
+                    p[channel + ".H_nominal"] = depth
+                    logger.debug(
+                        f"Set dynamic nominal {channel + '.H_nominal'} water level for channel {channel} "
+                        f"to {depth}."
+                    )
+                elif key == "H_b_down":
+                    depth = nominal_level - p[channel + ".H_b_down"]
+                    # nominal should be positive and non-zero
+                    # if value is zero net nominal to 1
+                    if depth <= 0:
+                        depth = 1
+                        raise ValueError(
+                            f"Calculated dynamic nominal water level for channel {channel} is non-positive. Setting to 1."
+                        )
+                    p[channel + ".H_nominal_down"] = depth
+                    logger.debug(
+                        f"Set dynamic nominal {channel + '.H_nominal_down'} water level for channel {channel} "
+                        f"to {depth}."
+                    )
 
-            if reach_number < 10:
-                nominal_level = self.get_timeseries(
-                    "H_reach_" + str(reach_number + 1)
-                ).values[self.timeseries_import.forecast_index]
-            else:
-                nominal_level = self.get_timeseries(
-                    "H_reach_" + str(reach_number)
-                ).values[self.timeseries_import.forecast_index]
-            value = nominal_level - p[channel + ".H_b_down"]
-            p[channel + ".H_nominal_down"] = value
         return p
