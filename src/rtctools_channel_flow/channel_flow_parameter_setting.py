@@ -1,7 +1,6 @@
 import logging
 import numpy as np
 from rtctools_channel_flow.calculate_parameters import GetLinearSVVariables
-from rtctools._internal.caching import cached
 
 
 logger = logging.getLogger("rtctools")
@@ -29,16 +28,28 @@ class ChannelFlowParameterSettingOpimizationMixin:
         key: branch name,
             key: "H_b_up" or "H_b_down":
             value: nominal water levels. Can be a fixed value or a timeseries.
+                These are the values around which the linearization is done.
+                Possible types:
 
                 - fixed value: float
                 - timeseries name: str, name of the timeseries to use for nominal levels.
                     Note that the value at the start of the optimization run will be
                     used as the nominal level.
+            key: "Q_nominal":
+                These are the values around which the linearization is done.
+                Possible types:
+
+                - fixed value: float
+                - timeseries name: str, name of the timeseries to use for nominal flows.
+                    Note that the value at the start of the optimization run will be
+                    used as the nominal flow.
+
 
         example:
             {my_branch_name: {
                 "H_b_up": 2.5,
-                "H_b_down": 'H_nominal_down_timeseries',
+                "H_b_down": "H_nominal_down_timeseries",
+                "Q_nominal": "Q_nominal_timeseries_name"
             }}
     """
 
@@ -72,7 +83,6 @@ class ChannelFlowParameterSettingOpimizationMixin:
                 p = self.set_linear_sv_dynamic_nominal(p=p)
         return p
 
-    # @cached
     def set_linear_sv_parameters(self, p):
         """
         Set the parameters for the block:
@@ -140,7 +150,6 @@ class ChannelFlowParameterSettingOpimizationMixin:
 
         return p
 
-    # @cached
     def set_linear_sv_dynamic_nominal(self, p):
         """
         Set the dynamic nominal water levels for the block:
@@ -152,7 +161,6 @@ class ChannelFlowParameterSettingOpimizationMixin:
 
         :return: Updated parameters with dynamic nominal water levels.
         """
-        # TODO this method should be generalized
         for channel in self.linearised_sv_branches:
             if channel not in self.linearised_sv_nominal_levels:
                 logger.warning(
@@ -162,7 +170,10 @@ class ChannelFlowParameterSettingOpimizationMixin:
                     "default nominal levels."
                 )
                 continue
-            for key in ["H_b_up", "H_b_down"]:
+            for key in ["H_b_up", "H_b_down", "Q_nominal"]:
+                # check if key is present for channel
+                if key not in self.linearised_sv_nominal_levels[channel]:
+                    continue
                 # check if nominal is a float
                 if isinstance(self.linearised_sv_nominal_levels[channel][key], float):
                     nominal_level = self.linearised_sv_nominal_levels[channel][key]
@@ -224,6 +235,12 @@ class ChannelFlowParameterSettingOpimizationMixin:
                     logger.debug(
                         f"Set dynamic nominal {channel + '.H_nominal_down'} water level for channel {channel} "
                         f"to {depth}."
+                    )
+                elif key == "Q_nominal":
+                    p[channel + ".Q_nominal"] = nominal_level
+                    logger.debug(
+                        f"Set dynamic nominal {channel + '.Q_nominal'} flow for channel {channel} "
+                        f"to {nominal_level}."
                     )
 
         return p
