@@ -2,8 +2,13 @@ import logging
 import numpy as np
 from rtctools_channel_flow.calculate_parameters import GetLinearSVVariables
 
+from functools import lru_cache
 
 logger = logging.getLogger("rtctools")
+
+@lru_cache(None)
+def inform_once(logger, msg):
+    logger.info(msg)
 
 
 class ChannelFlowParameterSettingOpimizationMixin:
@@ -213,29 +218,33 @@ class ChannelFlowParameterSettingOpimizationMixin:
                     # nominal should be positive and non-zero
                     # if value is zero net nominal to 1
                     if depth <= 0:
-                        depth = 1
                         raise ValueError(
-                            f"Calculated dynamic nominal water level for channel {channel} is non-positive. Setting to 1."
+                            f"Calculated dynamic nominal water level for channel {channel} is non-positive. "
+                            f"Calculated value: {depth}. Provided nominal water level is {nominal_level} "
+                            f"and upstream bed level is {p[channel + '.H_b_up']}."
                         )
                     p[channel + ".H_nominal"] = depth
-                    logger.debug(
+                    msg = (
                         f"Set dynamic nominal {channel + '.H_nominal'} water level for channel {channel} "
                         f"to {depth}."
                     )
+                    inform_once(logger, msg)
                 elif key == "H_b_down":
                     depth = nominal_level - p[channel + ".H_b_down"]
                     # nominal should be positive and non-zero
                     # if value is zero net nominal to 1
                     if depth <= 0:
-                        depth = 1
                         raise ValueError(
-                            f"Calculated dynamic nominal water level for channel {channel} is non-positive. Setting to 1."
+                            f"Calculated dynamic nominal water level for channel {channel} is non-positive. "
+                            f"Calculated value: {depth}. Provided nominal water level is {nominal_level} "
+                            f"and downstream bed level is {p[channel + '.H_b_down']}."
                         )
                     p[channel + ".H_nominal_down"] = depth
-                    logger.debug(
+                    msg = (
                         f"Set dynamic nominal {channel + '.H_nominal_down'} water level for channel {channel} "
                         f"to {depth}."
                     )
+                    inform_once(logger, msg)
                 elif key == "Q_nominal":
                     p[channel + ".Q_nominal"] = nominal_level
                     logger.debug(
