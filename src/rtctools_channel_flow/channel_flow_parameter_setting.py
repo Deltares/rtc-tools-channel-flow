@@ -22,24 +22,24 @@ class ChannelFlowParameterSettingOpimizationMixin:
                         Default is ``None``.
     :cvar linearised_sv_branches:  List of LinearisedSV branches to set parameters for.
                         Default is ``None``.
-    :cvar linearised_sv_use_dynamic_nominals: True if dynamic nominal water levels
+    :cvar linearised_sv_use_dynamic_nominals: True if dynamic nominal water depths
                         should be used for LinearisedSV branches.
                         Default is ``False``.
     :cvar linearised_sv_nominal_levels: dict
-        A dictionary with nominal water levels for each branch.
+        A dictionary with nominal water depths for each branch.
         For each branch, nominals can be provided for up and down.
         values can be a fixed value or a timeseries.
 
         key: branch name,
             key: "H_b_up" or "H_b_down":
-            value: nominal water levels. Can be a fixed value or a timeseries.
+            value: nominal water depths. Can be a fixed value or a timeseries.
                 These are the values around which the linearization is done.
                 Possible types:
 
                 - fixed value: float
-                - timeseries name: str, name of the timeseries to use for nominal levels.
+                - timeseries name: str, name of the timeseries to use for nominal depths.
                     Note that the value at the start of the optimization run will be
-                    used as the nominal level.
+                    used as the nominal depth.
             key: "Q_nominal":
                 These are the values around which the linearization is done.
                 Possible types:
@@ -83,7 +83,7 @@ class ChannelFlowParameterSettingOpimizationMixin:
                     raise ValueError(
                         "Dictionary of linearised_sv_nominal_levels is not provided "
                         "while linearised_sv_use_dynamic_nominals is True. Cannot set "
-                        "dynamic nominal water levels for LinearisedSV block."
+                        "dynamic nominal water depths for LinearisedSV block."
                     )
                 p = self.set_linear_sv_dynamic_nominal(p=p)
         return p
@@ -157,22 +157,22 @@ class ChannelFlowParameterSettingOpimizationMixin:
 
     def set_linear_sv_dynamic_nominal(self, p):
         """
-        Set the dynamic nominal water levels for the block:
+        Set the dynamic nominal water depths for the block:
         Deltares.ChannelFlow.Hydraulic.Branches.LinearisedSV.
         If the required nominal data is not provided, the
-        default nominal levels are used.
+        default nominal depths are used.
 
         :param p: The parameters of the model.
 
-        :return: Updated parameters with dynamic nominal water levels.
+        :return: Updated parameters with dynamic nominal water depths.
         """
         for channel in self.linearised_sv_branches:
             if channel not in self.linearised_sv_nominal_levels:
                 logger.warning(
-                    f"Nominal water levels for channel {channel} are not provided "
+                    f"Nominal water depths for channel {channel} are not provided "
                     "while linearised_sv_use_dynamic_nominals is True. Cannot set "
-                    "dynamic nominal water levels for LinearisedSV block. Using "
-                    "default nominal levels."
+                    "dynamic nominal water depths for LinearisedSV block. Using "
+                    "default nominal depths."
                 )
                 continue
             for key in ["H_b_up", "H_b_down", "Q_nominal"]:
@@ -188,9 +188,9 @@ class ChannelFlowParameterSettingOpimizationMixin:
                     ts_name = self.linearised_sv_nominal_levels[channel][key]
                     if ts_name not in self.io.get_timeseries_names():
                         logger.warning(
-                            f"Nominal water level timeseries {ts_name} for channel "
+                            f"Nominal water depth timeseries {ts_name} for channel "
                             f"{channel} and key {key} does not exist. Cannot set "
-                            "dynamic nominal water levels for LinearisedSV block."
+                            "dynamic nominal water depths for LinearisedSV block."
                         )
                         continue
                     nominal_level = self.get_timeseries(
@@ -199,17 +199,17 @@ class ChannelFlowParameterSettingOpimizationMixin:
                     # check if timeseries has a value at forecast_index
                     if np.isnan(nominal_level):
                         logger.warning(
-                            f"Nominal water level timeseries {ts_name} "
+                            f"Nominal water depth timeseries {ts_name} "
                             f"does not have a value at forecast index "
                             f"{self.timeseries_import.forecast_index}. Cannot set "
-                            "dynamic nominal water levels for LinearisedSV block."
+                            "dynamic nominal water depths for LinearisedSV block."
                         )
                         continue
                 else:
                     logger.warning(
-                        f"Nominal water level for channel {channel} and key {key} is "
+                        f"Nominal water depth for channel {channel} and key {key} is "
                         "not a float or a timeseries name. Cannot set dynamic nominal "
-                        "water levels for LinearisedSV block."
+                        "water depths for LinearisedSV block."
                     )
                     continue
 
@@ -219,13 +219,13 @@ class ChannelFlowParameterSettingOpimizationMixin:
                     # if value is zero net nominal to 1
                     if depth <= 0:
                         raise ValueError(
-                            f"Calculated dynamic nominal water level for channel {channel} is non-positive. "
-                            f"Calculated value: {depth}. Provided nominal water level is {nominal_level} "
+                            f"Calculated dynamic nominal depth level for channel {channel} is non-positive. "
+                            f"Calculated value: {depth}. Provided nominal water depth is {nominal_level} "
                             f"and upstream bed level is {p[channel + '.H_b_up']}."
                         )
                     p[channel + ".H_nominal"] = depth
                     msg = (
-                        f"Set dynamic nominal {channel + '.H_nominal'} water level for channel {channel} "
+                        f"Set dynamic nominal {channel + '.H_nominal'} water depth for channel {channel} "
                         f"to {depth}."
                     )
                     inform_once(logger, msg)
@@ -235,13 +235,13 @@ class ChannelFlowParameterSettingOpimizationMixin:
                     # if value is zero net nominal to 1
                     if depth <= 0:
                         raise ValueError(
-                            f"Calculated dynamic nominal water level for channel {channel} is non-positive. "
-                            f"Calculated value: {depth}. Provided nominal water level is {nominal_level} "
+                            f"Calculated dynamic nominal depth level for channel {channel} is non-positive. "
+                            f"Calculated value: {depth}. Provided nominal water depth is {nominal_level} "
                             f"and downstream bed level is {p[channel + '.H_b_down']}."
                         )
                     p[channel + ".H_nominal_down"] = depth
                     msg = (
-                        f"Set dynamic nominal {channel + '.H_nominal_down'} water level for channel {channel} "
+                        f"Set dynamic nominal {channel + '.H_nominal_down'} water depth for channel {channel} "
                         f"to {depth}."
                     )
                     inform_once(logger, msg)
