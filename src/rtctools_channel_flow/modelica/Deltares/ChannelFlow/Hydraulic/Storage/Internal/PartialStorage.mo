@@ -21,5 +21,9 @@ equation
 	HQ.M[substance] / (Q_nominal * C_nominal[substance]) = (theta * der(V * HQ.C[substance]) + (1 - theta) * Q_nominal * der(HQ.C[substance]))  / (Q_nominal * C_nominal[substance]);
   end for;
   */
-  HQ.M[:] / (Q_nominal * C_nominal[:]) = (theta * der(V * HQ.C[:]) + (1 - theta) * Q_nominal * der(HQ.C[:]))  / (Q_nominal * C_nominal[:]);
+(HQ.M ./ (Q_nominal .* C_nominal)) =
+   (theta * der(V .* HQ.C)
+    + (1 - theta) * Q_nominal * der(HQ.C))
+   ./ (Q_nominal .* C_nominal);
+  //HQ.M[:] / (Q_nominal * C_nominal[:]) = (theta * der(V * HQ.C[:]) + (1 - theta) * Q_nominal * der(HQ.C[:]))  / (Q_nominal * C_nominal[:]);
 end PartialStorage;
