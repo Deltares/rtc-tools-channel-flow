@@ -62,7 +62,6 @@ model LinearisedSV
 protected
   SI.Stress _wind_stress;
   constant Real D2R = 3.141592653590 / 180.0;
-  parameter Real g_n=9.80665;
   parameter SI.Angle rotation_rad = D2R * rotation_deg; // Conversion to rotation in radians
   parameter SI.Distance dx = length / (n_level_nodes - 1);
   SI.Area[n_level_nodes] _cross_section;
