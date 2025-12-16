@@ -3,7 +3,7 @@ within Deltares.ChannelFlow.Salt.Elements;
 model SaltyLinearReservoirBnd
   /*
   This block is designed to be used together with the "salt_simulation_mixin" to calculate dispersive and advective transport
-   between salty reservoir elements, do not user in optimization.
+   between salty reservoir elements, do not use in optimization.
   */
   import SI = Modelica.Units.SI;
   extends SaltyPartialReservoirBnd(H(min = H_b));
