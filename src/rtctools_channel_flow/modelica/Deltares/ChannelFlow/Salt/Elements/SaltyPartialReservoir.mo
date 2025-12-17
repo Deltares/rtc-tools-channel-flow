@@ -12,7 +12,7 @@ partial model SaltyPartialReservoir
 
   parameter Real theta = 1.0;
   parameter SI.VolumeFlowRate Q_nominal = 1.0;
-  parameter SI.VolumeFlowRate C_nominal = 1.0;
+  parameter SI.Concentration C_nominal = 1.0;
   parameter SI.Volume V_nominal;
 
 equation
@@ -26,8 +26,5 @@ equation
   // Mass balance
   der(V) = HQUp.Q + HQDown.Q + sum(QForcing) + sum(QLateral.Q);
   der(V * C) = HQUp.M[1] + HQDown.M[1] + sum(MForcing);
-  //HQ.M / (Q_nominal * C_nominal) = (theta * der(V * HQ.C) + (1 - theta) * Q_nominal * der(HQ.C))  / (Q_nominal * C_nominal);
 
-  // Split outflow between turbine and spill flow
-  // HQDown.Q + Q_turbine + Q_spill = 0.0;
 end SaltyPartialReservoir;
