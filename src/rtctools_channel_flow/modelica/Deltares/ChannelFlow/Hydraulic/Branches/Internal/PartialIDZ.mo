@@ -7,7 +7,8 @@ partial model PartialIDZ
   extends Deltares.ChannelFlow.Internal.Reservoir;
   input Real Q_upstream_delayed;
   input Real Q_downstream_delayed;
-  //output Real q_up_der;
+  parameter SI.Duration Delay_in_hour;
+
 
   // States
   SI.Position[2] H(min = H_b_down);
@@ -26,19 +27,10 @@ equation
   Q[1] = HQUp.Q;
   Q[2] = HQDown.Q;
   
-  // Mass balance
-  //der(V) = HQUp.Q + HQDown.Q + sum(QForcing) + sum(QLateral.Q);
-  //idz_zero = 0.001;
-  //der(HQDown.Q) = q_up_der;
-  //der(HQDown.Q) =   q_down_der;
-
   der(HQDown.H) = Q_upstream_delayed / Ad + sum(QForcing) / Ad + sum(QLateral.Q) / Ad + p21 * der(Q_upstream_delayed)+ HQDown.Q / Ad + p22 * der(HQDown.Q);
   der(HQUp.H) =   HQUp.Q / Au + sum(QForcing) / Au + sum(QLateral.Q) / Au + p11 * der(HQUp.Q)+ Q_downstream_delayed / Au + p12 * der(Q_downstream_delayed);
-  Q_upstream_delayed = HQUp.Q;
-  Q_downstream_delayed = HQDown.Q;
 
-  //Q_upstream_delayed + HQDown.Q = 0;
+  Q_downstream_delayed = delay(HQDown.Q, Delay_in_hour);
+  Q_upstream_delayed = delay(HQUp.Q, Delay_in_hour);
 
-  // Split outflow between turbine and spill flow
-  HQDown.Q + Q_turbine + Q_spill = 0.0;
 end PartialIDZ;
