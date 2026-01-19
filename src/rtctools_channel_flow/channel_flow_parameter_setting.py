@@ -1,10 +1,13 @@
 import logging
-import numpy as np
-from rtctools_channel_flow.calculate_parameters import GetLinearSVVariables
+from rtctools_channel_flow.calculate_parameters import (
+    GetLinearSVVariables,
+    GetIDZVariables,
+)
 
 from functools import lru_cache
 
 logger = logging.getLogger("rtctools")
+
 
 @lru_cache(None)
 def inform_once(logger, msg):
@@ -17,6 +20,7 @@ class ChannelFlowParameterSettingOpimizationMixin:
 
     Supported blocks:
     Deltares.ChannelFlow.Hydraulic.Branches.LinearisedSV
+    Deltares.ChannelFlow.Hydraulic.Branches.IDZ
 
     :cvar linearised_sv: True if LinearisedSV branch is used.
                         Default is ``None``.
@@ -56,12 +60,52 @@ class ChannelFlowParameterSettingOpimizationMixin:
                 "H_b_down": "H_nominal_down_timeseries",
                 "Q_nominal": "Q_nominal_timeseries_name"
             }}
+        :cvar idz: True if IDZ branch is used.
+        Default is ``None``.
+
+    :cvar idz_branches: List of IDZ branches to set parameters for.
+        Each entry should be the full Modelica path to an
+        ``Deltares.ChannelFlow.Hydraulic.Branches.IDZ`` block.
+        Default is ``None``.
+
+    :cvar idz_use_dynamic_nominals: True if dynamic nominal water depths
+        should be used for IDZ branches.
+        Default is ``False``.
+
+    :cvar idz_nominal_levels: dict
+        A dictionary with nominal water depths for each IDZ branch.
+
+        For each branch, a nominal water depth can be provided that is
+        used as the linearization point for the IDZ formulation.
+
+        key: branch name
+            key: "H_nominal":
+                Nominal water depth for the IDZ branch.
+
+                Possible types:
+                - fixed value: float
+                - timeseries name: str, name of the timeseries to use for
+                  nominal depth.
+
+                Note that if a timeseries is provided, the value at the
+                start of the optimization run will be used as the nominal
+                water depth.
+
+        example:
+            {
+                my_idz_branch_name: {
+                    "H_nominal": 2.0
+                }
+            }
     """
 
     linearised_sv = None
     linearised_sv_branches = None
     linearised_sv_use_dynamic_nominals = False
     linearised_sv_nominal_levels = None
+    idz = None
+    idz_branches = None
+    idz_use_dynamic_nominals = False
 
     def parameters(self, ensemble_member):
         """
@@ -86,6 +130,23 @@ class ChannelFlowParameterSettingOpimizationMixin:
                         "dynamic nominal water depths for LinearisedSV block."
                     )
                 p = self.set_linear_sv_dynamic_nominal(p=p)
+
+        if self.idz:
+            if self.idz_branches is None:
+                raise ValueError(
+                    "List of idz is not provided while idz "
+                    "is True. Cannot set parameters for IDZ block."
+                )
+            p = self.set_idz_parameters(p=p)
+            if self.idz_use_dynamic_nominals:
+                # check if linearised_sv_nominal_levels is set
+                if self.idz_nominal_levels is None:
+                    raise ValueError(
+                        "Dictionary of idz_nominal_levels is not provided "
+                        "while idz_use_dynamic_nominals is True. Cannot set "
+                        "dynamic nominal water depths for IDZ block."
+                    )
+                p = self.set_idz_dynamic_nominal(p=p)
         return p
 
     def set_linear_sv_parameters(self, p):
@@ -155,10 +216,103 @@ class ChannelFlowParameterSettingOpimizationMixin:
 
         return p
 
-    def set_linear_sv_dynamic_nominal(self, p):
+    def set_idz_parameters(self, p):
+        """
+        Set the parameters for the block:
+        ``Deltares.ChannelFlow.Hydraulic.Branches.IDZ``.
+
+        This method computes and assigns the internal IDZ parameters
+        based on geometric properties, hydraulic characteristics, and
+        nominal operating conditions of the channel.
+
+        The following parameters must be defined in the model prior
+        to calling this method (typically via the Modelica ``.mo`` file):
+
+        Required parameters per IDZ branch:
+            - ``.length`` :
+                Channel length [m]
+            - ``.H_b`` :
+                Bed level [m]
+            - ``.Q_nominal`` :
+                Nominal discharge [m³/s]
+            - ``.width`` :
+                Bottom width of the channel [m]
+            - ``.H_nominal`` :
+                Nominal water depth [m]
+            - ``.friction_coefficient`` :
+                Hydraulic friction coefficient [-]
+            - ``.side_slope`` :
+                Side slope of the channel cross section [-]
+
+        Based on these inputs, the following IDZ parameters are computed
+        and written to the parameter dictionary:
+
+            - ``p11, p12, p21, p22`` :
+                Linearized state-space coefficients of the IDZ model
+            - ``Au`` :
+                Upstream wetted cross-sectional area [m²]
+            - ``Ad`` :
+                Downstream wetted cross-sectional area [m²]
+            - ``Delay_in_hour`` :
+                Hydraulic delay through the channel [h]
+
+        :param p: dict
+            Dictionary containing the current model parameters.
+        :return: dict
+            Updated parameter dictionary including computed IDZ parameters.
+        """
+
+        required_params = [
+            ".length",
+            ".H_b_up",
+            ".H_b_down",
+            ".Q_nominal",
+            ".width",
+            ".H_nominal",
+            ".friction_coefficient",
+            ".side_slope",
+        ]
+
+        for channel in self.idz_branches:
+            # check if all required parameters are present
+            for param in required_params:
+                if channel + param not in p:
+                    raise ValueError(
+                        f"Parameter {channel + param} is required to set "
+                        "IDZ parameters but is missing. "
+                        "This parameter can be set via the declaration of "
+                        f"the IDZ branch, {channel}, in the model "
+                        ".mo file."
+                    )
+            variableGetter = GetIDZVariables(
+                length=float(p[channel + ".length"]),
+                h_b_up=float(p[channel + ".H_b_up"]),
+                h_b_down=float(p[channel + ".H_b_down"]),
+                q_nominal=float(p[channel + ".Q_nominal"]),
+                width=float(p[channel + ".width"]),
+                y_nominal=float(p[channel + ".H_nominal"]),
+                friction_coefficient=float(p[channel + ".friction_coefficient"]),
+                side_slope=float(p[channel + ".side_slope"]),
+            )
+            variableGetter.getVariables()
+            p[channel + ".p11"] = variableGetter.p11
+            p[channel + ".p12"] = variableGetter.p12
+            p[channel + ".p21"] = variableGetter.p21
+            p[channel + ".p22"] = variableGetter.p22
+            p[channel + ".Au"] = variableGetter.Au
+            p[channel + ".Ad"] = variableGetter.Ad
+            p[channel + ".Delay_in_hour"] = variableGetter.Delay_in_hour
+            logger.debug(
+                f"Set IDZ parameters for channel {channel} for channel flow"
+                " block Deltares.ChannelFlow.Hydraulic.Branches.IDZ"
+            )
+
+        return p
+
+    def set_idz_dynamic_nominal(self, p):
         """
         Set the dynamic nominal water depths for the block:
-        Deltares.ChannelFlow.Hydraulic.Branches.LinearisedSV.
+        Deltares.ChannelFlow.Hydraulic.Branches.IDZ.
         If the required nominal data is not provided, the
         default nominal depths are used.
 
@@ -166,90 +320,6 @@ class ChannelFlowParameterSettingOpimizationMixin:
 
         :return: Updated parameters with dynamic nominal water depths.
         """
-        for channel in self.linearised_sv_branches:
-            if channel not in self.linearised_sv_nominal_levels:
-                logger.warning(
-                    f"Nominal water depths for channel {channel} are not provided "
-                    "while linearised_sv_use_dynamic_nominals is True. Cannot set "
-                    "dynamic nominal water depths for LinearisedSV block. Using "
-                    "default nominal depths."
-                )
-                continue
-            for key in ["H_b_up", "H_b_down", "Q_nominal"]:
-                # check if key is present for channel
-                if key not in self.linearised_sv_nominal_levels[channel]:
-                    continue
-                # check if nominal is a float
-                if isinstance(self.linearised_sv_nominal_levels[channel][key], float):
-                    nominal_level = self.linearised_sv_nominal_levels[channel][key]
-                # check if nominal is a timeseries name
-                elif isinstance(self.linearised_sv_nominal_levels[channel][key], str):
-                    # check if timeseries exists
-                    ts_name = self.linearised_sv_nominal_levels[channel][key]
-                    if ts_name not in self.io.get_timeseries_names():
-                        logger.warning(
-                            f"Nominal water depth timeseries {ts_name} for channel "
-                            f"{channel} and key {key} does not exist. Cannot set "
-                            "dynamic nominal water depths for LinearisedSV block."
-                        )
-                        continue
-                    nominal_level = self.get_timeseries(
-                        ts_name
-                    ).values[self.timeseries_import.forecast_index]
-                    # check if timeseries has a value at forecast_index
-                    if np.isnan(nominal_level):
-                        logger.warning(
-                            f"Nominal water depth timeseries {ts_name} "
-                            f"does not have a value at forecast index "
-                            f"{self.timeseries_import.forecast_index}. Cannot set "
-                            "dynamic nominal water depths for LinearisedSV block."
-                        )
-                        continue
-                else:
-                    logger.warning(
-                        f"Nominal water depth for channel {channel} and key {key} is "
-                        "not a float or a timeseries name. Cannot set dynamic nominal "
-                        "water depths for LinearisedSV block."
-                    )
-                    continue
-
-                if key == "H_b_up":
-                    depth = nominal_level - p[channel + ".H_b_up"]
-                    # nominal should be positive and non-zero
-                    # if value is zero net nominal to 1
-                    if depth <= 0:
-                        raise ValueError(
-                            f"Calculated dynamic nominal depth level for channel {channel} is non-positive. "
-                            f"Calculated value: {depth}. Provided nominal water depth is {nominal_level} "
-                            f"and upstream bed level is {p[channel + '.H_b_up']}."
-                        )
-                    p[channel + ".H_nominal"] = depth
-                    msg = (
-                        f"Set dynamic nominal {channel + '.H_nominal'} water depth for channel {channel} "
-                        f"to {depth}."
-                    )
-                    inform_once(logger, msg)
-                elif key == "H_b_down":
-                    depth = nominal_level - p[channel + ".H_b_down"]
-                    # nominal should be positive and non-zero
-                    # if value is zero net nominal to 1
-                    if depth <= 0:
-                        raise ValueError(
-                            f"Calculated dynamic nominal depth level for channel {channel} is non-positive. "
-                            f"Calculated value: {depth}. Provided nominal water depth is {nominal_level} "
-                            f"and downstream bed level is {p[channel + '.H_b_down']}."
-                        )
-                    p[channel + ".H_nominal_down"] = depth
-                    msg = (
-                        f"Set dynamic nominal {channel + '.H_nominal_down'} water depth for channel {channel} "
-                        f"to {depth}."
-                    )
-                    inform_once(logger, msg)
-                elif key == "Q_nominal":
-                    p[channel + ".Q_nominal"] = nominal_level
-                    logger.debug(
-                        f"Set dynamic nominal {channel + '.Q_nominal'} flow for channel {channel} "
-                        f"to {nominal_level}."
-                    )
+        raise NotImplementedError("Dynamic nominal idz is not yet implemented.")
 
         return p
