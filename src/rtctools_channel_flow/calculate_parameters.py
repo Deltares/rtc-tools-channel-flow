@@ -685,14 +685,17 @@ class GetLinearSVVariables:
 
         # Calculate self.deltas
         self.delta = [None] * (self.n_level_nodes + 1)
-        self.delta[0] = (2 * g_n / self.v0[0]) * (s_b - self.dydx[0])
-        for node in range(1, self.n_level_nodes):
-            self.delta[node] = (2 * g_n / self.v0[node * 2 - 1]) * (
-                s_b - self.dydx[node * 2 - 1]
-            )
-        self.delta[self.n_level_nodes] = (
-            2 * g_n / self.v0[2 * self.n_level_nodes - 2]
-        ) * (s_b - self.dydx[2 * self.n_level_nodes - 2])
+        if self.q_nominal ==0:
+            self.delta = [0.0] * (self.n_level_nodes + 1)
+        else:
+            self.delta[0] = (2 * g_n / self.v0[0]) * (s_b - self.dydx[0])
+            for node in range(1, self.n_level_nodes):
+                self.delta[node] = (2 * g_n / self.v0[node * 2 - 1]) * (
+                    s_b - self.dydx[node * 2 - 1]
+                )
+            self.delta[self.n_level_nodes] = (
+                2 * g_n / self.v0[2 * self.n_level_nodes - 2]
+            ) * (s_b - self.dydx[2 * self.n_level_nodes - 2])
 
         # Calculate self.kappas
         self.kappa = [None] * self.n_level_nodes
