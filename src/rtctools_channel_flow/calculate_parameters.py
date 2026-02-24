@@ -579,6 +579,40 @@ def IdzFun(q, n, B, m, Sb, Y0, L, shape):
 
 
 class GetLinearSVVariables:
+    
+    """
+    Pre-compute steady-state and linearized shallow-water (Saint-Venant) variables
+    for a 1D open-channel flow in a rectangular cross-section.
+
+    This helper class sets up arrays at staggered nodes (Q- and H-points) commonly
+    used in finite-difference schemes for open-channel hydraulics. Given nominal
+    flow and geometry along the reach, it computes:
+    - Geometric arrays (top width, area, wetted perimeter, hydraulic radius),
+    - Kinematic/dynamic arrays (velocity, Froude number, friction slope),
+    - Auxiliary coefficients (delta, kappa, f2, gamma) used in linearized models.
+
+    **Grid and staggering**
+    - There are `n_level_nodes` water-level (H) nodes along the reach (including
+      both ends). Discharge (Q) points are located in a staggered manner, resulting
+      in `2*n_level_nodes - 1` interlaced positions for mixed variables.
+    - Spatial step: `dx = length / (n_level_nodes - 1)`
+
+    **Assumptions**
+    - Rectangular channel cross-section with constant top width `width` along x.
+    - Linearly varying nominal depth from downstream (`y_nominal_down`) to upstream
+      (`y_nominal`), constructed via `np.linspace`.
+    - Uniform nominal discharge `q_nominal` (replicated across Q-points).
+    - Hydrostatic pressure distribution and 1D Saint-Venant framework.
+    - Friction modeled via a Chezy/Manning-like term condensed into
+      `friction_coefficient` (dimensionless here; ensure consistency with your model).
+    - Gravitational acceleration is fixed to `g = 9.80665 m/s²`.
+
+    **Units (recommended)**
+    - length, h_b_up, h_b_down, y_nominal, y_nominal_down, width : meters [m]
+    - q_nominal : cubic meters per second [m³/s]
+    - friction_coefficient : dimensionless (model-dependent)
+    """
+
     def __init__(
         self,
         n_level_nodes=4,
@@ -591,6 +625,39 @@ class GetLinearSVVariables:
         y_nominal_down=0,
         friction_coefficient=0,
     ):
+        
+        """
+        Initialize channel and nominal-flow parameters.
+
+        Parameters
+        ----------
+        n_level_nodes : int, default=4
+            Number of water level (H) nodes along the channel, including both ends.
+            Must be >= 2 to form at least one segment.
+        length : float, default=0.0
+            Channel reach length [m].
+        h_b_up : float, default=0.0
+            Upstream bed elevation [m].
+        h_b_down : float, default=0.0
+            Downstream bed elevation [m].
+        q_nominal : float, default=0.0
+            Nominal discharge, assumed uniform across Q-points [m³/s].
+        width : float, default=0.0
+            Channel top width (rectangular section) [m].
+        y_nominal : float, default=0.0
+            Nominal *upstream* flow depth [m].
+        y_nominal_down : float, default=0.0
+            Nominal *downstream* flow depth [m].
+        friction_coefficient : float, default=0.0
+            Friction coefficient (dimensionless). Interpretation depends on your
+            chosen friction law; ensure consistency across the model.
+
+        Notes
+        -----
+        This constructor only stores inputs. Call :meth:`getVariables` to compute
+        all derived arrays.
+        """
+
         self.n_level_nodes = n_level_nodes
         self.length = length
         self.h_b_up = h_b_up
@@ -602,6 +669,82 @@ class GetLinearSVVariables:
         self.friction_coefficient = friction_coefficient
 
     def getVariables(self):
+        
+        """
+        Compute and store all derived steady/linearized arrays in-place.
+
+        After calling this method, the following attributes are created:
+
+        Geometry / base fields
+        ----------------------
+        q0 : list[float], length n_level_nodes + 1
+            Nominal discharge at Q-points (staggered), replicated from `q_nominal`.
+        t0 : list[float], length n_level_nodes
+            Channel top width at H-nodes (constant = `width` for rectangular).
+        y0 : np.ndarray, length n_level_nodes
+            Nominal water depth at H-nodes, linearly interpolated from
+            downstream (`y_nominal_down`) to upstream (`y_nominal`).
+        a0 : list[float], length n_level_nodes
+            Wetted area at H-nodes. For rectangular section: `a0 = t0 * y0`.
+        p0 : list[float], length n_level_nodes
+            Wetted perimeter at H-nodes. Rectangular: `p0 = t0 + 2*y0`.
+        r : list[float], length n_level_nodes
+            Hydraulic radius at H-nodes: `r = a0 / p0`.
+
+        Kinematics / dynamics (staggered)
+        ---------------------------------
+        v0 : list[float], length 2*n_level_nodes - 1
+            Velocity at staggered Q/H points. Computed via discharge and
+            adjacent areas depending on the location (Q vs H points).
+        sf : list[float], length 2*n_level_nodes - 1
+            Friction slope at staggered points. Uses squared discharge and
+            a composite term with area and hydraulic radius.
+        c0 : list[float], length n_level_nodes + 1
+            Gravity-wave celerity at Q-points (staggered): `c0 = sqrt(g * y)`.
+        f0 : list[float], length 2*n_level_nodes - 1
+            Local Froude number at staggered points: `f0 = v0 / c0` (interpolated
+            where needed).
+        dydx : list[float], length 2*n_level_nodes - 1
+            Water-surface slope at staggered points from gradually-varied flow:
+            `dydx = (s_b - sf) / (1 - f0^2)`, where `s_b` is bed slope.
+
+        Linearization auxiliaries
+        -------------------------
+        delta : list[float], length n_level_nodes + 1
+            Array used in linearized momentum relations, coefficient of the 
+            discharge term; set to zeros if
+            `q_nominal == 0` to avoid division by zero, otherwise computed from
+            `v0`, `s_b`, and `dydx`.
+        kappa : list[float], length n_level_nodes
+            Coefficient derived from linearization for rectangular cross-sections:
+            `kappa = 7/3 - (4*a0)/(3*t0*p0) * 2` (the final `* 2` reflects the
+            PDE coefficient due to rectangular geometry).
+        f2 : list[float], length n_level_nodes
+            Froude number: `f2 = v0(H)^2 * t0 / (g * a0)`, where `v0(H)`
+            is taken at the H-indexed staggered position (even index).
+        gamma : list[float], length n_level_nodes
+            Coefficient of the water level term, coming from the
+            Froude-related contributions, and bed slope. Computed at H-nodes.
+
+        Notes
+        -----
+        - Gravitational acceleration is set to `g = 9.80665 m/s²`.
+        - Bed slope: `s_b = (h_b_up - h_b_down) / length`.
+        - Spatial step: `dx = length / (n_level_nodes - 1)`.
+        - This function does not return a value; it populates instance attributes.
+        - If `q_nominal == 0`, `delta` is set to a zero array (to prevent division
+          by zero in `v0` terms).
+        - The detailed description of this linearization of the Saint-Venant equations 
+          can be found in Litrico, X., & Fromion, V. (2009). Modeling and control of 
+          hydrosystems. London: Springer London.
+
+        Raises
+        ------
+        ZeroDivisionError
+            If `length == 0` or `n_level_nodes < 2`, divisions by zero may occur.
+            Ensure inputs are physically meaningful before calling.
+        """
+
         s_b = (self.h_b_up - self.h_b_down) / self.length
         g_n = 9.80665
         dx = self.length / (self.n_level_nodes - 1)
@@ -745,6 +888,38 @@ class GetLinearSVVariables:
 
 
 class GetIDZVariables:
+    
+    """
+    Compute IDZ (Integrator Delay Zero) model variables for a 1D open‑channel flow
+    segment, based on nominal discharge, geometry, slope, and friction.
+
+    This class wraps a call to an external function `IdzFun`, which performs
+    the core IDZ hydraulic computations and returns:
+
+        - Linearized model coefficients: p11, p12, p21, p22
+        - Upstream/Downstream amplification factors: Au, Ad
+        - Travel times: tu_hat, td_hat
+        - Additional geometric outputs: yn, x2 (not stored here)
+
+    The class stores the key IDZ coefficients and mean delay time.
+
+    **Intended use**
+    ----------------
+    Instantiate, then call :meth:`getVariables`:
+
+    >>> model = GetIDZVariables(length=5000, h_b_up=3, h_b_down=2,
+                                q_nominal=50, width=20, y_nominal=2,
+                                side_slope=2, friction_coefficient=0.03)
+    >>> model.getVariables()
+    >>> model.Delay_in_hour, model.p11, model.p12
+
+    Notes
+    -----
+    - The computation relies on the function `IdzFun`, which must be available
+      in the current namespace.
+    - This class stores only a subset of the results produced by `IdzFun`.
+    """
+
     def __init__(
         self,
         length=0,
@@ -797,5 +972,3 @@ class GetIDZVariables:
         self.p22 = p22_inf_hat
 
 
-# Test function
-# res = IdzFun(2.7, 0.02, 7.0, 1.5, 0.0001, 2.1, 7000, 0)
