@@ -6,7 +6,7 @@ partial model PartialHomotopic
   // to false.  Consult Baayen and Piovesan, A continuation approach to nonlinear
   // model predictive control of open channel systems, 2018 for details:
   // https://arxiv.org/abs/1801.06507
-  import SI = Modelica.SIunits;
+  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
