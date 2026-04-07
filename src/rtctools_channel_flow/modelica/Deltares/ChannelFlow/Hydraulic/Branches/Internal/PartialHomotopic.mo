@@ -56,7 +56,7 @@ partial model PartialHomotopic
   // Zero by default, which means that a fully implicit discretization is used.
   input SI.Duration semi_implicit_step_size = 0.0;
   // Substance flow rates
-  constant Integer n_substances = 0;
+  constant Integer n_substances = medium.n_substances;
   SI.VolumeFlowRate M[n_level_nodes + 1, n_substances](each nominal = 10);
   // Substance concentrations
   SI.Density C[n_level_nodes, n_substances](each min = 0, each nominal = 1);
