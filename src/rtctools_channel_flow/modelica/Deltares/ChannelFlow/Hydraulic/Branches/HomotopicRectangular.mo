@@ -1,8 +1,7 @@
 within Deltares.ChannelFlow.Hydraulic.Branches;
 
-model HomotopicLinear
+model HomotopicRectangular
   /*
-  This block is depracated. Use homotopic rectangular instead!
   Note: The default medium is FreshWater.
   To use a different medium, decalre the choice in your model file, for example
   replaceable package MyMedium = Deltares.ChannelFlow.Media.SalineWater;
@@ -27,4 +26,4 @@ equation
   _cross_section = width .* (H .- H_b);
   // Compute Wetted Perimeter
   _wetted_perimeter = width .+ 2.0 * (H .- H_b);
-end HomotopicLinear;
+end HomotopicRectangular;
