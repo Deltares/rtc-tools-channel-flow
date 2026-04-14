@@ -1,5 +1,7 @@
 DischargeControlledStructure
 Pump
+PumpPower
+TurbineGenerator
 PumpUserEquationdH
 Weir
 Orifice
