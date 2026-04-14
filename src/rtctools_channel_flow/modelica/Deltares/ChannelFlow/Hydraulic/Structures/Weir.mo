@@ -3,7 +3,7 @@ within  Deltares.ChannelFlow.Hydraulic.Structures;
 model Weir
   import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
-  //This block if from rtc-tools-hydraulic-structures and works correctly if the corresponding mixin is imported
+  //This block is from rtc-tools-hydraulic-structures and works correctly if the corresponding mixin is imported
   // Inputs
   input SI.VolumeFlowRate Q;
 
