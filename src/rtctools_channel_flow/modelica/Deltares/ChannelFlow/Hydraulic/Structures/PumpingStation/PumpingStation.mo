@@ -5,7 +5,7 @@ model PumpingStation
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
 
   parameter Integer n_pumps = 0;
-  //This block if from rtc-tools-hydraulic-structures and works correctly if the corresponding mixin is imported
+  //This block is from rtc-tools-hydraulic-structures and works correctly if the corresponding mixin is imported
   // FIXME: For some reason JModelica/CasADi returns {1, 2} for the expression
   // 1:3 if we store it as an Integer, whereas it returns {1, 2, 3} if we
   // store it as a Real. The weird thing is that JModelica does not complain
