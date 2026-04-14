@@ -4,8 +4,8 @@ partial model Pump "Pump with QHP relationship"
   import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Hydraulic.Structures.DischargeControlledStructure;
   //This block if from rtc-tools-hydraulic-structures and works correctly if the corresponding mixin is imported
-  // Increasing row number is increasing H power (staring at 0th power).
-  // Increasing column number is increasing Q power (staring at 0th power).
+  // Increasing row number is increasing H power (starting at 0th power).
+  // Increasing column number is increasing Q power (starting at 0th power).
   parameter Real power_coefficients[:, :, :];
   parameter Real speed_coefficients[:, :] = {{0.0}};
 
