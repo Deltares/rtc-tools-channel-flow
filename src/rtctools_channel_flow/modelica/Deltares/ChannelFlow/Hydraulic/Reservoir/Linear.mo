@@ -1,7 +1,7 @@
 within Deltares.ChannelFlow.Hydraulic.Reservoir;
 
 model Linear
-  import SI = Modelica.SIunits;
+  import SI = Modelica.Units.SI;
   extends Internal.PartialReservoir(H(min = H_b));
   // Parameters
   parameter SI.Area A;

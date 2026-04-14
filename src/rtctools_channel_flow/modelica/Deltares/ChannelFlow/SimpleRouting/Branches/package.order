@@ -1,5 +1,8 @@
 Internal
 Delay
+EmptyBranch
 Integrator
+KNNonlinear
 Muskingum
 Steady
+LagAndK

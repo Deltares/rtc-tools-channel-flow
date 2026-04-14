@@ -1,0 +1,6 @@
+# pycache files
+__pycache__
+
+# Distribution & Packaging
+*.eggs
+*.egg-info

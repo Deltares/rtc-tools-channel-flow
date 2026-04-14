@@ -1,7 +1,11 @@
 within Deltares.ChannelFlow.Internal;
 
 partial class Reservoir
-  import SI = Modelica.SIunits;
+// a base class for any reservoir lake: 1) volumes and flows only or 2) volumes, flows and water levels
+// no equations for the water balance specified. 
+// turbine flow is the portion of the reservoir release that is guided through the power hose.
+// spill flow accounts for flow throgh bottom outlet and flow through the spillway
+  import SI = Modelica.Units.SI;
   // Inputs
   input SI.VolumeFlowRate Q_turbine;
   input SI.VolumeFlowRate Q_spill;

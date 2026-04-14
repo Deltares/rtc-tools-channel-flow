@@ -1,3 +1,9 @@
 DischargeControlledStructure
 Pump
 FreeRectangularWeir
+PumpPower
+TurbineGenerator
+PumpUserEquationdH
+Weir
+Orifice
+PumpingStation
