@@ -3,21 +3,21 @@ within Deltares.ChannelFlow.Hydraulic.Structures;
 model FreeRectangularWeir "FreeRectangularWeir"
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   // Crest level input
-  input Modelica.SIunits.Position crest_level;
+  input Modelica.Units.SI.Position crest_level;
   // Head
-  Modelica.SIunits.Distance head(min = 0.0);
+  Modelica.Units.SI.Distance head(min = 0.0);
   // Weir parameters
   parameter Real coefficient;
-  parameter Modelica.SIunits.Distance crest_width;
+  parameter Modelica.Units.SI.Distance crest_width;
   // Homotopy parameter
   parameter Real theta;
   // Minimum value used in the smoothed weir equation. This defaults to a nonzero value,
   // so that (head^2 + min_abs_head^2)^0.25 is continuously differentiable for all head.
-  parameter Modelica.SIunits.VolumeFlowRate min_abs_head = Deltares.Constants.eps;
+  parameter Modelica.Units.SI.VolumeFlowRate min_abs_head = Deltares.Constants.eps;
   // Nominal values used in linearization
-  parameter Modelica.SIunits.Distance head_nominal;
-  parameter Modelica.SIunits.MassFlowRate Q_nominal = 1;
-  parameter Modelica.SIunits.Density C_nominal[HQUp.medium.n_substances] = fill(1e-3, HQUp.medium.n_substances);
+  parameter Modelica.Units.SI.Distance head_nominal;
+  parameter Modelica.Units.SI.MassFlowRate Q_nominal = 1;
+  parameter Modelica.Units.SI.Density C_nominal[medium.n_substances] = fill(1e-3, medium.n_substances);
 equation
   // Water
   head = HQUp.H - crest_level;
