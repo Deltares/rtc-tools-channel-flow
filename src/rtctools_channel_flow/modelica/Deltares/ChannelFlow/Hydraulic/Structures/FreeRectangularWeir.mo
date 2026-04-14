@@ -11,8 +11,8 @@ model FreeRectangularWeir "FreeRectangularWeir"
   parameter Modelica.SIunits.Distance crest_width;
   // Homotopy parameter
   parameter Real theta;
-  // Minimum value of the sabs(head) part of the weir equation.  This defaults to a nonzero value,
-  // so that sabs(head) = sqrt(head^2 + min_head_Q^2) is continuously differentiable for all head.
+  // Minimum value used in the smoothed weir equation. This defaults to a nonzero value,
+  // so that (head^2 + min_abs_head^2)^0.25 is continuously differentiable for all head.
   parameter Modelica.SIunits.VolumeFlowRate min_abs_head = Deltares.Constants.eps;
   // Nominal values used in linearization
   parameter Modelica.SIunits.Distance head_nominal;
