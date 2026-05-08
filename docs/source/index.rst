@@ -1,17 +1,20 @@
-Welcome to Lumache's documentation!
+Documentation of the RTC-Tools channel flow library
 ===================================
 
-**Lumache** (/lu'make/) is a Python library for cooks and food lovers
-that creates recipes mixing random ingredients.
-It pulls data from the `Open Food Facts database <https://world.openfoodfacts.org/>`_
-and offers a *simple* and *intuitive* API.
+
+**RTC-Tools** is an open-source Python package designed to model, simulate,
+and optimize networks or portfolios of assets, such as 
+reservoirs, pumps, renewables, and batteries. It is part 
+of `LF Energy <https://lfenergy.org/projects/rtc-tools/>`_.
+
+The `RTC-Tools channel flow library <https://github.com/Deltares/rtc-tools-channel-flow>`_ supports `Modelica <https://modelica.org/>`_ building blocks to build water system model schematization from. 
 
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.
 
 .. note::
 
-   This project is under active development.
+   This documentation is under active development and not yet complete
 
 Contents
 --------
@@ -19,4 +22,4 @@ Contents
 .. toctree::
 
    usage
-   api
+

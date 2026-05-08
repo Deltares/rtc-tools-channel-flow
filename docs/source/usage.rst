@@ -6,29 +6,19 @@ Usage
 Installation
 ------------
 
-To use Lumache, first install it using pip:
+The RTC-Tools channel flow library can be installed with pip:
 
 .. code-block:: console
 
-   (.venv) $ pip install lumache
+   (.venv) $ pip install rtc-tools-channel-flow
 
-Creating recipes
+Open Modelica Connection Editor
 ----------------
 
-To retrieve a list of random ingredients,
-you can use the ``lumache.get_random_ingredients()`` function:
+RTC-Tools uses the Modelica language to describe the mathematics of the system we wish to optimize or simulate. There are several editors for Modelica models, but the `OpenModelica Connection Editor <https://openmodelica.org/free-and-open-source-software/omconnectioneditoromedit/>`, or OMEdit, is a free and open-source graphical connection editor that can be used to construct RTC-Tools models.
 
-.. autofunction:: lumache.get_random_ingredients
+RTC-Tools and the RTC-Tools channel flow library
+---------------
+Examples of RTC-Tools models that use the channel floe library can be found in the `RTC-Tools documentation <https://rtc-tools.readthedocs.io/>`_.
 
-The ``kind`` parameter should be either ``"meat"``, ``"fish"``,
-or ``"veggies"``. Otherwise, :py:func:`lumache.get_random_ingredients`
-will raise an exception.
-
-.. autoexception:: lumache.InvalidKindError
-
-For example:
-
->>> import lumache
->>> lumache.get_random_ingredients()
-['shells', 'gorgonzola', 'parsley']
 
