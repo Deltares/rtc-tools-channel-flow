@@ -1,5 +1,5 @@
 Documentation of the RTC-Tools channel flow library
-===================================
+===================================================
 
 
 **RTC-Tools** is an open-source Python package designed to model, simulate,
@@ -22,4 +22,5 @@ Contents
 .. toctree::
 
    usage
+   ChannelFlowLibrary
 

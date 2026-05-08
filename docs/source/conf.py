@@ -2,9 +2,9 @@
 
 # -- Project information
 
-project = 'Lumache'
-copyright = '2021, Graziella'
-author = 'Graziella'
+project = 'RTC-Tools channel flow'
+copyright = 'Deltares'
+author = 'Bernhard Becker, Bernhard.Becker@deltares.nl'
 
 release = '0.1'
 version = '0.1.0'
