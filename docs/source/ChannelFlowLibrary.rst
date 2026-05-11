@@ -51,7 +51,7 @@ The connector ``QOut.Q`` is typically connected to a time series which represent
 Steady
 """"""
 
-The *Steady* branch basically passes inflow to outflow, but lateral inflow and forcing can be added. 
+The *Steady* branch basically passes inflow to outflow. Lateral inflow and forcing can be added. This model object is used to model river sections where travel time and wave damping can be neglected. Typical application cases are reservoir models and water balance models. 
 
 Nodes
 ^^^^^
@@ -71,8 +71,26 @@ In this example, the *Node*  with name *Alder* has two inflow connectors (``nin`
 Reservoir
 ^^^^^^^^^
 
+The *Reservoir* node is used for modelling reservoirs. The basic equation is the storage equation
+
+.. math:: \frac{\partial V}{\partial t} = Q_\mathrm{in} - Q_\mathrm{out} + Q_\mathrm{forcing} + Q_\mathrm{lateral}
+
+The reservoir outflow is split into turbnie flow and spill:
+
+.. math:: Q_\mathrm{out} = Q_\mathrm{turbine} + Q_\mathrm{spill}
+
+The basic idea is to distinguish between the total reservoir release that is available for hydropower production and the portion that is not used for hydropower production (spill). An optimization model usually has a goal to minimize the spill such that water pereferably is guided through the turbine. Note that the spill flow component summarizes all flow components that are not turbine flow. Usually this is the flow through the bottom outlet and the spillway flow. 
+
+:math:`Q_\mathrm{forcing}` can be used to represent other extractions from the reservoir, for example extractions for drinking water supply.  :math:`Q_\mathrm{lateral}` typically represents inflow into the reservoir from other sources than the main inflow. 
+
 Storage
 ^^^^^^^
+
+A *Storage* node represents a more general storage in a model. The basic equation is:
+
+.. math:: \frac{\partial V}{\partial t} = Q_\mathrm{in} - Q_\mathrm{out} + Q_\mathrm{forcing}
+
+While for a resrvoir node the inflow is often given as external inflow time series or depends on upstream water management, for a *Storage* node often both the inflow `QIn.Q` and the outflow `QOut.Q` are control variables and either determined within the optimization (optimization model) or by a feedback control logic (simulation model).
 
 Structures
 ^^^^^^^^^^
@@ -80,7 +98,7 @@ Structures
 DischargeControlledStructure
 """"""""""""""""""""""""""""
 
-The *DischargeControlledStructure* takes a discharge value. Typically, this modeling object is used to represent a hydraulic structure like a weir or a pump and apply the discharge to it. The value of the discharge 
+The *DischargeControlledStructure* takes a discharge value. Typically, this modeling object is used to represent a hydraulic structure like a weir or a pump and apply the discharge to it. The value of the discharge `QOut.Q` is the control variable. 
 
 
 Hydraulic
