@@ -84,13 +84,13 @@ equation
 
 
   
-  der(Q_relative[2]) + 2 * V0[2] * ((Q_relative[3] - Q_relative[1]) / (1.5 * dx)) + (C0[2] ^ 2 - V0[2] ^ 2) * ((T0[1] + T0[2]) / 2) * ((Y_relative[2] - Y_relative[1]) / dx) + Delta[2] * Q_relative[2] - (Gamma[1] * Y_relative[1] + Gamma[2] * Y_relative[2]) / 2 - width / density_water * _wind_stress = 0;
+  (der(Q_relative[2]) + 2 * V0[2] * ((Q_relative[3] - Q_relative[1]) / (1.5 * dx)) + (C0[2] ^ 2 - V0[2] ^ 2) * ((T0[1] + T0[2]) / 2) * ((Y_relative[2] - Y_relative[1]) / dx) + Delta[2] * Q_relative[2] - (Gamma[1] * Y_relative[1] + Gamma[2] * Y_relative[2]) / 2 - width / density_water * _wind_stress) * 2 * dx = 0;
   
   for node in 3:n_level_nodes - 1 loop
-    der(Q_relative[node]) + 2 * V0[(node - 1) * 2] * ((Q_relative[node + 1] - Q_relative[node - 1]) / (2 * dx)) + (C0[node] ^ 2 - V0[(node - 1) * 2] ^ 2) * ((T0[node - 1] + T0[node]) / 2) * ((Y_relative[node] - Y_relative[node - 1]) / dx) + Delta[node] * Q_relative[node] - (Gamma[node - 1] * Y_relative[node - 1] + Gamma[node] * Y_relative[node]) / 2  - width / density_water * _wind_stress = 0;
+    (der(Q_relative[node]) + 2 * V0[(node - 1) * 2] * ((Q_relative[node + 1] - Q_relative[node - 1]) / (2 * dx)) + (C0[node] ^ 2 - V0[(node - 1) * 2] ^ 2) * ((T0[node - 1] + T0[node]) / 2) * ((Y_relative[node] - Y_relative[node - 1]) / dx) + Delta[node] * Q_relative[node] - (Gamma[node - 1] * Y_relative[node - 1] + Gamma[node] * Y_relative[node]) / 2  - width / density_water * _wind_stress) * 2 * dx = 0;
   end for;
   
-  der(Q_relative[n_level_nodes]) + 2 * V0[2 * n_level_nodes - 2] * ((Q_relative[n_level_nodes + 1] - Q_relative[n_level_nodes - 1]) / (1.5 * dx)) + (C0[n_level_nodes] ^ 2 - V0[2 * n_level_nodes - 2] ^ 2) * ((T0[n_level_nodes - 1] + T0[n_level_nodes]) / 2) * ((Y_relative[n_level_nodes] - Y_relative[n_level_nodes - 1]) / dx) + Delta[n_level_nodes] * Q_relative[n_level_nodes] - (Gamma[n_level_nodes - 1] * Y_relative[n_level_nodes - 1] + Gamma[n_level_nodes] * Y_relative[n_level_nodes]) / 2 - width / density_water * _wind_stress = 0;
+  (der(Q_relative[n_level_nodes]) + 2 * V0[2 * n_level_nodes - 2] * ((Q_relative[n_level_nodes + 1] - Q_relative[n_level_nodes - 1]) / (1.5 * dx)) + (C0[n_level_nodes] ^ 2 - V0[2 * n_level_nodes - 2] ^ 2) * ((T0[n_level_nodes - 1] + T0[n_level_nodes]) / 2) * ((Y_relative[n_level_nodes] - Y_relative[n_level_nodes - 1]) / dx) + Delta[n_level_nodes] * Q_relative[n_level_nodes] - (Gamma[n_level_nodes - 1] * Y_relative[n_level_nodes - 1] + Gamma[n_level_nodes] * Y_relative[n_level_nodes]) / 2 - width / density_water * _wind_stress)* 2 * dx = 0;
   
   
   der(_cross_section[1]) + 2 * (Q_relative[2] - Q_relative[1]) / dx - 2 * _QPerpendicular_distribution[1] / dx = 0;
