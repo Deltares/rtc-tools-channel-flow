@@ -1,6 +1,6 @@
 The Channel Flow Library
 ========================
-The channel flow library contains Modelica building blocks to compose water system models from. The modeling objects are grouped into different categories. 
+The channel flow library contains Modelica building blocks to compose water system models from. The modeling objects are grouped into different categories. There are three main categories that would be used directly by the modeller: hydraulic, simple routing and salt. Hydraulic blocks model the open water channel flow with spatially discretized nodes. Simple routing has elements that has only one water level, or only volume. The salt block is an experimental version to model dispersive and convective salt transport.
 
 Media
 -----
@@ -16,7 +16,7 @@ Building blocks of partial models. These internal models make use of interfaces 
 
 SimpleRouting
 -------------
-This group of modeling objects contains building blocks to compose water balance models. 
+This group of modeling objects contains building blocks to compose water balance models. Blocks have only one water level or only volume.
 
 BoundaryConditions
 ^^^^^^^^^^^^^^^^^^
@@ -46,7 +46,7 @@ The *Integrator* branch contains a storage element. The governing equation is
 
 .. math:: \frac{\partial V}{\partial t} = Q_\mathrm{in} - Q_\mathrm{out} + Q_\mathrm{forcing} + Q_\mathrm{lateral}
 
-The connector ``QOut.Q`` is typically connected to a time series which represents a as control variable. In optimization models, the control variable is an optimization variable, in simulation models the value of a control variable is computed according to the feedback control logic, which is typically specified in Python code. 
+The connector ``QOut.Q`` is free (input), therefore it is typically connected to a time series which represents a as control variable. In optimization models, the control variable is an optimization variable, in simulation models the value of a control variable is computed according to the feedback control logic, which is typically specified in Python code. 
 
 Steady
 """"""
@@ -59,7 +59,7 @@ Nodes
 Node
 """"
 
-A *Node* connects multiple branches. It can be used to model bifurcations and confluences in the water system model. 
+A *Node* connects multiple branches. It can be used to model bifurcations and confluences in the water system model. It is designed such that the first inputs are the known ones and the last one is calculated from mass balance.
 
 Example:
 
@@ -79,7 +79,7 @@ The reservoir outflow is split into turbnie flow and spill:
 
 .. math:: Q_\mathrm{out} = Q_\mathrm{turbine} + Q_\mathrm{spill}
 
-The basic idea is to distinguish between the total reservoir release that is available for hydropower production and the portion that is not used for hydropower production (spill). An optimization model usually has a goal to minimize the spill such that water pereferably is guided through the turbine. Note that the spill flow component summarizes all flow components that are not turbine flow. Usually this is the flow through the bottom outlet and the spillway flow. 
+The basic idea is to distinguish between the total reservoir release that is available for hydropower production and the portion that is not used for hydropower production (spill). An optimization model usually has a goal to minimize the spill such that water preferably is guided through the turbine. Note that the spill flow component summarizes all flow components that are not turbine flow. Usually this is the flow through the bottom outlet and the spillway flow. 
 
 :math:`Q_\mathrm{forcing}` can be used to represent other extractions from the reservoir, for example extractions for drinking water supply.  :math:`Q_\mathrm{lateral}` typically represents inflow into the reservoir from other sources than the main inflow. 
 
@@ -90,7 +90,7 @@ A *Storage* node represents a more general storage in a model. The basic equatio
 
 .. math:: \frac{\partial V}{\partial t} = Q_\mathrm{in} - Q_\mathrm{out} + Q_\mathrm{forcing}
 
-While for a resrvoir node the inflow is often given as external inflow time series or depends on upstream water management, for a *Storage* node often both the inflow `QIn.Q` and the outflow `QOut.Q` are control variables and either determined within the optimization (optimization model) or by a feedback control logic (simulation model).
+While for a reservoir node the inflow is often given as external inflow time series or depends on upstream water management, for a *Storage* node often both the inflow `QIn.Q` and the outflow `QOut.Q` are control variables and either determined within the optimization (optimization model) or by a feedback control logic (simulation model). Thus the only difference between the reservoir and the storage blocks (except for the reservoir allowing for lateral flows) that the reservoir block has two free outflows: release and spill - thus both of them will be set by optimization or should be set by simulation. 
 
 Structures
 ^^^^^^^^^^

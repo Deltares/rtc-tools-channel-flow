@@ -7,7 +7,7 @@ and optimize networks or portfolios of assets, such as
 reservoirs, pumps, renewables, and batteries. It is part 
 of `LF Energy <https://lfenergy.org/projects/rtc-tools/>`_.
 
-The `RTC-Tools channel flow library <https://github.com/Deltares/rtc-tools-channel-flow>`_ supports `Modelica <https://modelica.org/>`_ building blocks to build water system model schematization from. 
+The `RTC-Tools channel flow library <https://github.com/Deltares/rtc-tools-channel-flow>`_ contains and supports `Modelica <https://modelica.org/>`_ building blocks to build water system model schematization from. 
 
 Check out the :doc:`usage` section for further information, including
 how to :ref:`installation` the project.
