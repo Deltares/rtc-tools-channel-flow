@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+
+[project]
+name = "rtc-tools-channel-flow"
+dynamic = ["version"]
+authors = [{name = "Bernhard Becker", email = "Bernhard.Becker@deltares.nl"}]
+license = { file = "COPYING.LESSER" }
+description = "The channel flow library for RTC-Tools"
+readme = "README.md"
+
+requires-python = ">=3.10"
+
+dependencies = [
+]
+
+[dependency-groups]
+docs = [
+    "sphinx",
+    "sphinx_rtd_theme",
+    "matplotlib",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rtctools_channel_flow"]
+include = [
+  "/COPYING.LESSER",
+  "/README.md",
+]
