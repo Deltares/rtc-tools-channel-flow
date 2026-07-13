@@ -95,6 +95,57 @@ While for a reservoir node the inflow is often given as external inflow time ser
 Structures
 ^^^^^^^^^^
 
+Which weir block should I use?
+==============================
+
+Start
+-----
+
+Is it free-flow (not submerged)?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Yes:
+
+  Is the crest height variable and a decision variable?
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  - Yes:
+
+    Use: **Weir.mo**
+
+  - No:
+
+    Is the crest height fixed?
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    - Yes:
+
+      Are you using homotopy?
+      ~~~~~~~~~~~~~~~~~~~~~~~
+
+      - Yes:
+
+        Use: **FreeRectangularWeir.mo**
+
+      - No:
+
+        Do you have a linear model?
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        - Yes:
+
+          Use: **Orifice.mo**
+
+        - No:
+
+          Model choice unclear (nonlinear formulation without homotopy is not supported)
+
+- No:
+
+  This decision tree does not cover submerged flow conditions.
+
+
+
 DischargeControlledStructure
 """"""""""""""""""""""""""""
 
