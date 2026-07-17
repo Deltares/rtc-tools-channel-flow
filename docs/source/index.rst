@@ -19,8 +19,15 @@ how to :ref:`installation` the project.
 Contents
 --------
 
+
 .. toctree::
+   :maxdepth: 6
+   :glob:
+   :includehidden:
+
 
    usage
    ChannelFlowLibrary
+   generated/index
+   
 
