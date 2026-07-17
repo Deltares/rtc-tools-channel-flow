@@ -1,10 +1,6 @@
 within Deltares.ChannelFlow.Hydraulic.Reservoir.Internal;
 
 partial model PartialHomotopicPower
-// this partial model adds the hydropower equation to the HomotopicVolume partial model. 
-// the head difference is dynamically computed as difference between reservoir stage and tailwater level. 
-// the turbine efficiency is constant. 
-// The optimization starts with a linear approximation of the power equation: head difference is assumed to be constant. This value must be provided as parameter for the node.  
   import SI = Modelica.Units.SI;
   extends PartialHomotopicVolume(theta = theta);
   // Parameters
