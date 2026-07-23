@@ -16,7 +16,7 @@ Building blocks of partial models. These internal models make use of interfaces 
 
 SimpleRouting
 -------------
-This group of modeling objects contains building blocks to compose water balance models. Blocks have only one water level or only volume.
+This group of modeling objects contains building blocks to compose water balance models. Interfaces of the building blocks have inflow or outflow, respectively.
 
 BoundaryConditions
 ^^^^^^^^^^^^^^^^^^
@@ -95,19 +95,39 @@ While for a reservoir node the inflow is often given as external inflow time ser
 Structures
 ^^^^^^^^^^
 
+DischargeControlledStructure
+""""""""""""""""""""""""""""
+
+The *DischargeControlledStructure* takes a discharge value.
+
+DischargeControlledStructure
+""""""""""""""""""""""""""""
+
+The *Pump* is a copy of the building block DischargeControlledStructure, but has a different name. 
+
+Hydraulic
+---------
+This group of modeling objects contains building blocks for hydraulic modelling, basically one-dimensional open channel flow. Interfaces of the building blocks specify water level and discharge.
+
+Structures
+^^^^^^^^^^
+
+DischargeControlledStructure
+""""""""""""""""""""""""""""
+
+The *DischargeControlledStructure* takes a discharge value. Typically, this modeling object is used to represent a hydraulic structure like a weir or a pump and apply the discharge to it. The value of the discharge `QOut.Q` is the control variable. 
+
+
 Which weir block should I use?
-==============================
+""""""""""""""""""""""""""""""
 
 Start
------
 
 Is it free-flow (not submerged)?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Yes:
 
   Is the crest height variable and a decision variable?
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   - Yes:
 
@@ -116,12 +136,10 @@ Is it free-flow (not submerged)?
   - No:
 
     Is the crest height fixed?
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     - Yes:
 
       Are you using homotopy?
-      ~~~~~~~~~~~~~~~~~~~~~~~
 
       - Yes:
 
@@ -130,7 +148,6 @@ Is it free-flow (not submerged)?
       - No:
 
         Do you have a linear model?
-        ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         - Yes:
 
@@ -143,19 +160,6 @@ Is it free-flow (not submerged)?
 - No:
 
   This decision tree does not cover submerged flow conditions.
-
-
-
-DischargeControlledStructure
-""""""""""""""""""""""""""""
-
-The *DischargeControlledStructure* takes a discharge value. Typically, this modeling object is used to represent a hydraulic structure like a weir or a pump and apply the discharge to it. The value of the discharge `QOut.Q` is the control variable. 
-
-
-Hydraulic
----------
-This group of modeling objects contains building blocks for hydraulic modelling, basically one-dimensional open channel flow. 
-
 
 Salt
 ----
