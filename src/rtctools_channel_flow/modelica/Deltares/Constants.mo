@@ -1,7 +1,16 @@
 within Deltares;
 
 package Constants
-  "Library of mathematical constants and constants of nature"
+ annotation (
+    Documentation(info="
+<html>
+
+<p>
+The default medium is fresh water, salt water with variable density is also supported for some model objects. 
+</p>
+
+</html>")
+  );
 
   // Mathematical constants
   final constant Real pi=3.14159265358979;
