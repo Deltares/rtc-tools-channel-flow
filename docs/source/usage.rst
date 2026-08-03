@@ -27,6 +27,11 @@ A model schematization can be composed from building blocks from the Deltares li
 
 .. image:: images/OMEdit-DragAndDropConnect.jpg
 
+Further reading:
+
+* Modelica tutorial: https://modelica.org/documents/ModelicaTutorial14.pdf
+* Modelica by Example: https://mbe.modelica.university/
+
 Validating a model
 ^^^^^^^^^^^^^^^^^^
 
