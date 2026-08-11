@@ -8,7 +8,7 @@ model PumpUserEquationdH "PumpUserEquationdH"
   // Note: This block can be extended to support other head options
   parameter Integer head_option = 2;
   // The default head option of 2 aligns with the notation used in hydraulic structures
-  Modelica.Units.SI.Distance dH;
+  Modelica.Units.SI.Position dH;
  
 equation
   if head_option == 2 then
