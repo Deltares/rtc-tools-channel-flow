@@ -339,6 +339,9 @@ from collections import defaultdict
 package_contents = defaultdict(list)
 
 for mo_file in PACKAGE_ROOT.rglob("*.mo"):
+    # package.mo is represented by index.rst already
+    if mo_file.stem == "package":
+       continue
     text = mo_file.read_text(encoding="utf-8")
 
     doc = extract_documentation(text)
