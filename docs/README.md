@@ -15,7 +15,7 @@ generate_modelica_docs.py
     ↓
 generated/*.rst
     ↓
-Sphinx / Read the Docs
+Sphinx / Read*the Docs
 ```
 
 The Modelica file becomes the **single source of truth**.
@@ -53,7 +53,7 @@ P = \\eta \\rho g Q H
 <p>
 The optimization starts from a simplified power equation in which the hydraulic
 head is assumed to be constant. This reference head must be provided as a model parameter.
-/p>
+</p>
 
 </html>")
   );
@@ -73,6 +73,7 @@ Use:
 This is a paragraph.
 </p>
 ```
+
 Generates:
 
 ```rst
@@ -114,6 +115,7 @@ Generates:
 ---
 
 ## Lists
+
 Use:
 
 ```html
@@ -122,6 +124,7 @@ Use:
 <li>Second item</li>
 </ul>
 ```
+
 Generates:
 
 ```rst
@@ -158,25 +161,28 @@ Useful for parameter names such as:
 
 ## Code examples
 
+## Code examples
+
 Use multiline code blocks:
 
 ```html
 <code>
-Deltares.ChannelFlowSimpleRouting.Nodes.Node Alder(
+Deltares.ChannelFlow.SimpleRouting.Nodes.Node Alder(
   nin = 2,
   nout = 1,
-  n_QForcing =0)
+  n_QForcing = 0)
 </code>
 ```
 
 Generates:
 
-```rst::
+```rst
+::
 
-   Deltares.ChannelFlow.Simplerouting.Nodes.Node Alder(
+   Deltares.ChannelFlow.SimpleRouting.Nodes.Node Alder(
      nin = 2,
      nout = 1,
-     n_QForcing= 0)
+     n_QForcing = 0)
 ```
 
 ---
@@ -184,6 +190,7 @@ Generates:
 ## Equations
 
 Use:
+
 ```html
 <math>
 h = \\frac{V}{A}
@@ -210,7 +217,7 @@ annotation (
 <html>
 
 <p>
-A <em>node</em> connects multiple branches. It can be used to model
+A <em>Node</em> connects multiple branches. It can be used to model
 bifurcations and confluences in a water system.
 </p>
 
@@ -222,9 +229,9 @@ Example:
 Deltares.ChannelFlow.SimpleRouting.Nodes.Node Alder(
   nin = 2,
   nout = 1,
-  nQForcing = 0,
-  QIn.Q(each nominal= 0.3),
-  QOut.Q(each nominal = 10)
+  n_QForcing = 0,
+  QIn.Q(each nominal = 0.3),
+  QOut.Q(each nominal = 10))
 </code>
 
 <p>
@@ -232,6 +239,7 @@ In this example, the <em>Node</em> named <em>Alder</em> has two inflow
 connectors and one outflow connector (<code>nout</code>) to represent
 a confluence.
 </p>
+
 <math>
 Q_{in,1} + Q_{in,2} = Q_{out}
 </math>
@@ -243,11 +251,12 @@ Q_{in,1} + Q_{in,2} = Q_{out}
 Generated output:
 
 ```rst
+
 Node
 ====
 
 A *Node* connects multiple branches. It can be used to model
-bifurcation and confluences in a water system.
+bifurcations and confluences in a water system.
 
 Example:
 
@@ -256,17 +265,17 @@ Example:
    Deltares.ChannelFlow.SimpleRouting.Nodes.Node Alder(
      nin = 2,
      nout = 1,
-    n_QForcing = 0,
+     n_QForcing = 0,
      QIn.Q(each nominal = 0.3),
      QOut.Q(each nominal = 10))
 
 In this example, the *Node* named *Alder* has two inflow
-connectors and one outflow connection (``nout``) to represent
+connectors and one outflow connector (``nout``) to represent
 a confluence.
 
 .. math::
 
-   Q_{in,1} + Q_{i,2} = Q_{out}
+   Q_{in,1} + Q_{in,2} = Q_{out}
 ```
 
 ---
@@ -280,12 +289,13 @@ Modelica:
 ```text
 Deltares/
 ├── ChannelFlow/
-|   ├── Hydraulic/
+│   ├── Hydraulic/
 │   │   └── Reservoir/
 │   │       ├── HomotopicPower.mo
 │   │       └── HomotopicVolume.mo
-│   └── SimpleRouting/│       └── Nodes/
-│           └──Node.mo
+│   └── SimpleRouting/
+│       └── Nodes/
+│           └── Node.mo
 ```
 
 Generated documentation:
@@ -314,7 +324,7 @@ This creates a navigation tree that matches the Modelica package structure.
 
 # 5. Building the documentation
 
-Generate the RST file:
+Generate the RST files:
 
 ```bash
 python generate_modelica_docs.py
@@ -326,7 +336,7 @@ Build the documentation:
 make html
 ```
 
-or on windows:
+or on Windows:
 
 ```powershell
 .\make.bat html
@@ -340,7 +350,7 @@ In `conf.py`:
 
 ```python
 html_theme_options = {
-   "navigation_depth": 6,
+    "navigation_depth": 6,
 }
 ```
 
@@ -350,10 +360,10 @@ This ensures the full package hierarchy remains visible in the navigation panel.
 
 # 7. Recommendations
 
-* Keep package-level documentation concise.
-- Put detailed description in the Modelica model itself.
+- Keep package-level documentation concise.
+- Put detailed descriptions in the Modelica model itself.
 - Use `<math>` for equations.
-- Use `<Node>` for parameter names and examples.
+- Use `<code>` for parameter names and examples.
 - Use `<em>` for model names and concepts.
 - Avoid duplicate documentation in `.mo` and `.rst`.
 - Generate documentation from Modelica whenever possible.
@@ -363,7 +373,7 @@ This ensures the full package hierarchy remains visible in the navigation panel.
 
 # Troubleshooting
 
-## document isn't included in any toctree"
+## "document isn't included in any toctree"
 
 Usually caused by:
 
@@ -385,7 +395,7 @@ Check:
 
 ```python
 extensions = [
-    "sphinx.ext.mathjax,
+    "sphinx.ext.mathjax",
 ]
 ```
 
@@ -394,7 +404,7 @@ and ensure the generated RST contains:
 ```rst
 .. math::
 
-  h = \frac{V}{A}
+   h = \frac{V}{A}
 ```
 
 not:
@@ -404,6 +414,7 @@ not:
 
    h = \\frac{V}{A}
 ```
+
 ## Inline code rendered as a code block
 
 Use:
@@ -418,6 +429,6 @@ Use multiline `<code>` blocks only for examples:
 
 ```html
 <code>
-..
+...
 </code>
 ```
