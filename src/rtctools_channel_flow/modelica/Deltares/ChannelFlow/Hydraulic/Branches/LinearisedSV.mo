@@ -93,13 +93,13 @@ equation
   (der(Q_relative[n_level_nodes]) + 2 * V0[2 * n_level_nodes - 2] * ((Q_relative[n_level_nodes + 1] - Q_relative[n_level_nodes - 1]) / (1.5 * dx)) + (C0[n_level_nodes] ^ 2 - V0[2 * n_level_nodes - 2] ^ 2) * ((T0[n_level_nodes - 1] + T0[n_level_nodes]) / 2) * ((Y_relative[n_level_nodes] - Y_relative[n_level_nodes - 1]) / dx) + Delta[n_level_nodes] * Q_relative[n_level_nodes] - (Gamma[n_level_nodes - 1] * Y_relative[n_level_nodes - 1] + Gamma[n_level_nodes] * Y_relative[n_level_nodes]) / 2 - width / density_water * _wind_stress)* 2 * dx = 0;
   
   
-  der(_cross_section[1]) + 2 * (Q_relative[2] - Q_relative[1]) / dx - 2 * _QPerpendicular_distribution[1] / dx = 0;
+  der(_cross_section[1]) * dx + 2 * (Q_relative[2] - Q_relative[1]) - 2 * _QPerpendicular_distribution[1] = 0;
   for node in 2:n_level_nodes-1 loop
     // Middle heights calculated by mass conservation
-    der(_cross_section[node]) + (Q_relative[node + 1] - Q_relative[node]) / dx - _QPerpendicular_distribution[node] / dx= 0;
+    der(_cross_section[node]) * dx + Q_relative[node + 1] - Q_relative[node] - _QPerpendicular_distribution[node] = 0;
   end for;
   // Boundary mass conservation
-  der(_cross_section[n_level_nodes]) + 2 * (Q_relative[n_level_nodes + 1] - Q_relative[n_level_nodes]) / dx - 2 * _QPerpendicular_distribution[n_level_nodes] / dx = 0;
+  der(_cross_section[n_level_nodes]) * dx + 2 * Q_relative[n_level_nodes + 1] - Q_relative[n_level_nodes] - 2 * _QPerpendicular_distribution[n_level_nodes] = 0;
 
 
   for node in 1:n_level_nodes loop
