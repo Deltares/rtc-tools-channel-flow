@@ -23,6 +23,9 @@ docs = [
     "sphinx",
     "sphinx_rtd_theme",
     "matplotlib",
+    "numpy",
+    "mock",
+    "sphinxcontrib-spelling",
 ]
 
 [tool.hatch.build.targets.wheel]
