@@ -31,3 +31,6 @@ include = [
   "/COPYING.LESSER",
   "/README.md",
 ]
+
+[project.entry-points."rtctools.libraries.modelica"]
+library_folder = "rtctools_channel_flow:modelica"
