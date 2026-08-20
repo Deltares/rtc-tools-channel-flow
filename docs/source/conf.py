@@ -4,7 +4,8 @@ import sys
 
 from rtctools_hydraulic_structures._version import get_versions
 
-
+sys.path.insert(0, os.path.abspath('_mocked_modules'))
+sys.path.insert(0, os.path.abspath('..'))
 
 # Configuration file for the Sphinx documentation builder.
 
@@ -80,3 +81,25 @@ html_theme = 'sphinx_rtd_theme'
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
+
+# -- Hack to strip annotations from Modelica files ------------------------
+MODELICA_EXAMPLE_BASE_FOLDER = '../examples'
+MODELICA_STRIPPED_EXAMPLE_FOLDER = '_build/_stripped_examples'
+
+for root, _dirs, files in os.walk(MODELICA_EXAMPLE_BASE_FOLDER):
+    mo_files = [x for x in files if x.endswith('.mo')]
+    if mo_files:
+        rel_path = os.path.relpath(root, MODELICA_EXAMPLE_BASE_FOLDER)
+        target_path = os.path.join(MODELICA_STRIPPED_EXAMPLE_FOLDER, rel_path)
+        os.makedirs(target_path, exist_ok=True)
+
+        for m in mo_files:
+            mo_in = os.path.join(root, m)
+            mo_out = os.path.join(target_path, m)
+
+            with open(mo_in, 'r') as f_in:
+                with open(mo_out, 'w') as f_out:
+                    s = f_in.read()
+                    s = re.sub(r'[\r\n]+[ \t]*annotation\(.*\);([\r\n]+)', r'\1', s)
+                    s = re.sub(r'[ \t]+annotation\(.*?\);', ';', s, flags=re.DOTALL | re.MULTILINE)
+                    f_out.write(s)
