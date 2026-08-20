@@ -13,7 +13,7 @@ Pumping Station Mixin
 
 
 .. automodule:: rtctools_hydraulic_structures.pumping_station_mixin
-    :members: Pump, Resistance, PumpingStation, MinimizePumpCostGoal, MinimizePumpEnergyGoal, plot_operating_points
+    :members: 
     :special-members: __init__, __getattr__
     :show-inheritance:
 
