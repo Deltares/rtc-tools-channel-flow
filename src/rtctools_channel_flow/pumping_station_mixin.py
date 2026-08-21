@@ -12,7 +12,18 @@ from operator import methodcaller
 from typing import List, Union
 
 import casadi as ca
-from casadi import Function, MX, SX, det, hessian, jacobian, substitute, symvar, trace, vertcat
+from casadi import (
+    Function,
+    MX,
+    SX,
+    det,
+    hessian,
+    jacobian,
+    substitute,
+    symvar,
+    trace,
+    vertcat,
+)
 
 import numpy as np
 from numpy import inf
@@ -24,19 +35,17 @@ from rtctools.optimization.timeseries import Timeseries
 from .polygon_enclosure import DeadEndError, enclosing_segments
 from .util import _ObjectParameterWrapper
 
-logger = logging.getLogger("rtctools")
+logger = logging.getLogger(__name__)
 
 
 class CommonStructureSwitchFunctions:
-
-    def StructureHistory(self, structure, times, status_sym, pump_history=None, station_history=None):
+    def StructureHistory(
+        self, structure, times, status_sym, pump_history=None, station_history=None
+    ):
         hist_needed = max(structure.minimum_off, structure.minimum_on)
         hist_earliest = np.min(times - hist_needed)
 
-        history_map = {
-            Pump: pump_history,
-            PumpingStation: station_history
-        }
+        history_map = {Pump: pump_history, PumpingStation: station_history}
 
         if type(structure) in history_map:
             history = history_map[type(structure)]
@@ -48,19 +57,26 @@ class CommonStructureSwitchFunctions:
             raise Exception("Unknown structure type for history processing.")
 
         hist_end_ind = np.searchsorted(history.times, times[0])
-        hist_times = history.times[hist_start_ind:hist_end_ind + 1]
-        hist_status = history.values[hist_start_ind:hist_end_ind + 1]
+        hist_times = history.times[hist_start_ind : hist_end_ind + 1]
+        hist_status = history.values[hist_start_ind : hist_end_ind + 1]
 
         if any(np.isnan(hist_status[hist_start_ind:hist_end_ind])):
-            logger.info("Missing values in history of {}, skipping status history constraints."
-                        .format(structure.symbol))
+            logger.info(
+                "Missing values in history of {}, skipping status history constraints.".format(
+                    structure.symbol
+                )
+            )
             raise KeyError
 
         rev_hist_times = np.abs(hist_times[::-1])
         rev_hist_status = hist_status[::-1]
 
         if not all((hist_status == 0) | (hist_status == 1)):
-            raise Exception("Invalid values in history of {} {}".format(type(structure), structure.symbol))
+            raise Exception(
+                "Invalid values in history of {} {}".format(
+                    type(structure), structure.symbol
+                )
+            )
 
         # Force the initial state to match the history
         min_vals = np.full(len(times), 0.0)
@@ -69,34 +85,50 @@ class CommonStructureSwitchFunctions:
         max_vals[0] = rev_hist_status[0]
         # ToDo: user might want hard constraint on history so need to look further back here as an option
 
-        if self.pumpingstation_history_constraints == 'hard':
+        if self.pumpingstation_history_constraints == "hard":
             hist_bounds = (Timeseries(times, min_vals), Timeseries(times, max_vals))
             if isinstance(structure, Pump):
                 cur_bounds = self.__pump_status_bounds[status_sym]
-                self.__pump_status_bounds[status_sym] = self.merge_bounds(hist_bounds, cur_bounds)
+                self.__pump_status_bounds[status_sym] = self.merge_bounds(
+                    hist_bounds, cur_bounds
+                )
             if isinstance(structure, PumpingStation):
-                cur_bounds = self._PumpingStationMixin__station_status_bounds[status_sym]
-                self.__station_status_bounds[status_sym] = self.merge_bounds(hist_bounds, cur_bounds)
+                cur_bounds = self._PumpingStationMixin__station_status_bounds[
+                    status_sym
+                ]
+                self.__station_status_bounds[status_sym] = self.merge_bounds(
+                    hist_bounds, cur_bounds
+                )
         else:
             if isinstance(structure, Pump):
-                self._PumpingStationMixin__psmixin_initial_pump_status[structure.symbol] = rev_hist_status[0]
+                self._PumpingStationMixin__psmixin_initial_pump_status[
+                    structure.symbol
+                ] = rev_hist_status[0]
             if isinstance(structure, PumpingStation):
-                self._PumpingStationMixin__psmixin_initial_station_status[structure.symbol] = rev_hist_status[0]
+                self._PumpingStationMixin__psmixin_initial_station_status[
+                    structure.symbol
+                ] = rev_hist_status[0]
 
-        hist_on = next((rev_hist_times[i] for i, s in enumerate(rev_hist_status) if s == 0), rev_hist_times[-1])
-        hist_off = next((rev_hist_times[i] for i, s in enumerate(rev_hist_status) if s == 1), rev_hist_times[-1])
+        hist_on = next(
+            (rev_hist_times[i] for i, s in enumerate(rev_hist_status) if s == 0),
+            rev_hist_times[-1],
+        )
+        hist_off = next(
+            (rev_hist_times[i] for i, s in enumerate(rev_hist_status) if s == 1),
+            rev_hist_times[-1],
+        )
 
         return hist_on, hist_off
 
-    def GenerateStatusSymbols(self, structure, need_on_sym, need_off_sym,
-                              status_sym=None, power_sym=None):
-
+    def GenerateStatusSymbols(
+        self, structure, need_on_sym, need_off_sym, status_sym=None, power_sym=None
+    ):
         if need_on_sym > 0:
-            sw_on_sym = '{}__switched_on'.format(structure.symbol)
+            sw_on_sym = "{}__switched_on".format(structure.symbol)
         else:
             sw_on_sym = None
         if need_off_sym > 0:
-            sw_off_sym = '{}__switched_off'.format(structure.symbol)
+            sw_off_sym = "{}__switched_off".format(structure.symbol)
         else:
             sw_off_sym = None
 
@@ -113,7 +145,10 @@ class CommonStructureSwitchFunctions:
             constant_inputs = self.constant_inputs(0)
             if structure.semi_continuous is not None:
                 continuous = constant_inputs[structure.semi_continuous]
-                self._PumpingStationMixin__pump_status_bounds[status_sym] = (continuous, 1)
+                self._PumpingStationMixin__pump_status_bounds[status_sym] = (
+                    continuous,
+                    1,
+                )
             if need_on_sym:
                 self._PumpingStationMixin__pump_status_bounds[sw_on_sym] = (0, 1)
             if need_off_sym:
@@ -141,11 +176,17 @@ class CommonStructureSwitchFunctions:
 
         self._PumpingStationMixin__pumping_station_mx_path_variables.append(status_mx)
         if isinstance(structure, Pump):
-            self._PumpingStationMixin__pumping_station_mx_path_variables.append(power_mx)
+            self._PumpingStationMixin__pumping_station_mx_path_variables.append(
+                power_mx
+            )
         if need_on_sym:
-            self._PumpingStationMixin__pumping_station_mx_path_variables.append(sw_on_mx)
+            self._PumpingStationMixin__pumping_station_mx_path_variables.append(
+                sw_on_mx
+            )
         if need_off_sym:
-            self._PumpingStationMixin__pumping_station_mx_path_variables.append(sw_off_mx)
+            self._PumpingStationMixin__pumping_station_mx_path_variables.append(
+                sw_off_mx
+            )
 
         if isinstance(structure, Pump):
             return status_sym, sw_on_sym, sw_off_sym, power_sym
@@ -160,7 +201,14 @@ class Pump(_ObjectParameterWrapper):
     in the model.
     """
 
-    def __init__(self, optimization_problem, symbol, energy_price_symbol, semi_continuous=None, status_history=None):
+    def __init__(
+        self,
+        optimization_problem,
+        symbol,
+        energy_price_symbol,
+        semi_continuous=None,
+        status_history=None,
+    ):
         super().__init__(optimization_problem)
 
         self.optimization_problem = optimization_problem
@@ -180,7 +228,7 @@ class Pump(_ObjectParameterWrapper):
         # variable, but only top level input variables are allowed. We
         # therefore use the convention that a symbol exists where all dots are
         # replaced with underscores.
-        return self.optimization_problem.state(self.symbol.replace('.', '_') + '_Q')
+        return self.optimization_problem.state(self.symbol.replace(".", "_") + "_Q")
 
     def head(self):
         """
@@ -189,15 +237,23 @@ class Pump(_ObjectParameterWrapper):
 
         :returns: `MX` expression of the pump head.
         """
-        return self.optimization_problem.state(self.symbol + '.dH')
+        return self.optimization_problem.state(self.symbol + ".dH")
 
     @property
     def _need_switched_on_symbol(self):
-        return self.minimum_on > 0.0 or self.start_up_energy > 0.0 or self.start_up_cost > 0.0
+        return (
+            self.minimum_on > 0.0
+            or self.start_up_energy > 0.0
+            or self.start_up_cost > 0.0
+        )
 
     @property
     def _need_switched_off_symbol(self):
-        return self.minimum_off > 0.0 or self.shut_down_energy > 0.0 or self.shut_down_cost > 0.0
+        return (
+            self.minimum_off > 0.0
+            or self.shut_down_energy > 0.0
+            or self.shut_down_cost > 0.0
+        )
 
 
 class Resistance(_ObjectParameterWrapper):
@@ -219,7 +275,7 @@ class Resistance(_ObjectParameterWrapper):
 
         :returns: `MX` expression of the discharge.
         """
-        return self.optimization_problem.state(self.symbol + '.HQUp.Q')
+        return self.optimization_problem.state(self.symbol + ".HQUp.Q")
 
     def head_loss(self):
         """
@@ -230,7 +286,7 @@ class Resistance(_ObjectParameterWrapper):
 
         # Can't we use the dot notation instead, as the two are equated in the
         # Modelica model anyway?
-        return self.optimization_problem.state(self.symbol.replace('.', '_') + '_dH')
+        return self.optimization_problem.state(self.symbol.replace(".", "_") + "_dH")
 
 
 class PumpingStation(_ObjectParameterWrapper):
@@ -239,14 +295,16 @@ class PumpingStation(_ObjectParameterWrapper):
     :cpp:class:`~Deltares::HydraulicStructures::PumpingStation::PumpingStation` object in the model.
     """
 
-    def __init__(self,
-                 optimization_problem: OptimizationProblem,
-                 symbol: str,
-                 pump_symbols: List[str] = None,
-                 energy_price_symbols: Union[str, List[str]] = None,
-                 semi_continuous: Union[str, List[str]] = None,
-                 status_history: Union[str, List[str]] = None,
-                 **kwargs):
+    def __init__(
+        self,
+        optimization_problem: OptimizationProblem,
+        symbol: str,
+        pump_symbols: List[str] = None,
+        energy_price_symbols: Union[str, List[str]] = None,
+        semi_continuous: Union[str, List[str]] = None,
+        status_history: Union[str, List[str]] = None,
+        **kwargs,
+    ):
         """
         Initialize the pumping station object.
 
@@ -279,7 +337,9 @@ class PumpingStation(_ObjectParameterWrapper):
         self._resistances = None
 
         if energy_price_symbols is None:
-            self.energy_price_symbols = optimization_problem.pumpingstation_energy_price_symbol
+            self.energy_price_symbols = (
+                optimization_problem.pumpingstation_energy_price_symbol
+            )
         else:
             self.energy_price_symbols = energy_price_symbols
 
@@ -294,7 +354,7 @@ class PumpingStation(_ObjectParameterWrapper):
         # variable, but only top level input variables are allowed. We
         # therefore use the convention that a symbol exists where all dots are
         # replaced with underscores.
-        return self.optimization_problem.state(self.symbol + '.HQUp.Q')
+        return self.optimization_problem.state(self.symbol + ".HQUp.Q")
 
     def pumps(self) -> List[Pump]:
         """
@@ -309,11 +369,13 @@ class PumpingStation(_ObjectParameterWrapper):
                 # if the pump switching matrix is all zeros.
                 matrix = self.pump_switching_matrix
                 if not np.all(matrix == 0):
-                    raise Exception("Automatic finding of pumps not allowed with non-zero switching matrix.")
+                    raise Exception(
+                        "Automatic finding of pumps not allowed with non-zero switching matrix."
+                    )
 
                 _pump_symbols = set()
                 for x in self.optimization_problem.parameters(0).keys():
-                    m = re.search(r'({}\..+?)\.working_area\['.format(self.symbol), x)
+                    m = re.search(r"({}\..+?)\.working_area\[".format(self.symbol), x)
                     if m is None:
                         continue
                     else:
@@ -323,37 +385,60 @@ class PumpingStation(_ObjectParameterWrapper):
 
             if isinstance(self.energy_price_symbols, list):
                 if len(self.energy_price_symbols) != len(self.pump_symbols):
-                    raise Exception("Each pump in {} must have a corresponding energy price".format(self.symbol))
+                    raise Exception(
+                        "Each pump in {} must have a corresponding energy price".format(
+                            self.symbol
+                        )
+                    )
                 energy_price_symbols = self.energy_price_symbols
             else:
-                energy_price_symbols = [self.energy_price_symbols] * len(self.pump_symbols)
+                energy_price_symbols = [self.energy_price_symbols] * len(
+                    self.pump_symbols
+                )
 
             if isinstance(self.semi_continuous, list):
                 if len(self.semi_continuous) != len(self.pump_symbols):
                     raise Exception(
-                        "Each pump in {} must have a corresponding semi continuous series".format(self.symbol))
+                        "Each pump in {} must have a corresponding semi continuous series".format(
+                            self.symbol
+                        )
+                    )
                 semi_continuous_symbols = self.semi_continuous
             else:
-                semi_continuous_symbols = [self.semi_continuous] * len(self.pump_symbols)
+                semi_continuous_symbols = [self.semi_continuous] * len(
+                    self.pump_symbols
+                )
 
             if isinstance(self.status_history, list):
                 if len(self.status_history) != len(self.pump_symbols):
                     raise Exception(
-                        "Each pump in {} must have a corresponding status history series".format(self.symbol))
+                        "Each pump in {} must have a corresponding status history series".format(
+                            self.symbol
+                        )
+                    )
                 status_history_ts_names = self.status_history
             elif isinstance(self.status_history, str):
-                status_history_ts_names = [self.status_history.format(pump=x) for x in self.pump_symbols]
+                status_history_ts_names = [
+                    self.status_history.format(pump=x) for x in self.pump_symbols
+                ]
             elif self.status_history is None:
                 status_history_ts_names = [None] * len(self.pump_symbols)
             else:
-                raise ValueError("Pump status history must be a list or string, not {}"
-                                 .format(type(self.status_history)))
+                raise ValueError(
+                    "Pump status history must be a list or string, not {}".format(
+                        type(self.status_history)
+                    )
+                )
 
-            self._pumps = [Pump(self.optimization_problem, x, e, s, h)
-                           for x, e, s, h in zip(self.pump_symbols,
-                                                 energy_price_symbols,
-                                                 semi_continuous_symbols,
-                                                 status_history_ts_names)]
+            self._pumps = [
+                Pump(self.optimization_problem, x, e, s, h)
+                for x, e, s, h in zip(
+                    self.pump_symbols,
+                    energy_price_symbols,
+                    semi_continuous_symbols,
+                    status_history_ts_names,
+                )
+            ]
 
         return self._pumps
 
@@ -371,7 +456,7 @@ class PumpingStation(_ObjectParameterWrapper):
                 # TODO: Isn't there a better way to find these components
                 # instead of looking for some type of signature (which can
                 # change).
-                m = re.search(r'({}\..+?)\.C'.format(self.symbol), x)
+                m = re.search(r"({}\..+?)\.C".format(self.symbol), x)
                 if m is None:
                     continue
                 else:
@@ -379,7 +464,9 @@ class PumpingStation(_ObjectParameterWrapper):
 
             _resist_symbols = sorted(_resist_symbols)
 
-            self._resistances = [Resistance(self.optimization_problem, x) for x in _resist_symbols]
+            self._resistances = [
+                Resistance(self.optimization_problem, x) for x in _resist_symbols
+            ]
 
         return self._resistances
 
@@ -388,7 +475,7 @@ class PumpingStation(_ObjectParameterWrapper):
         # TODO: Move default values to Modelica, and delete this property
         # method (i.e. let it be handled automatically by __getattr__)
         # TODO: For some reason using super() does not work. Why?
-        matrix = _ObjectParameterWrapper.__getattr__(self, 'pump_switching_matrix')
+        matrix = _ObjectParameterWrapper.__getattr__(self, "pump_switching_matrix")
 
         # FIXME: Detect placeholder array for JModelica workaround
         if np.all(matrix == -999):
@@ -398,7 +485,9 @@ class PumpingStation(_ObjectParameterWrapper):
 
         # Only lower triangle matrices are allowed
         if not (np.tril(matrix) == matrix).all():
-            raise Exception("Switching matrices may only contain a non-zeros in the lower triangle.")
+            raise Exception(
+                "Switching matrices may only contain a non-zeros in the lower triangle."
+            )
 
         return matrix
 
@@ -406,25 +495,37 @@ class PumpingStation(_ObjectParameterWrapper):
     def pump_switching_constraints(self) -> np.ndarray:
         # TODO: Move default values to Modelica, and delete this property
         # method (i.e. let it be handled automatically by __getattr__)
-        constraints = _ObjectParameterWrapper.__getattr__(self, 'pump_switching_constraints')
+        constraints = _ObjectParameterWrapper.__getattr__(
+            self, "pump_switching_constraints"
+        )
 
         # FIXME: Detect placeholder array for JModelica workaround
         if np.all(constraints == -999):
-            constraints = np.transpose([np.zeros(self.n_pumps), list(range(self.n_pumps))])
+            constraints = np.transpose(
+                [np.zeros(self.n_pumps), list(range(self.n_pumps))]
+            )
 
         return constraints
 
     @property
     def n_pumps(self) -> int:
-        return int(_ObjectParameterWrapper.__getattr__(self, 'n_pumps'))
+        return int(_ObjectParameterWrapper.__getattr__(self, "n_pumps"))
 
     @property
     def _need_switched_on_symbol(self):
-        return self.minimum_on > 0.0 or self.start_up_energy > 0.0 or self.start_up_cost > 0.0
+        return (
+            self.minimum_on > 0.0
+            or self.start_up_energy > 0.0
+            or self.start_up_cost > 0.0
+        )
 
     @property
     def _need_switched_off_symbol(self):
-        return self.minimum_off > 0.0 or self.shut_down_energy > 0.0 or self.shut_down_cost > 0.0
+        return (
+            self.minimum_off > 0.0
+            or self.shut_down_energy > 0.0
+            or self.shut_down_cost > 0.0
+        )
 
 
 class _MinimizePumpGoalType(Enum):
@@ -433,7 +534,6 @@ class _MinimizePumpGoalType(Enum):
 
 
 class _MinimizePumpGoal(Goal):
-
     priority = sys.maxsize
     order = 1
 
@@ -444,7 +544,13 @@ class _MinimizePumpGoal(Goal):
     # multiplying the reference nominal (based on previous priorities) by 0.1.
     _dynamic_nominal_scaling = 0.1
 
-    def __init__(self, use_dynamic_nominal: bool = True, exclude_continuous: bool = False, *args, **kwargs):
+    def __init__(
+        self,
+        use_dynamic_nominal: bool = True,
+        exclude_continuous: bool = False,
+        *args,
+        **kwargs,
+    ):
         """
         :param use_dynamic_nominal: Whether to use a dynamically calculated
             nominal based on results of previous priorities.
@@ -456,17 +562,24 @@ class _MinimizePumpGoal(Goal):
 
     def function(self, o, ensemble_member):
         if self.use_dynamic_nominal:
-            priorities, nominals = list(zip(*o._psmixin_pump_minimization_nominal[self._type]))
+            priorities, nominals = list(
+                zip(*o._psmixin_pump_minimization_nominal[self._type])
+            )
             ind = np.searchsorted(priorities, self.priority) - 1
             nominal = nominals[ind] * self._dynamic_nominal_scaling
             # We store the dynamic nominal that we use for debugging purposes.
             # We check/assert that the value does not change, even when this
             # function is called after the priority completes.
-            assert not hasattr(self, '_dynamic_nominal') or self._dynamic_nominal == nominal
+            assert (
+                not hasattr(self, "_dynamic_nominal")
+                or self._dynamic_nominal == nominal
+            )
             self._dynamic_nominal = nominal
 
             if self.function_nominal != 1.0:
-                raise Exception("The minimization goal's function_nominal has to be 1.0 when using dynamic scaling.")
+                raise Exception(
+                    "The minimization goal's function_nominal has to be 1.0 when using dynamic scaling."
+                )
         else:
             self._dynamic_nominal = 1.0
 
@@ -482,7 +595,9 @@ class _MinimizePumpGoal(Goal):
         for ps in o.pumping_stations():
             for p in ps.pumps():
                 if p.semi_continuous is not None and self.exclude_continuous:
-                    assert np.array_equal(constant_inputs[p.semi_continuous].times, times)
+                    assert np.array_equal(
+                        constant_inputs[p.semi_continuous].times, times
+                    )
                     continuous = constant_inputs[p.semi_continuous].values
                 else:
                     continuous = np.full_like(times, 0.0)
@@ -494,8 +609,11 @@ class _MinimizePumpGoal(Goal):
                         price = o.timeseries_at(p.energy_price_symbol, tf)
                         # Zero or negative price values will lead to wrong results
                         if price < 0:
-                            raise Exception("Price for pump {} at t = {} s is negative.".format(
-                                p.symbol, tf))
+                            raise Exception(
+                                "Price for pump {} at t = {} s is negative.".format(
+                                    p.symbol, tf
+                                )
+                            )
 
                     elif self._type == _MinimizePumpGoalType.ENERGY:
                         price = 1.0
@@ -504,15 +622,28 @@ class _MinimizePumpGoal(Goal):
 
                     # TODO: Not pretty to use the same formatting again
                     # Pump power
-                    costs += tstep * o.state_at('{}__power'.format(p.symbol), tf) * price * (1 - cont)
+                    costs += (
+                        tstep
+                        * o.state_at("{}__power".format(p.symbol), tf)
+                        * price
+                        * (1 - cont)
+                    )
 
                     # Start-up energy
                     if p.start_up_energy > 0.0:
-                        costs += o.state_at('{}__switched_on'.format(p.symbol), tf) * p.start_up_energy * price
+                        costs += (
+                            o.state_at("{}__switched_on".format(p.symbol), tf)
+                            * p.start_up_energy
+                            * price
+                        )
 
                     # Shut-down energy
                     if p.shut_down_energy > 0.0:
-                        costs += o.state_at('{}__switched_off'.format(p.symbol), tf) * p.shut_down_energy * price
+                        costs += (
+                            o.state_at("{}__switched_off".format(p.symbol), tf)
+                            * p.shut_down_energy
+                            * price
+                        )
 
                     if self._type == _MinimizePumpGoalType.ENERGY:
                         continue
@@ -521,11 +652,17 @@ class _MinimizePumpGoal(Goal):
 
                     # Fixed start-up costs (other than energy)
                     if p.start_up_cost > 0.0:
-                        costs += o.state_at('{}__switched_on'.format(p.symbol), tf) * p.start_up_cost
+                        costs += (
+                            o.state_at("{}__switched_on".format(p.symbol), tf)
+                            * p.start_up_cost
+                        )
 
                     # Fixed shut-down costs (other than energy)
                     if p.shut_down_cost > 0.0:
-                        costs += o.state_at('{}__switched_off'.format(p.symbol), tf) * p.shut_down_cost
+                        costs += (
+                            o.state_at("{}__switched_off".format(p.symbol), tf)
+                            * p.shut_down_cost
+                        )
         return costs / self._dynamic_nominal
 
 
@@ -562,26 +699,40 @@ class MinimizePumpEnergyGoal(_MinimizePumpGoal):
 
 
 class StructureStatusGoal(Goal):
-
     order = 1
 
-    def __init__(self, optimization_problem, structure, minimum_on=None, minimum_off=None,
-                 initial_status=True, horizon_status=False, priority=1, weight=1, function_nominal=1):
-
+    def __init__(
+        self,
+        optimization_problem,
+        structure,
+        minimum_on=None,
+        minimum_off=None,
+        initial_status=True,
+        horizon_status=False,
+        priority=1,
+        weight=1,
+        function_nominal=1,
+    ):
         if minimum_on is None:
             minimum_on = structure.minimum_on
         if minimum_off is None:
             minimum_off = structure.minimum_off
 
         if minimum_on > 0 and not structure._need_switched_on_symbol:
-            raise Exception("StructureStatusGoal: A switched on symbol is needed when using minimum on time. "
-                            "For example, set the parameter {}.minimum_on to a small, but non-zero, value."
-                            .format(structure.symbol))
+            raise Exception(
+                "StructureStatusGoal: A switched on symbol is needed when using minimum on time. "
+                "For example, set the parameter {}.minimum_on to a small, but non-zero, value.".format(
+                    structure.symbol
+                )
+            )
 
         if minimum_off > 0 and not structure._need_switched_off_symbol:
-            raise Exception("StructureStatusGoal: A switched off symbol is needed when using minimum off time. "
-                            "For example, set the parameter {}.minimum_off to a small, but non-zero, value."
-                            .format(structure.symbol))
+            raise Exception(
+                "StructureStatusGoal: A switched off symbol is needed when using minimum off time. "
+                "For example, set the parameter {}.minimum_off to a small, but non-zero, value.".format(
+                    structure.symbol
+                )
+            )
 
         self.structure = structure
         self.minimum_on = minimum_on
@@ -596,11 +747,17 @@ class StructureStatusGoal(Goal):
         horizon_constraints = []
 
         if initial_status:
-            initial_constraints = optimization_problem._psmixin_initial_status_constraints(
-                structure, minimum_on, minimum_off)
+            initial_constraints = (
+                optimization_problem._psmixin_initial_status_constraints(
+                    structure, minimum_on, minimum_off
+                )
+            )
         if horizon_status:
-            horizon_constraints = optimization_problem._psmixin_horizon_status_constraints(
-                structure, minimum_on, minimum_off)
+            horizon_constraints = (
+                optimization_problem._psmixin_horizon_status_constraints(
+                    structure, minimum_on, minimum_off
+                )
+            )
 
         total_size = 0
         self._constraints = []
@@ -611,8 +768,14 @@ class StructureStatusGoal(Goal):
 
             if isinstance(structure, Pump):
                 try:
-                    init_val = optimization_problem._PumpingStationMixin__psmixin_initial_pump_status[structure.symbol]
-                    status_sym, *_ = optimization_problem._PumpingStationMixin__pump_status_pairs[structure.symbol]
+                    init_val = optimization_problem._PumpingStationMixin__psmixin_initial_pump_status[
+                        structure.symbol
+                    ]
+                    status_sym, *_ = (
+                        optimization_problem._PumpingStationMixin__pump_status_pairs[
+                            structure.symbol
+                        ]
+                    )
 
                     def f(o, status_sym=status_sym):
                         return o.state_at(status_sym, o.initial_time)
@@ -626,7 +789,11 @@ class StructureStatusGoal(Goal):
                     init_val = optimization_problem._PumpingStationMixin__psmixin_initial_station_status[
                         structure.symbol
                     ]
-                    status_sym, *_ = optimization_problem._PumpingStationMixin__station_status_pairs[structure.symbol]
+                    status_sym, *_ = (
+                        optimization_problem._PumpingStationMixin__station_status_pairs[
+                            structure.symbol
+                        ]
+                    )
 
                     def f(o, status_sym=status_sym):
                         return o.state_at(status_sym, o.initial_time)
@@ -709,12 +876,12 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
 
     #: Energy price symbol to use if no symbol specified per pumping station
     #: or per pump.
-    pumpingstation_energy_price_symbol = 'energy_price'
+    pumpingstation_energy_price_symbol = "energy_price"
 
     #: How pump status history constraints should be enforced. Either as a
     #: hard constraint ('hard'), or by using the PumpStatusGoal ('soft' /
     #: None). Note that the latter requires 'keep_soft_constraints' to be set.
-    pumpingstation_history_constraints = 'hard'
+    pumpingstation_history_constraints = "hard"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -724,11 +891,13 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
         self.__additional_results = OrderedDict()
         self.__additional_output_variables = set()
 
-        assert 'model_folder' in kwargs
-        self.__model_folder = kwargs['model_folder']
+        assert "model_folder" in kwargs
+        self.__model_folder = kwargs["model_folder"]
 
         self.__hq_subproblem_cache = OrderedDict()
-        self.__hq_subproblem_cache_path = os.path.join(kwargs['model_folder'], '_hq_subproblem_cache.pickle')
+        self.__hq_subproblem_cache_path = os.path.join(
+            kwargs["model_folder"], "_hq_subproblem_cache.pickle"
+        )
 
     def pre(self):
         super().pre()
@@ -761,10 +930,12 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
         self.__station_status_hist = {}
 
         # Uses the same mapping as Pump.head_option for easy access
-        self._psmixin_head_range = {-1: self.__head_range_up,
-                                    0: self.__head_range_diff,
-                                    1: self.__head_range_down,
-                                    2: self.__head_range_diff}
+        self._psmixin_head_range = {
+            -1: self.__head_range_up,
+            0: self.__head_range_diff,
+            1: self.__head_range_down,
+            2: self.__head_range_diff,
+        }
 
         # Check validity of HQ subproblem cache. We check if _any_ file other
         # than ourself in the model folder is newer.
@@ -782,10 +953,13 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
             for root, _dir, files in os.walk(self.__model_folder):
                 for f in files:
                     f_abspath = os.path.abspath(os.path.join(root, f))
-                    if cache_abspath != f_abspath and os.path.getmtime(f_abspath) > cache_mtime:
+                    if (
+                        cache_abspath != f_abspath
+                        and os.path.getmtime(f_abspath) > cache_mtime
+                    ):
                         raise _InvalidCacheError("Cache no longer valid")
 
-            with open(self.__hq_subproblem_cache_path, 'rb') as file:
+            with open(self.__hq_subproblem_cache_path, "rb") as file:
                 # Load subproblem.
                 try:
                     self.__hq_subproblem_cache = pickle.load(file)
@@ -813,9 +987,10 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                 symbol_down = ps.symbol + ".HQDown.H"
 
             # Use bounds if specified, otherwise try deriving bounds from time series
-            for hr, s in [(self.__head_range_up, symbol_up),
-                          (self.__head_range_down, symbol_down)]:
-
+            for hr, s in [
+                (self.__head_range_up, symbol_up),
+                (self.__head_range_down, symbol_down),
+            ]:
                 m, M = self.bounds().get(s, [None, None])
 
                 if isinstance(m, Timeseries):
@@ -828,70 +1003,101 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                     canonical_state, sign = self.alias_relation.canonical_signed(s)
 
                     # Discard history values for head estimation.
-                    ts_values = np.array([v for t, v in zip(ts.times, ts.values) if t in self.times()])
+                    ts_values = np.array(
+                        [v for t, v in zip(ts.times, ts.values) if t in self.times()]
+                    )
 
                     # Attempt to avoid using time series used as initial conditions only by checking for NaN
                     if m is None or not np.isfinite(m) and not any(np.isnan(ts_values)):
                         m = min(ts_values)
-                        logger.info('Using {} value "{}" in time series "{}" as lower bound for "{}".'.format(
-                            "minimum" if sign == 1 else "maximum", m, canonical_state, s))
+                        logger.info(
+                            'Using {} value "{}" in time series "{}" as lower bound for "{}".'.format(
+                                "minimum" if sign == 1 else "maximum",
+                                m,
+                                canonical_state,
+                                s,
+                            )
+                        )
                     if M is None or not np.isfinite(M) and not any(np.isnan(ts_values)):
                         M = max(ts_values)
-                        logger.info('Using {} value "{}" in time series "{}" as upper bound for "{}".'.format(
-                            "maximum" if sign == 1 else "minimum", M, canonical_state, s))
+                        logger.info(
+                            'Using {} value "{}" in time series "{}" as upper bound for "{}".'.format(
+                                "maximum" if sign == 1 else "minimum",
+                                M,
+                                canonical_state,
+                                s,
+                            )
+                        )
                 except KeyError:
                     # Time series does not exist
                     pass
 
                 if m is None or M is None or not np.isfinite(m) or not np.isfinite(M):
                     raise Exception(
-                        "Specify (finite) bounds or time series for '{}', currently found {}".format(s, (m, M)))
+                        "Specify (finite) bounds or time series for '{}', currently found {}".format(
+                            s, (m, M)
+                        )
+                    )
 
                 hr[ps.symbol] = (m, M)
 
-            self.__head_range_diff[ps.symbol] = [a - b for a, b in zip(self.__head_range_down[ps.symbol],
-                                                                       reversed(self.__head_range_up[ps.symbol]))]
+            self.__head_range_diff[ps.symbol] = [
+                a - b
+                for a, b in zip(
+                    self.__head_range_down[ps.symbol],
+                    reversed(self.__head_range_up[ps.symbol]),
+                )
+            ]
 
         # Automatic derivation of discharge and power if not specified by user
         for ps in self.pumping_stations():
             for p in ps.pumps():
-                discharge_sym = p.symbol.replace('.', '_') + "_Q"
+                discharge_sym = p.symbol.replace(".", "_") + "_Q"
                 head_sym = p.symbol + "_head"
-                power_sym = '{}__power'.format(p.symbol)
+                power_sym = "{}__power".format(p.symbol)
 
                 # Find the maximum discharge and head in the working area
-                Q = SX.sym('Q')
-                H = SX.sym('H')
+                Q = SX.sym("Q")
+                H = SX.sym("H")
 
                 hr = self._psmixin_head_range[p.head_option][ps.symbol]
 
                 _, (_, q_max) = self.__solve_working_area_subproblem(
-                    p.working_area, p.working_area_direction, hr, H, Q, -1 * Q)
+                    p.working_area, p.working_area_direction, hr, H, Q, -1 * Q
+                )
                 self._psmixin_pump_discharge_bounds[discharge_sym] = (0.0, q_max)
 
                 _, (h_max, _) = self.__solve_working_area_subproblem(
-                    p.working_area, p.working_area_direction, hr, H, Q, -1 * H)
+                    p.working_area, p.working_area_direction, hr, H, Q, -1 * H
+                )
                 self._psmixin_pump_working_area_head_range[head_sym] = (0.0, h_max)
                 # TODO: determine h_min, or do we count on it being 0.0?
 
                 _, (h_max, _) = self.__solve_working_area_subproblem(
-                    p.working_area, p.working_area_direction, hr, H, Q, -1 * H, 0)
+                    p.working_area, p.working_area_direction, hr, H, Q, -1 * H, 0
+                )
                 _, (h_min, _) = self.__solve_working_area_subproblem(
-                    p.working_area, p.working_area_direction, hr, H, Q, H, 0)
-                self._psmixin_pump_extended_working_area_head_range[head_sym] = (h_min, h_max)
+                    p.working_area, p.working_area_direction, hr, H, Q, H, 0
+                )
+                self._psmixin_pump_extended_working_area_head_range[head_sym] = (
+                    h_min,
+                    h_max,
+                )
 
                 # Recalculate the maximum discharge, but now for the
                 # _extended_ working area, so that we can use it for the
                 # maximum power calculation below.
                 _, (_, q_max) = self.__solve_working_area_subproblem(
-                    p.working_area, p.working_area_direction, hr, H, Q, -1 * Q, 0)
+                    p.working_area, p.working_area_direction, hr, H, Q, -1 * Q, 0
+                )
 
                 # Lower power bound (when on)
                 coeffs = p.power_coefficients
                 power_functions = self.__power_functions(H, Q, coeffs)
 
                 min_power, _ = self.__solve_power_subproblem(
-                    p.working_area, p.working_area_direction, hr, H, Q, power_functions)
+                    p.working_area, p.working_area_direction, hr, H, Q, power_functions
+                )
 
                 # For a monotonically increasing convex function we can find
                 # the maximum by checking all vertices of the polygon. We do
@@ -908,13 +1114,13 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                 self.__pump_power_range_on[power_sym] = (min_power, max_power)
 
         # Convexity and increasing-with-H check of power coefficients
-        Q = SX.sym('Q')
-        H = SX.sym('H')
+        Q = SX.sym("Q")
+        H = SX.sym("H")
         X = vertcat(Q, H)
 
         for ps in self.pumping_stations():
             for p in ps.pumps():
-                discharge_sym = p.symbol.replace('.', '_') + "_Q"
+                discharge_sym = p.symbol.replace(".", "_") + "_Q"
                 head_sym = p.symbol + "_head"
 
                 coeffs = p.power_coefficients
@@ -934,31 +1140,56 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                         trace_calculated = float(sx_trace)
 
                         if np.isnan(determinant):
-                            logger.warning('Cannot determine monotonicity in H of power equation '
-                                           'at index {} of pump "{}".'.format(power_i + 1, p.symbol))
+                            logger.warning(
+                                "Cannot determine monotonicity in H of power equation "
+                                'at index {} of pump "{}".'.format(
+                                    power_i + 1, p.symbol
+                                )
+                            )
                         elif determinant < 0.0 or trace_calculated < 0.0:
                             # Concave function of which we are trying to find the minimum --> use enclosing rectangle
-                            h_min, h_max = self._psmixin_pump_working_area_head_range[head_sym]
-                            q_min, q_max = self._psmixin_pump_discharge_bounds[discharge_sym]
+                            h_min, h_max = self._psmixin_pump_working_area_head_range[
+                                head_sym
+                            ]
+                            q_min, q_max = self._psmixin_pump_discharge_bounds[
+                                discharge_sym
+                            ]
 
                             min_jac = np.inf
 
-                            for h, q in [(h_min, q_min), (h_max, q_min), (h_min, q_max), (h_max, q_max)]:
-                                cur_jac = float(substitute(substitute(sx_jac, H, h), Q, q))
+                            for h, q in [
+                                (h_min, q_min),
+                                (h_max, q_min),
+                                (h_min, q_max),
+                                (h_max, q_max),
+                            ]:
+                                cur_jac = float(
+                                    substitute(substitute(sx_jac, H, h), Q, q)
+                                )
                                 min_jac = min(cur_jac, min_jac)
 
                             if min_jac < 0.0:
-                                logger.warning('Power equation at index {} of pump "{}" likely not increasing '
-                                               'with H in working area.'.format(power_i, p.symbol))
+                                logger.warning(
+                                    'Power equation at index {} of pump "{}" likely not increasing '
+                                    "with H in working area.".format(power_i, p.symbol)
+                                )
                         else:
                             hr = self._psmixin_head_range[p.head_option][ps.symbol]
                             # We require convexity on the working area (i.e. when pump is on)
                             minimum_jac, _ = self.__solve_working_area_subproblem(
-                                p.working_area, p.working_area_direction, hr, H, Q, sx_jac)
+                                p.working_area,
+                                p.working_area_direction,
+                                hr,
+                                H,
+                                Q,
+                                sx_jac,
+                            )
 
                             if minimum_jac < 0.0:
-                                logger.error('Power equation at index {} of pump "{}" is not increasing '
-                                             'with H in working area.'.format(power_i, p.symbol))
+                                logger.error(
+                                    'Power equation at index {} of pump "{}" is not increasing '
+                                    "with H in working area.".format(power_i, p.symbol)
+                                )
 
                     # Convexity check:
                     sx_hess = hessian(power, X)[0]
@@ -970,9 +1201,12 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                     trace_calculated = float(sx_trace)
 
                     if (not np.isnan(determinant) and determinant < 0.0) or (
-                            not np.isnan(trace_calculated) and trace_calculated < 0.0):
-                        logger.error('Non-convex power relationship specified for pump "{}" '
-                                     'at power equation index {}.'.format(p.symbol, power_i))
+                        not np.isnan(trace_calculated) and trace_calculated < 0.0
+                    ):
+                        logger.error(
+                            'Non-convex power relationship specified for pump "{}" '
+                            "at power equation index {}.".format(p.symbol, power_i)
+                        )
                     elif np.isnan(determinant):
                         # The determinant is an expression of H and Q. Check if it
                         # is a convex expression, and if so, find the minimum.
@@ -984,14 +1218,33 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                         if not np.isnan(det_determinant):
                             hr = self._psmixin_head_range[p.head_option][ps.symbol]
                             # We require convexity on the expanded working area, i.e when pump is off
-                            minimum_determinant, _ = self.__solve_working_area_subproblem(
-                                p.working_area, p.working_area_direction, hr, H, Q, sx_determinant, 0)
+                            minimum_determinant, _ = (
+                                self.__solve_working_area_subproblem(
+                                    p.working_area,
+                                    p.working_area_direction,
+                                    hr,
+                                    H,
+                                    Q,
+                                    sx_determinant,
+                                    0,
+                                )
+                            )
                             minimum_trace, _ = self.__solve_working_area_subproblem(
-                                p.working_area, p.working_area_direction, hr, H, Q, sx_trace, 0)
+                                p.working_area,
+                                p.working_area_direction,
+                                hr,
+                                H,
+                                Q,
+                                sx_trace,
+                                0,
+                            )
 
                             if minimum_determinant < 0.0 or minimum_trace < 0.0:
                                 logger.error(
-                                    'Power for pump "{}" is not convex over extended working area'.format(p.symbol))
+                                    'Power for pump "{}" is not convex over extended working area'.format(
+                                        p.symbol
+                                    )
+                                )
 
                             # For correct maximum power estimation, we also require
                             # convexity on the rectangular region:
@@ -999,17 +1252,33 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                             # H \in [0, max_h]
                             # where  max_q and max_h are the maximum discharge
                             # and pump head when the pump is _on_.
-                            bnds = {Q.name(): self._psmixin_pump_discharge_bounds[discharge_sym],
-                                    H.name(): self._psmixin_pump_working_area_head_range[head_sym]}
-                            minimum_determinant, _ = self.__solve_hq_subproblem(H, Q, sx_determinant, bounds=bnds)
-                            minimum_trace, _ = self.__solve_hq_subproblem(H, Q, sx_trace, bounds=bnds)
+                            bnds = {
+                                Q.name(): self._psmixin_pump_discharge_bounds[
+                                    discharge_sym
+                                ],
+                                H.name(): self._psmixin_pump_working_area_head_range[
+                                    head_sym
+                                ],
+                            }
+                            minimum_determinant, _ = self.__solve_hq_subproblem(
+                                H, Q, sx_determinant, bounds=bnds
+                            )
+                            minimum_trace, _ = self.__solve_hq_subproblem(
+                                H, Q, sx_trace, bounds=bnds
+                            )
 
                             if minimum_determinant < 0.0 or minimum_trace < 0.0:
-                                logger.error('Power equation at index {} for pump "{}" is not convex '
-                                             'over max. head/discharge range.'.format(power_i, p.symbol))
+                                logger.error(
+                                    'Power equation at index {} for pump "{}" is not convex '
+                                    "over max. head/discharge range.".format(
+                                        power_i, p.symbol
+                                    )
+                                )
                         else:
-                            logger.warning('Cannot detect convexity of power coefficients '
-                                           'at index {} of pump "{}".'.format(power_i, p.symbol))
+                            logger.warning(
+                                "Cannot detect convexity of power coefficients "
+                                'at index {} of pump "{}".'.format(power_i, p.symbol)
+                            )
                     else:
                         # Positive determinant --> convex
                         continue
@@ -1019,34 +1288,42 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
             # TODO: Add on/off + switched on/off symbols for each pump as well.
             #       Make sure that this is accompanied by also adding constraints on
             #       pump 2 only being able to switch on (or be on?) when pump 1 is on.
-            station_status_sym = '{}__status'.format(ps.symbol)
+            station_status_sym = "{}__status".format(ps.symbol)
             station_need_on_sym = False
             station_need_off_sym = False
             for p in ps.pumps():
                 if p.status_history is not None:
-                    station_hist_values = np.full_like(self.get_timeseries(p.status_history).values, 0.0)
+                    station_hist_values = np.full_like(
+                        self.get_timeseries(p.status_history).values, 0.0
+                    )
             for p in ps.pumps():
                 # Define symbol names
-                status_sym = '{}__status'.format(p.symbol)
-                power_sym = '{}__power'.format(p.symbol)
+                status_sym = "{}__status".format(p.symbol)
+                power_sym = "{}__power".format(p.symbol)
 
                 need_on_sym = p._need_switched_on_symbol
                 station_need_on_sym += need_on_sym
                 need_off_sym = p._need_switched_off_symbol
                 station_need_off_sym += need_off_sym
                 # Generate status symbols
-                (status_sym,
-                 sw_on_sym,
-                 sw_off_sym,
-                 power_sym) = CommonStructureSwitchFunctions.GenerateStatusSymbols(self,
-                                                                                   p,
-                                                                                   need_on_sym,
-                                                                                   need_off_sym,
-                                                                                   status_sym=status_sym,
-                                                                                   power_sym=power_sym)
+                (status_sym, sw_on_sym, sw_off_sym, power_sym) = (
+                    CommonStructureSwitchFunctions.GenerateStatusSymbols(
+                        self,
+                        p,
+                        need_on_sym,
+                        need_off_sym,
+                        status_sym=status_sym,
+                        power_sym=power_sym,
+                    )
+                )
 
                 # Store all symbols together
-                self.__pump_status_pairs[p.symbol] = (status_sym, sw_on_sym, sw_off_sym, power_sym)
+                self.__pump_status_pairs[p.symbol] = (
+                    status_sym,
+                    sw_on_sym,
+                    sw_off_sym,
+                    power_sym,
+                )
 
                 # Pump status history on/off
                 times = self.times()
@@ -1057,12 +1334,12 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                     except KeyError as e:
                         raise KeyError(
                             "History for pump '{}' specified, but Timeseries '{}' was not found.".format(
-                                p.symbol, p.status_history)) from e
-                    hist_on, hist_off = CommonStructureSwitchFunctions.StructureHistory(self,
-                                                                                        p,
-                                                                                        times,
-                                                                                        status_sym,
-                                                                                        pump_history=pump_history)
+                                p.symbol, p.status_history
+                            )
+                        ) from e
+                    hist_on, hist_off = CommonStructureSwitchFunctions.StructureHistory(
+                        self, p, times, status_sym, pump_history=pump_history
+                    )
                 else:
                     hist_on = 0.0
                     hist_off = 0.0
@@ -1092,21 +1369,31 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                 if not all(v in (0, 1) for v in station_hist_values):
                     if all(v in (0, 1) or np.isnan(v) for v in station_hist_values):
                         # if all values are 0, 1 or nan, we can just fill nan with 0
-                        logger.info(f"Status history for pumping station '{ps.symbol}' contains NaN values. "
-                                    "Filling NaNs with 0.")
-                        station_hist_values = np.array([0 if np.isnan(v) else v for v in station_hist_values])
+                        logger.info(
+                            f"Status history for pumping station '{ps.symbol}' contains NaN values. "
+                            "Filling NaNs with 0."
+                        )
+                        station_hist_values = np.array(
+                            [0 if np.isnan(v) else v for v in station_hist_values]
+                        )
                     else:
-                        logger.warning(f"Status history for pumping station '{ps.symbol}' contains "
-                                       "values other than 0 or 1. Converting to binary status history "
-                                       "by converting all values > 0 to 1 and all others to 0.")
-                        station_hist_values = np.array([1 if v > 0 else 0 for v in station_hist_values])
+                        logger.warning(
+                            f"Status history for pumping station '{ps.symbol}' contains "
+                            "values other than 0 or 1. Converting to binary status history "
+                            "by converting all values > 0 to 1 and all others to 0."
+                        )
+                        station_hist_values = np.array(
+                            [1 if v > 0 else 0 for v in station_hist_values]
+                        )
                 try:
                     hist_on, hist_off = CommonStructureSwitchFunctions.StructureHistory(
                         self,
                         ps,
                         times,
                         station_status_sym,
-                        station_history=Timeseries(self.io.times_sec, station_hist_values)
+                        station_history=Timeseries(
+                            self.io.times_sec, station_hist_values
+                        ),
                     )
                 except AttributeError:
                     continue
@@ -1124,7 +1411,9 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
 
         for ps in self.pumping_stations():
             for p in ps.pumps():
-                avg_pump_power = max(self.__pump_power_range_on[p.symbol + '__power'][1]) / 2
+                avg_pump_power = (
+                    max(self.__pump_power_range_on[p.symbol + "__power"][1]) / 2
+                )
 
                 # Energy
                 minimization_nominals[_MinimizePumpGoalType.ENERGY] += avg_pump_power
@@ -1142,11 +1431,13 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                 minimization_nominals[_MinimizePumpGoalType.COST] += pump_nominal
 
         for k, v in minimization_nominals.items():
-            self._psmixin_pump_minimization_nominal[k] = [(-np.inf, v * (self.times()[-1] - self.times()[0]))]
+            self._psmixin_pump_minimization_nominal[k] = [
+                (-np.inf, v * (self.times()[-1] - self.times()[0]))
+            ]
 
         # Store cache to disk
         if self.pumpingstation_cache_hq_subproblem:
-            with open(self.__hq_subproblem_cache_path, 'wb') as f:
+            with open(self.__hq_subproblem_cache_path, "wb") as f:
                 pickle.dump(self.__hq_subproblem_cache, f)
 
     def __power_functions(self, head, discharge, coeffs, status=1):
@@ -1160,7 +1451,7 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
         power = 0.0
         for i in range(coeffs.shape[0]):
             for j in range(coeffs.shape[1]):
-                power += coeffs[i, j] * head ** i * discharge ** j * status
+                power += coeffs[i, j] * head**i * discharge**j * status
         return power
 
     def spec_energy_functions(self, head, discharge, coeffs, status=1):
@@ -1175,21 +1466,37 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
         for i in range(coeffs.shape[0]):
             for j in range(coeffs.shape[1]):
                 # unit: kWh/1000m3
-                spece += coeffs[i, j] * head ** i * discharge ** j * status / (discharge * 3600) * 1000
+                spece += (
+                    coeffs[i, j]
+                    * head**i
+                    * discharge**j
+                    * status
+                    / (discharge * 3600)
+                    * 1000
+                )
         return spece
 
-    def _psmixin_initial_status_constraints(self, structure, minimum_on=0, minimum_off=0):
-
+    def _psmixin_initial_status_constraints(
+        self, structure, minimum_on=0, minimum_off=0
+    ):
         initial_constraints = []
 
         if isinstance(structure, Pump):
             hist_on, hist_off = self.__pump_status_hist[structure.symbol]
-            status_sym, sw_on_sym, sw_off_sym, _ = self.__pump_status_pairs[structure.symbol]
+            status_sym, sw_on_sym, sw_off_sym, _ = self.__pump_status_pairs[
+                structure.symbol
+            ]
         elif isinstance(structure, PumpingStation):
             hist_on, hist_off = self.__station_status_hist[structure.symbol]
-            status_sym, sw_on_sym, sw_off_sym = self.__station_status_pairs[structure.symbol]
+            status_sym, sw_on_sym, sw_off_sym = self.__station_status_pairs[
+                structure.symbol
+            ]
         else:
-            logger.error('We currently do not support structures of type {}'.format(type(structure)))
+            logger.error(
+                "We currently do not support structures of type {}".format(
+                    type(structure)
+                )
+            )
 
         times = self.times(status_sym)
 
@@ -1202,11 +1509,16 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
 
                 def _f(o, status_sym=status_sym, max_ind=max_ind):
                     return o.state_vector(status_sym)[1:max_ind]
-                initial_constraints.append((_f,
-                                            np.ones(max_ind - 1),
-                                            np.full(max_ind - 1, np.inf),
-                                            np.zeros(max_ind - 1),
-                                            np.ones(max_ind - 1)))
+
+                initial_constraints.append(
+                    (
+                        _f,
+                        np.ones(max_ind - 1),
+                        np.full(max_ind - 1, np.inf),
+                        np.zeros(max_ind - 1),
+                        np.ones(max_ind - 1),
+                    )
+                )
 
         if minimum_off > 0.0:
             if hist_off > 0.0 and minimum_off > hist_off:
@@ -1216,22 +1528,36 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
 
                 def _f(o, status_sym=status_sym, max_ind=max_ind):
                     return o.state_vector(status_sym)[1:max_ind]
-                initial_constraints.append((_f,
-                                            np.full(max_ind - 1, -np.inf),
-                                            np.zeros(max_ind - 1),
-                                            np.zeros(max_ind - 1),
-                                            np.ones(max_ind - 1)))
+
+                initial_constraints.append(
+                    (
+                        _f,
+                        np.full(max_ind - 1, -np.inf),
+                        np.zeros(max_ind - 1),
+                        np.zeros(max_ind - 1),
+                        np.ones(max_ind - 1),
+                    )
+                )
         return initial_constraints
 
-    def _psmixin_horizon_status_constraints(self, structure, minimum_on=0, minimum_off=0):
-
+    def _psmixin_horizon_status_constraints(
+        self, structure, minimum_on=0, minimum_off=0
+    ):
         horizon_constraints = []
         if isinstance(structure, Pump):
-            status_sym, sw_on_sym, sw_off_sym, _ = self.__pump_status_pairs[structure.symbol]
+            status_sym, sw_on_sym, sw_off_sym, _ = self.__pump_status_pairs[
+                structure.symbol
+            ]
         elif isinstance(structure, PumpingStation):
-            status_sym, sw_on_sym, sw_off_sym = self.__station_status_pairs[structure.symbol]
+            status_sym, sw_on_sym, sw_off_sym = self.__station_status_pairs[
+                structure.symbol
+            ]
         else:
-            logger.error('We currently do not support structures of type {}'.format(type(structure)))
+            logger.error(
+                "We currently do not support structures of type {}".format(
+                    type(structure)
+                )
+            )
         times = self.times(status_sym)
         num_tsteps = len(times)
 
@@ -1240,10 +1566,13 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
             # Figure out at what times the structure status symbol should be on
             # when the structure switches on at a particular timestep
             status_end_inds = np.searchsorted(times, times[:-1] + minimum_on).tolist()
-            status_range_inds = [np.arange(i + 1, min((e + 1), len(times))).tolist()
-                                 for i, e in enumerate(status_end_inds)]
-            assert isinstance(status_range_inds[0][0], int), \
+            status_range_inds = [
+                np.arange(i + 1, min((e + 1), len(times))).tolist()
+                for i, e in enumerate(status_end_inds)
+            ]
+            assert isinstance(status_range_inds[0][0], int), (
                 "Indexing CasADi symbols only fast with list of _Python_ ints"
+            )
 
             for i in range(1, num_tsteps):
                 cur_status_inds = status_range_inds[i - 1]
@@ -1251,20 +1580,33 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                     # Trivial constraint
                     continue
 
-                def _f(o, status_sym=status_sym, cur_status_inds=cur_status_inds, sw_on_sym=sw_on_sym, i=i):
-                    return (ca.sum1(o.state_vector(status_sym)[cur_status_inds])
-                            - len(cur_status_inds) * o.state_vector(sw_on_sym)[i])
+                def _f(
+                    o,
+                    status_sym=status_sym,
+                    cur_status_inds=cur_status_inds,
+                    sw_on_sym=sw_on_sym,
+                    i=i,
+                ):
+                    return (
+                        ca.sum1(o.state_vector(status_sym)[cur_status_inds])
+                        - len(cur_status_inds) * o.state_vector(sw_on_sym)[i]
+                    )
 
-                horizon_constraints.append((_f, 0.0, np.inf, -len(cur_status_inds), 0.0))
+                horizon_constraints.append(
+                    (_f, 0.0, np.inf, -len(cur_status_inds), 0.0)
+                )
 
         if minimum_off > 0.0:
             # Figure out at what times the pump status symbol should be off
             # when the pump switches off at a particular timestep
             status_end_inds = np.searchsorted(times, times[:-1] + minimum_off).tolist()
-            status_range_inds = [np.arange(i + 1, min((e + 1), len(times))).tolist()
-                                 for i, e in enumerate(status_end_inds)]
-            assert isinstance(status_range_inds[0][0], int), \
+            status_range_inds = [
+                np.arange(i + 1, min((e + 1), len(times))).tolist()
+                for i, e in enumerate(status_end_inds)
+            ]
+            assert isinstance(status_range_inds[0][0], int), (
                 "Indexing CasADi symbols only fast with list of _Python_ ints"
+            )
 
             for i in range(1, num_tsteps):
                 cur_status_inds = status_range_inds[i - 1]
@@ -1272,11 +1614,21 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                     # Trivial constraint
                     continue
 
-                def _f(o, status_sym=status_sym, cur_status_inds=cur_status_inds, sw_off_sym=sw_off_sym, i=i):
-                    return (ca.sum1(1 - o.state_vector(status_sym)[cur_status_inds])
-                            - len(cur_status_inds) * o.state_vector(sw_off_sym)[i])
+                def _f(
+                    o,
+                    status_sym=status_sym,
+                    cur_status_inds=cur_status_inds,
+                    sw_off_sym=sw_off_sym,
+                    i=i,
+                ):
+                    return (
+                        ca.sum1(1 - o.state_vector(status_sym)[cur_status_inds])
+                        - len(cur_status_inds) * o.state_vector(sw_off_sym)[i]
+                    )
 
-                horizon_constraints.append((_f, 0.0, np.inf, -len(cur_status_inds), 0.0))
+                horizon_constraints.append(
+                    (_f, 0.0, np.inf, -len(cur_status_inds), 0.0)
+                )
 
         return horizon_constraints
 
@@ -1295,7 +1647,9 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
         for ps in self.pumping_stations():
             pumps_index = 0.0
             for p in ps.pumps():
-                status_sym, sw_on_sym, sw_off_sym, _ = self.__pump_status_pairs[p.symbol]
+                status_sym, sw_on_sym, sw_off_sym, _ = self.__pump_status_pairs[
+                    p.symbol
+                ]
 
                 d_tm1 = self.state_vector(status_sym)[:-1]
                 d_t = self.state_vector(status_sym)[1:]
@@ -1315,7 +1669,9 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                     constraints.append((1 - d_tm1 - x, 0, inf))
 
                 if sw_off_sym is not None:
-                    assert np.array_equal(self.times(status_sym), self.times(sw_off_sym))
+                    assert np.array_equal(
+                        self.times(status_sym), self.times(sw_off_sym)
+                    )
 
                     y = self.state_vector(sw_off_sym)[1:]
 
@@ -1324,11 +1680,15 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                     constraints.append((y + d_diff, 0, inf))
                     constraints.append((1 - d_t - y, 0, inf))
 
-                if self.pumpingstation_history_constraints == 'hard':
-                    constraints.extend([
-                        (x[0](self), *x[1:3]) for x in self._psmixin_initial_status_constraints(
-                            p, p.minimum_on, p.minimum_off)
-                    ])
+                if self.pumpingstation_history_constraints == "hard":
+                    constraints.extend(
+                        [
+                            (x[0](self), *x[1:3])
+                            for x in self._psmixin_initial_status_constraints(
+                                p, p.minimum_on, p.minimum_off
+                            )
+                        ]
+                    )
                 try:
                     ii = [y[0] for y in self.PumpsCardinality].index(self.priority)
                     matrix_indicator = self.PumpsCardinality[ii][1]
@@ -1339,15 +1699,21 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                         matrix_indicator = True
                 if pumps_index == 0.0 or matrix_indicator:
                     # Always force constraints for minimum on/off time throughout the horizon
-                    constraints.extend([
-                        (x[0](self), *x[1:3]) for x in self._psmixin_horizon_status_constraints(
-                            p, p.minimum_on, p.minimum_off)
-                    ])
+                    constraints.extend(
+                        [
+                            (x[0](self), *x[1:3])
+                            for x in self._psmixin_horizon_status_constraints(
+                                p, p.minimum_on, p.minimum_off
+                            )
+                        ]
+                    )
 
                 pumps_index += 1.0
             # constraints for station here.
             if ps.status_history is not None:
-                status_sym, sw_on_sym, sw_off_sym = self.__station_status_pairs[ps.symbol]
+                status_sym, sw_on_sym, sw_off_sym = self.__station_status_pairs[
+                    ps.symbol
+                ]
 
                 d_tm1 = self.state_vector(status_sym)[:-1]
                 d_t = self.state_vector(status_sym)[1:]
@@ -1363,7 +1729,9 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                     constraints.append((1 - d_tm1 - x, 0, inf))
 
                 if sw_off_sym is not None:
-                    assert np.array_equal(self.times(status_sym), self.times(sw_off_sym))
+                    assert np.array_equal(
+                        self.times(status_sym), self.times(sw_off_sym)
+                    )
                     y = self.state_vector(sw_off_sym)[1:]
                     # y is 1 if and only if station switched off (else 0)
                     constraints.append((d_tm1 - y, 0, inf))
@@ -1384,8 +1752,7 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
 
         # Discharge of pump is always positive
         if bounds is None:
-            bounds = {Q.name(): (0.0, np.inf),
-                      H.name(): (-np.inf, np.inf)}
+            bounds = {Q.name(): (0.0, np.inf), H.name(): (-np.inf, np.inf)}
 
         if constraints is None:
             g, lbg, ubg = list(starmap(vertcat, ([], [], [])))
@@ -1400,35 +1767,39 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
         X.extend(additional_vars)
 
         # Bounds
-        lbx = vertcat(*(bounds[x.name()][0] for x in X[:2]), *([-inf]*len(additional_vars)))
-        ubx = vertcat(*(bounds[x.name()][1] for x in X[:2]), *([inf]*len(additional_vars)))
+        lbx = vertcat(
+            *(bounds[x.name()][0] for x in X[:2]), *([-inf] * len(additional_vars))
+        )
+        ubx = vertcat(
+            *(bounds[x.name()][1] for x in X[:2]), *([inf] * len(additional_vars))
+        )
 
         X = vertcat(*X)
 
-        nlp = {'f': f, 'g': g, 'x': X}
+        nlp = {"f": f, "g": g, "x": X}
 
         # Use the same solver and solver settings as for the overall
         # optimization problem
         options = self.solver_options().copy()
 
-        my_solver = options.pop('solver')
+        my_solver = options.pop("solver")
 
         # Delete unused entries
-        del options['optimized_num_dir']
-        options.pop('expand', None)  # Everything is SX already
+        del options["optimized_num_dir"]
+        options.pop("expand", None)  # Everything is SX already
 
-        casadi_solver = options.pop('casadi_solver')
+        casadi_solver = options.pop("casadi_solver")
         if isinstance(casadi_solver, str):
             casadi_solver = getattr(ca, casadi_solver)
 
         # Remove ipopt and bonmin defaults if they are not used
-        if my_solver != 'ipopt':
-            options.pop('ipopt', None)
-        if my_solver != 'bonmin':
-            options.pop('bonmin', None)
+        if my_solver != "ipopt":
+            options.pop("ipopt", None)
+        if my_solver != "bonmin":
+            options.pop("bonmin", None)
 
-        options.pop('export_lp', None)
-        solver = casadi_solver('nlp', my_solver, nlp, options)
+        options.pop("export_lp", None)
+        solver = casadi_solver("nlp", my_solver, nlp, options)
 
         results = solver(x0=np.zeros(X.shape), lbx=lbx, ubx=ubx, lbg=lbg, ubg=ubg)
 
@@ -1437,27 +1808,39 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
         if not success:
             raise Exception("Solve of HQ-subproblem failed.")
 
-        objective_value = float(results['f'])
-        solver_output = np.array(results['x'])[:, 0]
+        objective_value = float(results["f"])
+        solver_output = np.array(results["x"])[:, 0]
 
         self.__hq_subproblem_cache[pickle_key] = objective_value, solver_output[:2]
 
         return objective_value, solver_output[:2]
 
-    def __solve_working_area_subproblem(self, working_area, working_area_direction, head_range, H, Q, f, pump_status=1):
+    def __solve_working_area_subproblem(
+        self, working_area, working_area_direction, head_range, H, Q, f, pump_status=1
+    ):
         constraints = self._psmixin_working_area_constraints(
-            working_area, working_area_direction, head_range, H, Q, pump_status)
+            working_area, working_area_direction, head_range, H, Q, pump_status
+        )
 
         return self.__solve_hq_subproblem(H, Q, f, constraints)
 
-    def __solve_power_subproblem(self, working_area, working_area_direction, head_range,
-                                 H, Q, power_functions, pump_status=1):
+    def __solve_power_subproblem(
+        self,
+        working_area,
+        working_area_direction,
+        head_range,
+        H,
+        Q,
+        power_functions,
+        pump_status=1,
+    ):
         constraints = self._psmixin_working_area_constraints(
-            working_area, working_area_direction, head_range, H, Q, pump_status)
+            working_area, working_area_direction, head_range, H, Q, pump_status
+        )
 
         power_expr = ca.SX(-np.inf)
 
-        X = SX.sym('X')
+        X = SX.sym("X")
         for power_function in power_functions:
             constraints.append((X - power_function, 0.0, inf))
             power_expr = ca.fmax(power_expr, power_function)
@@ -1468,17 +1851,22 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
             raise Exception("Power inside working area cannot be negative")
 
         # Check if the inequality resolved to (approximately) an equality
-        power_eq = ca.Function('power', [H, Q], [power_expr]).expand()(h, q)
+        power_eq = ca.Function("power", [H, Q], [power_expr]).expand()(h, q)
 
-        if not np.allclose(power_eq, obj_power,
-                           rtol=self._pumpingstation_ineq_relative_error,
-                           atol=self._pumpingstation_absolute_error * min(abs(power_eq), abs(obj_power))):
+        if not np.allclose(
+            power_eq,
+            obj_power,
+            rtol=self._pumpingstation_ineq_relative_error,
+            atol=self._pumpingstation_absolute_error
+            * min(abs(power_eq), abs(obj_power)),
+        ):
             raise Exception("H-Q subproblem failed to solve power subproblem")
 
         return obj_power, (h, q)
 
-    def _psmixin_working_area_constraints(self, working_area, working_area_direction, head_range,
-                                          head, discharge, status):
+    def _psmixin_working_area_constraints(
+        self, working_area, working_area_direction, head_range, head, discharge, status
+    ):
         constraints = []
 
         for poly, direction in zip(working_area, working_area_direction):
@@ -1491,8 +1879,8 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
             constr_f = 0.0
 
             for i in range(poly.shape[0]):
-                offset_min_h += head_range[0]**i * poly[i, 0]
-                offset_max_h += head_range[1]**i * poly[i, 0]
+                offset_min_h += head_range[0] ** i * poly[i, 0]
+                offset_max_h += head_range[1] ** i * poly[i, 0]
 
                 for j in range(poly.shape[1]):
                     constr_f += poly[i, j] * head**i * discharge**j
@@ -1510,12 +1898,15 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
             # the working area size. We do not want to shrink it, even
             # if we hypothetically could, as we would rather keep the
             # constraints constant in that case.
-            if np.sign(direction) != np.sign(offset_min_h) and \
-               np.sign(direction) != np.sign(offset_max_h):
+            if np.sign(direction) != np.sign(offset_min_h) and np.sign(
+                direction
+            ) != np.sign(offset_max_h):
                 # We are violating both the lowest H-value as well as
                 # the highest H-value when the pump is off. We have to
                 # compensate only for the largest difference.
-                max_offset = np.sign(offset_min_h) * np.max(np.abs([offset_min_h, offset_max_h]))
+                max_offset = np.sign(offset_min_h) * np.max(
+                    np.abs([offset_min_h, offset_max_h])
+                )
                 constr_f -= (1 - status) * max_offset
             elif np.sign(direction) != np.sign(offset_min_h):
                 constr_f -= (1 - status) * offset_min_h
@@ -1528,7 +1919,10 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                 constraints.append((constr_f, 0.0, inf))
             else:
                 raise Exception(
-                    "Working area polynomial needs a direction of 1 or -1, but got {}".format(direction))
+                    "Working area polynomial needs a direction of 1 or -1, but got {}".format(
+                        direction
+                    )
+                )
 
         return constraints
 
@@ -1544,32 +1938,51 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
             station_Ms = None
             for p in ps.pumps():
                 status_sym, _, _, power_sym = self.__pump_status_pairs[p.symbol]
-                discharge_sym = p.symbol.replace('.', '_') + "_Q"
+                discharge_sym = p.symbol.replace(".", "_") + "_Q"
 
                 status = self.state(status_sym)
 
                 continuous = 0.0
                 if p.semi_continuous is not None:
                     if p.semi_continuous not in constant_inputs:
-                        raise TypeError("Semi-continuous series of pump '{}' not found in constant inputs"
-                                        .format(p.symbol))
+                        raise TypeError(
+                            "Semi-continuous series of pump '{}' not found in constant inputs".format(
+                                p.symbol
+                            )
+                        )
 
                     continuous_values = constant_inputs[p.semi_continuous].values
 
                     if not np.all((continuous_values == 0) | (continuous_values == 1)):
-                        raise ValueError("Semi-continuous series of pump '{}' should consist of only 0 and 1"
-                                         .format(p.symbol))
-                    if not np.array_equal(constant_inputs[p.semi_continuous].times, self.times()):
-                        raise ValueError("Semi-continuous series of pump '{}' should use optimization times"
-                                         .format(p.symbol))
+                        raise ValueError(
+                            "Semi-continuous series of pump '{}' should consist of only 0 and 1".format(
+                                p.symbol
+                            )
+                        )
+                    if not np.array_equal(
+                        constant_inputs[p.semi_continuous].times, self.times()
+                    ):
+                        raise ValueError(
+                            "Semi-continuous series of pump '{}' should use optimization times".format(
+                                p.symbol
+                            )
+                        )
 
                     # We need a symbol to easily multiply Timeseries with path variables
                     continuous = self.variable(p.semi_continuous)
 
                 hr = self._psmixin_head_range[p.head_option][ps.symbol]
 
-                constraints.extend(self._psmixin_working_area_constraints(
-                    p.working_area, p.working_area_direction, hr, p.head(), p.discharge(), (1 - continuous) * status))
+                constraints.extend(
+                    self._psmixin_working_area_constraints(
+                        p.working_area,
+                        p.working_area_direction,
+                        hr,
+                        p.head(),
+                        p.discharge(),
+                        (1 - continuous) * status,
+                    )
+                )
 
                 # Power calculation which we need for optimization/minimization and constraints.
                 coeffs = p.power_coefficients
@@ -1582,12 +1995,16 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
 
                 if len(powers) == 1 and powers[0].is_constant():
                     # Power is constant when pump is on. Can use an equality constraint.
-                    constraints.append((self.state(power_sym) - powers[0] * status, 0.0, 0.0))
+                    constraints.append(
+                        (self.state(power_sym) - powers[0] * status, 0.0, 0.0)
+                    )
                     station_m += float(powers[0])
                     station_Ms += float(powers[0])
                 else:
                     constraints.append((self.state(power_sym) - m * status, 0.0, inf))
-                    constraints.append((self.state(power_sym) - max(Ms) * status, -inf, 0.0))
+                    constraints.append(
+                        (self.state(power_sym) - max(Ms) * status, -inf, 0.0)
+                    )
                     if station_m is None:
                         station_m = m
                     else:
@@ -1606,9 +2023,15 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                         else:
                             station_Ms += Ms
 
-                    for (power, M) in zip(powers, Ms):
+                    for power, M in zip(powers, Ms):
                         # NOTE: Inequality constraint for power, as an equality constraint would have to be affine
-                        constraints.append((self.state(power_sym) - (power - M * (1 - status)), 0.0, inf))
+                        constraints.append(
+                            (
+                                self.state(power_sym) - (power - M * (1 - status)),
+                                0.0,
+                                inf,
+                            )
+                        )
 
                 # Pump needs to always have a positive discharge
                 constraints.append((p.discharge(), 0.0, inf))
@@ -1618,7 +2041,9 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
 
                 constraints.append((p.discharge() - (status * q_max), -inf, 0.0))
                 sum_q_max += q_max
-            status_sym, _, _ = self._PumpingStationMixin__station_status_pairs[ps.symbol]
+            status_sym, _, _ = self._PumpingStationMixin__station_status_pairs[
+                ps.symbol
+            ]
 
             status = self.state(status_sym)
             q_max = sum_q_max
@@ -1643,12 +2068,12 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                 if matrix_indicator:
                     switch_matrix = ps.pump_switching_matrix
                     if np.all(switch_matrix == 0.0):
-                        logger.info('Pumps are independent')
+                        logger.info("Pumps are independent")
                     else:
-                        logger.info('Pumps are dependent according to switching matrix')
+                        logger.info("Pumps are dependent according to switching matrix")
                 else:
                     switch_matrix = np.zeros_like(ps.pump_switching_matrix)
-                    logger.info('Pumps are independent')
+                    logger.info("Pumps are independent")
                 switch_constraints = ps.pump_switching_constraints
                 pump_status_vector = np.empty(len(ps.pumps()), dtype=object)
                 continuous_variables = []
@@ -1658,35 +2083,56 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                     else:
                         continuous_variables.append(0.0)
 
-                    pump_status_vector[i] = self.state(self.__pump_status_pairs[p.symbol][0])
+                    pump_status_vector[i] = self.state(
+                        self.__pump_status_pairs[p.symbol][0]
+                    )
 
                 for i in range(switch_matrix.shape[0]):
                     if any(switch_matrix[i, :] != 0.0):
                         # A pump can only be on when it is allowed to be according to the pump switching matrix
                         # If any pump is continuous, we disable the constraint.
                         any_pump_continuous = ca.mmax(ca.vertcat(*continuous_variables))
-                        constraints.append(((
-                            sum(np.multiply(switch_matrix[i, :], pump_status_vector)) * (1 - any_pump_continuous)
-                            + switch_constraints[i, 0] * any_pump_continuous),
-                            switch_constraints[i, 0],
-                            switch_constraints[i, 1]))
+                        constraints.append(
+                            (
+                                (
+                                    sum(
+                                        np.multiply(
+                                            switch_matrix[i, :], pump_status_vector
+                                        )
+                                    )
+                                    * (1 - any_pump_continuous)
+                                    + switch_constraints[i, 0] * any_pump_continuous
+                                ),
+                                switch_constraints[i, 0],
+                                switch_constraints[i, 1],
+                            )
+                        )
 
             for r in ps.resistances():
                 C = r.C
                 if C > 0.0:
-                    constraints.append((r.head_loss() - C * r.discharge()**2, 0.0, inf))
+                    constraints.append(
+                        (r.head_loss() - C * r.discharge() ** 2, 0.0, inf)
+                    )
 
                     # To force the head loss to go to zero, we need an upper bound as well.
                     _, max_head_loss = self._psmixin_head_range[0][ps.symbol]
-                    q_max_dh = (max_head_loss / C)**0.5
-                    constraints.append((max_head_loss / q_max_dh * r.discharge() - r.head_loss(), 0.0, inf))
+                    q_max_dh = (max_head_loss / C) ** 0.5
+                    constraints.append(
+                        (
+                            max_head_loss / q_max_dh * r.discharge() - r.head_loss(),
+                            0.0,
+                            inf,
+                        )
+                    )
                 elif C == 0.0:
                     # Force the head loss to zero in case of zero resistance
                     constraints.append((r.head_loss(), 0.0, 0.0))
                 else:
                     # Resistance cannot have a negative value
                     raise Exception(
-                        'Resistance has a negative value of "{}"'.format(r.C))
+                        'Resistance has a negative value of "{}"'.format(r.C)
+                    )
 
         return constraints
 
@@ -1741,7 +2187,7 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                 path_expressions.append(p.discharge())
 
         expression = self.map_path_expression(vertcat(*path_expressions), 0)
-        f = Function('f', [self.solver_input], [expression])
+        f = Function("f", [self.solver_input], [expression])
         evaluated_path_expressions = f(self.solver_output)
         evaluated_path_expressions = np.array(evaluated_path_expressions)
 
@@ -1759,7 +2205,9 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
 
                 status_realised = self.__additional_results[p.symbol + "_status"]
 
-                discharge_ts = Timeseries(times, evaluated_path_expressions[:, idx] * status_realised)
+                discharge_ts = Timeseries(
+                    times, evaluated_path_expressions[:, idx] * status_realised
+                )
                 discharge_key = "{}_{}".format(p.symbol, "discharge")
 
                 self.__additional_output_variables.add(discharge_key)
@@ -1777,8 +2225,9 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
         # Make sure the dynamic nominal is not too small, e.g. when the
         # pumps happen to all be off
         minimal_nominals = {}
-        minimal_nominals[_MinimizePumpGoalType.ENERGY] = \
-            min(m for m, M in self.__pump_power_range_on.values()) * min(tsteps)
+        minimal_nominals[_MinimizePumpGoalType.ENERGY] = min(
+            m for m, M in self.__pump_power_range_on.values()
+        ) * min(tsteps)
         minimal_nominals[_MinimizePumpGoalType.COST] = np.inf  # To be calculated
 
         for ps in self.pumping_stations():
@@ -1791,20 +2240,28 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                 head_realised = results[p.symbol + ".dH"]
                 discharge_realised = results[p.symbol + ".Q"]
                 status_realised = np.abs(np.around(results[p.symbol + "__status"]))
-                powers_calculated = self.__power_functions(head_realised, discharge_realised,
-                                                           p.power_coefficients, status_realised)
+                powers_calculated = self.__power_functions(
+                    head_realised,
+                    discharge_realised,
+                    p.power_coefficients,
+                    status_realised,
+                )
 
                 power_calculated = np.amax(powers_calculated, axis=0)
                 results[p.symbol + "_power"] = power_calculated * status_realised
 
                 # Energy
-                minimization_nominals[_MinimizePumpGoalType.ENERGY] += power_calculated[1:]
+                minimization_nominals[_MinimizePumpGoalType.ENERGY] += power_calculated[
+                    1:
+                ]
 
                 # Cost
                 ts = self.get_timeseries(p.energy_price_symbol)
                 prices = self.interpolate(self.times(), ts.times, ts.values)
-                minimization_nominals[_MinimizePumpGoalType.COST] += power_calculated[1:] * prices[1:]
-                min_power, max_power = self.__pump_power_range_on[p.symbol + '__power']
+                minimization_nominals[_MinimizePumpGoalType.COST] += (
+                    power_calculated[1:] * prices[1:]
+                )
+                min_power, max_power = self.__pump_power_range_on[p.symbol + "__power"]
 
                 assert min_power >= 0.0
                 if min_power == 0.0:
@@ -1817,24 +2274,32 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                 except Exception:
                     min_cost = 0
 
-                minimal_nominals[_MinimizePumpGoalType.COST] = \
-                    min(min_cost, minimal_nominals[_MinimizePumpGoalType.COST])
+                minimal_nominals[_MinimizePumpGoalType.COST] = min(
+                    min_cost, minimal_nominals[_MinimizePumpGoalType.COST]
+                )
 
         for k, v in minimization_nominals.items():
             integral_nominal = sum(v * tsteps)
             integral_nominal = max(integral_nominal, minimal_nominals[k])
-            self._psmixin_pump_minimization_nominal[k].append((priority, integral_nominal))
+            self._psmixin_pump_minimization_nominal[k].append(
+                (priority, integral_nominal)
+            )
 
         # Store the objective value the minimization goals evaluated to, so
         # they can be checked for proper scaling in post().
         assert self.ensemble_size == 1
-        goals = [g for g in self.goals() if g.priority == priority and isinstance(g, _MinimizePumpGoal)]
+        goals = [
+            g
+            for g in self.goals()
+            if g.priority == priority and isinstance(g, _MinimizePumpGoal)
+        ]
         for g in goals:
-            obj_val = Function('tmp', [self.solver_input], [g.function(self, 0)])(self.solver_output)
+            obj_val = Function("tmp", [self.solver_input], [g.function(self, 0)])(
+                self.solver_output
+            )
             self.__pump_minimization_function_values.append((g, float(obj_val)))
 
     def post(self):
-
         if not self.pumping_stations():
             super().post()
             return
@@ -1867,13 +2332,23 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                 if isinstance(g, MinimizePumpCostGoal) and not any_costs_made:
                     continue
                 elif (obj_val > 100 or obj_val < 0.01) and obj_val != 0.0:
-                    cur_func_nom = g._dynamic_nominal if g.use_dynamic_nominal else g.function_nominal
+                    cur_func_nom = (
+                        g._dynamic_nominal
+                        if g.use_dynamic_nominal
+                        else g.function_nominal
+                    )
                     # Reduce to one significant digit
                     unscaled_obj_val = cur_func_nom * obj_val
-                    new_func_nom = np.round(unscaled_obj_val, -int(np.floor(np.log10(np.abs(unscaled_obj_val)))))
+                    new_func_nom = np.round(
+                        unscaled_obj_val,
+                        -int(np.floor(np.log10(np.abs(unscaled_obj_val)))),
+                    )
 
-                    logger.warning("Solution may be unstable. Use {} instead of {} as a function nominal of {}".
-                                   format(new_func_nom, cur_func_nom, g))
+                    logger.warning(
+                        "Solution may be unstable. Use {} instead of {} as a function nominal of {}".format(
+                            new_func_nom, cur_func_nom, g
+                        )
+                    )
 
         # TODO: If we put the calculated pump head and discharge in the
         # extract_results() dictionary, should we maybe move the calculation
@@ -1907,10 +2382,17 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
 
                 max_power = self.__pump_power_bounds[p.symbol + "__power"][1]
 
-                if not np.allclose(power_calculated[inds], power_realised[inds],
-                                   rtol=self._pumpingstation_ineq_relative_error,
-                                   atol=self._pumpingstation_absolute_error * max_power):
-                    logger.error('Relative/absolute power error exceedence in pump "{}"'.format(p.symbol))
+                if not np.allclose(
+                    power_calculated[inds],
+                    power_realised[inds],
+                    rtol=self._pumpingstation_ineq_relative_error,
+                    atol=self._pumpingstation_absolute_error * max_power,
+                ):
+                    logger.error(
+                        'Relative/absolute power error exceedence in pump "{}"'.format(
+                            p.symbol
+                        )
+                    )
 
             for r in ps.resistances():
                 C = r.C
@@ -1919,10 +2401,17 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
 
                 head_loss_target = C * discharge_realised**2
 
-                if not np.allclose(head_loss_target, head_loss_realised,
-                                   rtol=self._pumpingstation_ineq_relative_error,
-                                   atol=self._pumpingstation_absolute_error):
-                    logger.error('Relative/absolute head loss error exceedence in resistance "{}"'.format(r.symbol))
+                if not np.allclose(
+                    head_loss_target,
+                    head_loss_realised,
+                    rtol=self._pumpingstation_ineq_relative_error,
+                    atol=self._pumpingstation_absolute_error,
+                ):
+                    logger.error(
+                        'Relative/absolute head loss error exceedence in resistance "{}"'.format(
+                            r.symbol
+                        )
+                    )
 
             # Append pump speed to results and output timeseries
             for ps in self.pumping_stations():
@@ -1942,7 +2431,12 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
 
                     for i in range(coeffs.shape[0]):
                         for j in range(coeffs.shape[1]):
-                            speed += coeffs[i, j] * head_realised**i * discharge_realised**j * status_realised
+                            speed += (
+                                coeffs[i, j]
+                                * head_realised**i
+                                * discharge_realised**j
+                                * status_realised
+                            )
 
                     speed_key = "{}_{}".format(p.symbol, "speed")
 
@@ -1978,8 +2472,13 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
         return variables
 
 
-def plot_operating_points(optimization_problem, output_folder=None, plot_expanded_working_area=True,
-                          plot_specific_energy=False, include_prices=False):
+def plot_operating_points(
+    optimization_problem,
+    output_folder=None,
+    plot_expanded_working_area=True,
+    plot_specific_energy=False,
+    include_prices=False,
+):
     """
     Plot the working area of each pump with its operating points.
     """
@@ -2000,14 +2499,20 @@ def plot_operating_points(optimization_problem, output_folder=None, plot_expande
 
             head_sym = p.symbol + "_head"
             if plot_expanded_working_area:
-                hrange_wa = optimization_problem._psmixin_pump_extended_working_area_head_range[head_sym]
+                hrange_wa = (
+                    optimization_problem._psmixin_pump_extended_working_area_head_range[
+                        head_sym
+                    ]
+                )
             else:
-                hrange_wa = optimization_problem._psmixin_pump_working_area_head_range[head_sym]
+                hrange_wa = optimization_problem._psmixin_pump_working_area_head_range[
+                    head_sym
+                ]
             hrange_wa = [float(x) for x in hrange_wa]  # Convert DMatrix to float
 
             hrange = [min(hr[0], hrange_wa[0]), max(hr[1], hrange_wa[1])]
 
-            discharge_sym = p.symbol.replace('.', '_') + "_Q"
+            discharge_sym = p.symbol.replace(".", "_") + "_Q"
             qrange = optimization_problem._psmixin_pump_discharge_bounds[discharge_sym]
             qrange = [float(x) for x in qrange]  # Convert DMatrix to float
 
@@ -2034,8 +2539,8 @@ def plot_operating_points(optimization_problem, output_folder=None, plot_expande
             plt.ylim(*hplot_range)
 
             # Plot lines for the horizontal and vertical axes
-            plt.axhline(0, color='black', zorder=1)
-            plt.axvline(0, color='black', zorder=1)
+            plt.axhline(0, color="black", zorder=1)
+            plt.axvline(0, color="black", zorder=1)
 
             wa = p.working_area
             wa_dir = p.working_area_direction
@@ -2047,10 +2552,12 @@ def plot_operating_points(optimization_problem, output_folder=None, plot_expande
             # Plot the working area
             for w in range(len(wa)):
                 constraints = optimization_problem._psmixin_working_area_constraints(
-                    wa[w:w+1], wa_dir[w:w+1], hr, hs, qs, 1)
+                    wa[w : w + 1], wa_dir[w : w + 1], hr, hs, qs, 1
+                )
 
-                C = plt.contour(qs, hs.ravel(), constraints[0][0], [0],
-                                colors='b', zorder=2)
+                C = plt.contour(
+                    qs, hs.ravel(), constraints[0][0], [0], colors="b", zorder=2
+                )
 
                 inner_points += ((constraints[0][0] * wa_dir[w]) > 0).astype(int)
                 if len(C.allsegs[0]) > 0:
@@ -2059,13 +2566,25 @@ def plot_operating_points(optimization_problem, output_folder=None, plot_expande
                     wa_lines.append([])
 
                 if plot_expanded_working_area:
-                    constraints = optimization_problem._psmixin_working_area_constraints(
-                        wa[w:w + 1], wa_dir[w:w+1], hr, hs, qs, 0)
+                    constraints = (
+                        optimization_problem._psmixin_working_area_constraints(
+                            wa[w : w + 1], wa_dir[w : w + 1], hr, hs, qs, 0
+                        )
+                    )
 
-                    plt.contour(qs, hs.ravel(), constraints[0][0], [0],
-                                colors='g', linestyles='dashed', zorder=2)
+                    plt.contour(
+                        qs,
+                        hs.ravel(),
+                        constraints[0][0],
+                        [0],
+                        colors="g",
+                        linestyles="dashed",
+                        zorder=2,
+                    )
 
-            plt.plot([0, 0], list(hr), 'yo', ms=6, mec='k', label="Head range", zorder=3)
+            plt.plot(
+                [0, 0], list(hr), "yo", ms=6, mec="k", label="Head range", zorder=3
+            )
 
             results = optimization_problem.extract_results()
 
@@ -2080,7 +2599,7 @@ def plot_operating_points(optimization_problem, output_folder=None, plot_expande
                     point = (qs[q_inds[0]], hs[h_inds[0]])
                     wa_segments = enclosing_segments(point, wa_lines)
                     x, y = list(zip(*(s[0] for s in wa_segments)))
-                    poly = plt.fill_between(x, y, alpha=0.25, color='none')
+                    poly = plt.fill_between(x, y, alpha=0.25, color="none")
                     verts = np.vstack([k.vertices for k in poly.get_paths()])
 
                     # Add the specific energy as a gradient to the working area of the pump
@@ -2111,26 +2630,43 @@ def plot_operating_points(optimization_problem, output_folder=None, plot_expande
                         q_step_length = (qplot_range[1] - qplot_range[0]) / step_number
                         h_step_length = h_step_length.item()
                         grid_h, grid_q = np.mgrid[
-                            hplot_range[0].item():hplot_range[1].item() + h_step_length:h_step_length,
-                            qplot_range[0].item():qplot_range[1].item() + q_step_length:q_step_length,
+                            hplot_range[0].item() : hplot_range[1].item()
+                            + h_step_length : h_step_length,
+                            qplot_range[0].item() : qplot_range[1].item()
+                            + q_step_length : q_step_length,
                         ]
 
                         # Compute specific energy using the defined coeffs in the working area of the pump
                         coeffs = p.power_coefficients
-                        spece_array = optimization_problem.spec_energy_functions(grid_h, grid_q, coeffs)
+                        spece_array = optimization_problem.spec_energy_functions(
+                            grid_h, grid_q, coeffs
+                        )
                         # Compute maximum for given set of coeffs
-                        spece_array_max = max(spece_array, key=methodcaller('tolist'))
+                        spece_array_max = max(spece_array, key=methodcaller("tolist"))
 
                         # Plot the specific energy in the working area of the pump
-                        gradient = plt.imshow(spece_array_max,
-                                              cmap='cool', aspect='auto', origin='lower',
-                                              extent=[verts[1:len(x), 0].min(), verts[1:len(x), 0].max(),
-                                                      verts[1:len(y), 1].min(), verts[1:len(y), 1].max()])
-                        gradient.set_clip_path(poly.get_paths()[0], transform=plt.gca().transData)
+                        gradient = plt.imshow(
+                            spece_array_max,
+                            cmap="cool",
+                            aspect="auto",
+                            origin="lower",
+                            extent=[
+                                verts[1 : len(x), 0].min(),
+                                verts[1 : len(x), 0].max(),
+                                verts[1 : len(y), 1].min(),
+                                verts[1 : len(y), 1].max(),
+                            ],
+                        )
+                        gradient.set_clip_path(
+                            poly.get_paths()[0], transform=plt.gca().transData
+                        )
                         # Add the colorbar to the plot
-                        cb = plt.colorbar(gradient, shrink=0.9,
-                                          label=r'Spec. energy  [$\mathdefault{kWh/1000m^3}$]')
-                        cb.outline.set_color('black')
+                        cb = plt.colorbar(
+                            gradient,
+                            shrink=0.9,
+                            label=r"Spec. energy  [$\mathdefault{kWh/1000m^3}$]",
+                        )
+                        cb.outline.set_color("black")
                         plt.clim(0, math.ceil(spece_array_max.max()))
 
                 except DeadEndError:
@@ -2140,33 +2676,51 @@ def plot_operating_points(optimization_problem, output_folder=None, plot_expande
             if include_prices:
                 # Add the cost (energy price) as a color gradient to the operating points.
                 colors = results[p.energy_price_symbol][1:]
-                sc = plt.scatter(results[discharge_sym][1:], results[head_sym][1:], zorder=4,
-                                 s=100, cmap='YlOrRd',
-                                 c=colors, marker='x', label="Operating points")
-                cb = plt.colorbar(sc, shrink=0.9, label=r'Energy price [€/kWh]')
-                cb.outline.set_color('black')
+                sc = plt.scatter(
+                    results[discharge_sym][1:],
+                    results[head_sym][1:],
+                    zorder=4,
+                    s=100,
+                    cmap="YlOrRd",
+                    c=colors,
+                    marker="x",
+                    label="Operating points",
+                )
+                cb = plt.colorbar(sc, shrink=0.9, label=r"Energy price [€/kWh]")
+                cb.outline.set_color("black")
                 plt.clim(0, math.ceil(max(colors)))
             else:
-                plt.plot(results[discharge_sym][1:], results[head_sym][1:], 'rx', markeredgecolor='black',
-                         markeredgewidth=2, label="Operating points", zorder=4)
+                plt.plot(
+                    results[discharge_sym][1:],
+                    results[head_sym][1:],
+                    "rx",
+                    markeredgecolor="black",
+                    markeredgewidth=2,
+                    label="Operating points",
+                    zorder=4,
+                )
 
             # Manually add legend entries for the working area(s), because
             # contour plots do not handle that automatically
             handles, _ = plt.gca().get_legend_handles_labels()
-            handles.append(mlines.Line2D([], [], color='b', label='Working area'))
+            handles.append(mlines.Line2D([], [], color="b", label="Working area"))
             if plot_expanded_working_area:
-                handles.append(mlines.Line2D([], [], color='g', linestyle='--', label='Extended working area'))
+                handles.append(
+                    mlines.Line2D(
+                        [], [], color="g", linestyle="--", label="Extended working area"
+                    )
+                )
 
             plt.legend(handles=handles)
-            plt.xlabel(r'Discharge [$\mathdefault{m^3\!/s}$]')
-            plt.ylabel(r'Head [$\mathdefault{m}$]')
+            plt.xlabel(r"Discharge [$\mathdefault{m^3\!/s}$]")
+            plt.ylabel(r"Head [$\mathdefault{m}$]")
             plt.grid(True)
             f.tight_layout()
 
             if output_folder is not None:
-                fname = 'QHP_{}.png'.format(p.symbol.replace('.', '_'))
+                fname = "QHP_{}.png".format(p.symbol.replace(".", "_"))
                 fname = os.path.join(output_folder, fname)
-                plt.savefig(fname, bbox_inches='tight', pad_inches=0.1)
+                plt.savefig(fname, bbox_inches="tight", pad_inches=0.1)
 
             plots[p.symbol] = f
 

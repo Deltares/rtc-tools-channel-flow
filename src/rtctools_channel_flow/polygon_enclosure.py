@@ -1,5 +1,6 @@
 from math import atan2, pi, sqrt
-TWO_PI = (2.0 * pi)
+
+TWO_PI = 2.0 * pi
 
 
 class DeadEndError(Exception):
@@ -7,11 +8,12 @@ class DeadEndError(Exception):
 
 
 def enclosing_segments(point, lines, return_lines=False):
-
     lines = _split_lines(lines)
 
     # Get all segments in all lines
-    line_segments = [(s, i) for i, points in enumerate(lines) for s in zip(points[:-1], points[1:])]
+    line_segments = [
+        (s, i) for i, points in enumerate(lines) for s in zip(points[:-1], points[1:])
+    ]
 
     # TODO: We are assuming unique segments here. It should be possible for a
     # segment to be part of more than one line.
@@ -40,7 +42,9 @@ def enclosing_segments(point, lines, return_lines=False):
         segment_dict.setdefault(flip_s[0], []).append(flip_s)
 
     # Find closest segment/point
-    sorted_segments = sorted(segments, key=lambda x: _distance_point_to_segment(point, x))
+    sorted_segments = sorted(
+        segments, key=lambda x: _distance_point_to_segment(point, x)
+    )
 
     # Determine in which way we should traverse the closest segment. If we
     # cannot figure out the direction, we pick the next closest segment
@@ -73,11 +77,17 @@ def enclosing_segments(point, lines, return_lines=False):
         results = [x for x in results if x != tuple(reversed(prev_segment))]
 
         if not results:
-            raise DeadEndError("Could not find another segment starting from {}".format(prev_end_point))
+            raise DeadEndError(
+                "Could not find another segment starting from {}".format(prev_end_point)
+            )
 
         # Pick the segment which goes most counter-clockwise
         cur_segment_angle = _segment_angle(prev_segment)
-        results = sorted(results, key=lambda x: (_segment_angle(x) - cur_segment_angle + pi) % TWO_PI, reverse=True) # noqa B023
+        results = sorted(
+            results,
+            key=lambda x: (_segment_angle(x) - cur_segment_angle + pi) % TWO_PI,
+            reverse=True,
+        )  # noqa B023
         next_segment = results[0]
 
         enclosing_segments.append(next_segment)
@@ -112,9 +122,9 @@ def enclosing_segments(point, lines, return_lines=False):
         enclosing_lines[-1].extend(enclosing_lines.pop(0))
 
     # Convert segments to points
-    for i, l in enumerate(enclosing_lines):
-        points = [s[0] for s in l]
-        points.append(l[-1][1])
+    for i, line in enumerate(enclosing_lines):
+        points = [s[0] for s in line]
+        points.append(line[-1][1])
         enclosing_lines[i] = points
 
     if return_lines:
@@ -150,7 +160,9 @@ def _split_lines(lines):
             # Note that we also check other segments of the current line, as we
             # have to account for the possibility that the line intersects itself.
 
-            other_segments = (s for points_j in lines for s in zip(points_j[:-1], points_j[1:]))
+            other_segments = (
+                s for points_j in lines for s in zip(points_j[:-1], points_j[1:])
+            )
 
             new_points = _split_segment(segment, other_segments)
 
@@ -174,7 +186,7 @@ def _split_segment(segment, other_segments):
         xa, ya = a
         xb, yb = b
 
-        return (xb - xa)**2 + (yb - ya)**2
+        return (xb - xa) ** 2 + (yb - ya) ** 2
 
     start_point, end_point = segment
 
@@ -189,7 +201,9 @@ def _split_segment(segment, other_segments):
     intersection_points.add(start_point)
     intersection_points.add(end_point)
 
-    ret = sorted(intersection_points, key=lambda x: _sort_distance_points(start_point, x))
+    ret = sorted(
+        intersection_points, key=lambda x: _sort_distance_points(start_point, x)
+    )
 
     return ret
 
@@ -234,7 +248,7 @@ def _distance_point_to_segment(point, segment):
     # handle such cases transparently. We therefore terminate early, to avoid
     # divisions by zero.
     if (x1, y1) == (x2, y2):
-        return sqrt((x1 - x0)**2 + (y1 - y0)**2)
+        return sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2)
 
     # Formulate segment as ax + by + c = 0.
     a, b, c = _general_equation_form(segment)
@@ -248,10 +262,10 @@ def _distance_point_to_segment(point, segment):
     # minimum distance to either of the end points as the distance from the
     # point to this segment.
     if _point_on_segment((xt, yt), segment):
-        distance = sqrt(((xt - x0)**2).item() + ((yt - y0)**2).item())
+        distance = sqrt(((xt - x0) ** 2).item() + ((yt - y0) ** 2).item())
     else:
-        d_1 = sqrt((x1 - x0)**2 + ((y1 - y0)**2).item())
-        d_2 = sqrt((x2 - x0)**2 + ((y2 - y0)**2).item())
+        d_1 = sqrt((x1 - x0) ** 2 + ((y1 - y0) ** 2).item())
+        d_2 = sqrt((x2 - x0) ** 2 + ((y2 - y0) ** 2).item())
         distance = min(d_1, d_2)
 
     return distance
@@ -276,8 +290,9 @@ def _segment_intersection(segment_1, segment_2):
         # lines are parallel, and do not intersect
         return None
 
-    if _point_on_segment((xt, yt), segment_1) and \
-       _point_on_segment((xt, yt), segment_2):
+    if _point_on_segment((xt, yt), segment_1) and _point_on_segment(
+        (xt, yt), segment_2
+    ):
         return (xt, yt)
     else:
         return None

@@ -21,7 +21,7 @@ class _ObjectParameterWrapper(object):
         inds = re.findall(r"(\d+)", inds.group(1))
         n_dim = len(inds)
 
-        pattern = r".*?\[" + ",".join([r"(\d+)"]*n_dim) + r"\]$"
+        pattern = r".*?\[" + ",".join([r"(\d+)"] * n_dim) + r"\]$"
         prog = re.compile(pattern)
         indices = [prog.match(x).groups() for x in ks]
 
@@ -36,7 +36,7 @@ class _ObjectParameterWrapper(object):
         # TODO: Why are parameters stored as individual elements? Would be much easier to just to
         # parameters[k].getMatrixValue.toArray() or .toMatrix, to avoid looping/regex string parsing.
         for k in ks:
-            inds = tuple(int(x)-1 for x in prog.match(k).groups())
+            inds = tuple(int(x) - 1 for x in prog.match(k).groups())
             arr[inds] = float(parameters[k])
 
         return arr
@@ -50,8 +50,11 @@ class _ObjectParameterWrapper(object):
             # Array parameters are not stored as arrays, but as individual
             # elements. So if the parameter is an array, we will have to put
             # it back together again.
-            ks = [x for x in self.optimization_problem.parameters(0).keys()
-                  if x.startswith(self.symbol + "." + attr + "[")]
+            ks = [
+                x
+                for x in self.optimization_problem.parameters(0).keys()
+                if x.startswith(self.symbol + "." + attr + "[")
+            ]
             if ks:
                 return self._parse_array(self.optimization_problem, ks)
             else:
