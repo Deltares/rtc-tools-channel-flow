@@ -12,7 +12,7 @@ from rtctools.optimization.optimization_problem import OptimizationProblem
 
 from .util import _ObjectParameterWrapper
 
-logger = logging.getLogger("rtc-hydraulic-structures")
+logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
@@ -37,15 +37,15 @@ class Weir(_ObjectParameterWrapper):
 
         :returns: `MX` expression of the weir discharge.
         """
-        return self.optimization_problem.state(self.symbol + '.Q')
+        return self.optimization_problem.state(self.symbol + ".Q")
 
     def _head(self):
-        return self.optimization_problem.state(self.symbol + '.HQUp.H')
+        return self.optimization_problem.state(self.symbol + ".HQUp.H")
 
     @property
     def c_weir(self):
         # coefficient part of the equation
-        return (2 * 9.81)**0.5 * 2.0 / 3.0 * self.weir_coef * self.width
+        return (2 * 9.81) ** 0.5 * 2.0 / 3.0 * self.weir_coef * self.width
 
     @property
     def q_nom(self):
@@ -55,11 +55,11 @@ class Weir(_ObjectParameterWrapper):
     @property
     def h_nom(self):
         # H corresponding to half of the possible dischage
-        return (self.q_nom / self.c_weir)**(2.0 / 3.0) + self.hw_min
+        return (self.q_nom / self.c_weir) ** (2.0 / 3.0) + self.hw_min
 
     @property
     def slope(self):
-        return self.c_weir * 3.0 / 2.0 * (self.h_nom - self.hw_min)**0.5
+        return self.c_weir * 3.0 / 2.0 * (self.h_nom - self.hw_min) ** 0.5
 
 
 class WeirMixin(OptimizationProblem):
@@ -93,7 +93,7 @@ class WeirMixin(OptimizationProblem):
 
         for w in self.weirs():
             # Define symbol names
-            status_sym = '{}__status'.format(w.symbol)
+            status_sym = "{}__status".format(w.symbol)
             # Store variable names
             self.__weir_discrete_symbols.append(status_sym)
             # Store bounds
@@ -102,7 +102,7 @@ class WeirMixin(OptimizationProblem):
             status_mx = MX.sym(status_sym)
             self.__weir_mx_path_variables.append(status_mx)
             # Store all symbols together
-            self.__weir_status_pairs[w.symbol] = (status_sym)
+            self.__weir_status_pairs[w.symbol] = status_sym
 
     def path_constraints(self, ensemble_member):
         constraints = super().path_constraints(ensemble_member)
@@ -112,21 +112,21 @@ class WeirMixin(OptimizationProblem):
             status = self.state(status_sym)
 
             # calculate minimum possible discharge (weir @ max)
-            slope_max = w.q_max / ((w.q_max / w.c_weir) ** (2.0/3.0))
+            slope_max = w.q_max / ((w.q_max / w.c_weir) ** (2.0 / 3.0))
             q_min_h = slope_max * w._head() - slope_max * w.hw_max
 
             # calculate maximum possible discharge (weir @ min), using
             # linearized curve
-            q_max_h = w.slope*(w._head() - w.h_nom-1 * (status-1)) + w.q_nom
+            q_max_h = w.slope * (w._head() - w.h_nom - 1 * (status - 1)) + w.q_nom
 
             # flow should be lower than physical maximum and bigger then zero
-            constraints.append((w.discharge() - w.q_max*(status), -inf, 0))
+            constraints.append((w.discharge() - w.q_max * (status), -inf, 0))
             epsilon = 0.00001
             # Here a small value, epsilon is used, write down the equation
             # status * epsilon < Q, with other words if the weir is "on",
             # this is the minimum flow. If the weir is "off" this flow can still be
             # present. So it should be small...
-            constraints.append((-w.discharge() + epsilon*(status), -inf, 0))
+            constraints.append((-w.discharge() + epsilon * (status), -inf, 0))
 
             # flow should be lower than max related to water level and weir
             # height
@@ -159,7 +159,6 @@ class WeirMixin(OptimizationProblem):
             return super().variable_is_discrete(variable)
 
     def post(self):
-
         results = self.extract_results()
 
         # Calculating the weir height
@@ -167,7 +166,9 @@ class WeirMixin(OptimizationProblem):
             weir_wl_up = results[w.symbol + ".HQUp.H"]
             weir_q = results[w.symbol + ".Q"]
 
-            self.__additional_results[w.symbol + "_height"] = weir_wl_up - (weir_q / w.c_weir)**(2.0/3.0)
+            self.__additional_results[w.symbol + "_height"] = weir_wl_up - (
+                weir_q / w.c_weir
+            ) ** (2.0 / 3.0)
 
         # NOTE: If we call super() first, adding output time series with
         # set_time series has no effect, as e.g. PIMIxin/CSVMixin have already
@@ -187,39 +188,44 @@ def plot_operating_points(optimization_problem, output_folder, results):
 
     for w in optimization_problem.weirs():
         weir_name = w.symbol
-        weir_flow_results = results[weir_name + '.Q']
-        water_level = results[weir_name + '.HQUp.H']
+        weir_flow_results = results[weir_name + ".Q"]
+        water_level = results[weir_name + ".HQUp.H"]
 
         # Calculating the working area of the weir
         hmargin = 0.25 * (w.hw_max - w.hw_min)
-        hs = np.linspace(w.hw_min - hmargin, w.hw_max + w.q_max/(w.c_weir) + hmargin, 100)
+        hs = np.linspace(
+            w.hw_min - hmargin, w.hw_max + w.q_max / (w.c_weir) + hmargin, 100
+        )
         q_max_h_plot = w.slope * (hs - w.h_nom) + w.q_nom
-        q_min_h_plot = w.c_weir * np.fmax(0, (hs - w.hw_max))**1.5
-        slope_max = w.q_max / ((w.q_max / w.c_weir) ** (2.0/3.0))
+        q_min_h_plot = w.c_weir * np.fmax(0, (hs - w.hw_max)) ** 1.5
+        slope_max = w.q_max / ((w.q_max / w.c_weir) ** (2.0 / 3.0))
         q_min_h_lin_plot = slope_max * hs - slope_max * w.hw_max
-        q_max_th_plot = w.c_weir * np.fmax(0, (hs - w.hw_min))**1.5
+        q_max_th_plot = w.c_weir * np.fmax(0, (hs - w.hw_min)) ** 1.5
         q_min_plot = np.full((100), w.q_min)
         q_max_plot = np.full((100), w.q_max)
 
         # Plotting the working area of the weir
         plt.clf()
-        plt.plot(hs, q_min_plot, 'k-')
-        plt.plot(hs, q_max_h_plot, 'k-')
-        plt.plot(hs, q_max_plot, 'k-')
-        plt.plot(hs, q_min_h_plot, 'g-')
-        plt.plot(hs, q_min_h_lin_plot, 'k-')
-        plt.plot(hs, q_max_th_plot, 'b-')
-        plt.plot(water_level, weir_flow_results, 'r+', markeredgewidth=2)
+        plt.plot(hs, q_min_plot, "k-")
+        plt.plot(hs, q_max_h_plot, "k-")
+        plt.plot(hs, q_max_plot, "k-")
+        plt.plot(hs, q_min_h_plot, "g-")
+        plt.plot(hs, q_min_h_lin_plot, "k-")
+        plt.plot(hs, q_max_th_plot, "b-")
+        plt.plot(water_level, weir_flow_results, "r+", markeredgewidth=2)
         plt.ylim(w.q_min - 0.5, w.q_max * 1.2)
-        plt.title('Working area of the weir')
-        plt.xlabel('Water level [m]')
-        plt.ylabel('Flow [$m^3\\,s^{-1}$]')
+        plt.title("Working area of the weir")
+        plt.xlabel("Water level [m]")
+        plt.ylabel("Flow [$m^3\\,s^{-1}$]")
         plt.xlim(min(hs), max(hs))
         save_name = weir_name + "_working_area" + ".png"
         fname = os.path.join(output_folder, save_name)
-        plt.savefig(fname, bbox_inches='tight', pad_inches=0.1)
+        plt.savefig(fname, bbox_inches="tight", pad_inches=0.1)
 
         if w.q_max > 2 * max(weir_flow_results[1:]):
-            logger.warning('The given maximum weir flow ({}) is much higher than the actual maximum flow ({}). '
-                           'This might lead to an unncessarily big linearization error.'.format(
-                                w.q_max, max(weir_flow_results)))
+            logger.warning(
+                "The given maximum weir flow ({}) is much higher than the actual maximum flow ({}). "
+                "This might lead to an unncessarily big linearization error.".format(
+                    w.q_max, max(weir_flow_results)
+                )
+            )
