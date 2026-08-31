@@ -48,7 +48,12 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
+    'sphinxcontrib.spelling',
 ]
+
+spelling_word_list_filename = "../spelling_wordlist.txt"
+spelling_show_suggestions = True
+spelling_lang = "en_US"
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),

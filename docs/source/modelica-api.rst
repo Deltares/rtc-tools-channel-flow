@@ -134,7 +134,7 @@ Pump
       The downstream head.
 
     2
-      The differential head (i.e. downstream head minus upstream head) where the upsteam head is a determined by 
+      The differential head (i.e. downstream head minus upstream head) where the upstream head is a determined by 
       the variable HW which can be set using a function of the users choice.
 
     .. note::
@@ -387,7 +387,7 @@ Orifice
 
   .. cpp:var:: Modelica::SIunits::Length dH_max = 10.0
 
-    The maximum possible head over the orifice. Amongst other used to
+    The maximum possible head over the orifice. Among other used to
     calculate the maximum possible discharge through the orifice if it is not
     set using bounds, and to make sure the inequality constraint relating
     :math:`Q` to :math:`H` remains feasible when the orifice is closed.

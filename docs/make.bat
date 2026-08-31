@@ -25,6 +25,11 @@ if errorlevel 9009 (
 	exit /b 1
 )
 
+if "%1" == "spelling" (
+    %SPHINXBUILD% -b spelling %SOURCEDIR% %BUILDDIR%/spelling
+    goto end
+)
+
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
 
