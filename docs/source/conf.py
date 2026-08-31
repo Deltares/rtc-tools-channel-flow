@@ -2,10 +2,9 @@ import os
 import re
 import sys
 
-from rtctools_hydraulic_structures._version import get_versions
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'src')))
 
-sys.path.insert(0, os.path.abspath('_mocked_modules'))
-sys.path.insert(0, os.path.abspath('..'))
+from rtctools_channel_flow._version import get_versions
 
 # Configuration file for the Sphinx documentation builder.
 
