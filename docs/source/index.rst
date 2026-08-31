@@ -26,7 +26,7 @@ Contents
    
 .. toctree::
    :maxdepth: 2
-   :caption: Hydarulic Structures User Documentation
+   :caption: Hydraulic Structures User Documentation
 
    getting-started
    support
