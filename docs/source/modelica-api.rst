@@ -37,7 +37,7 @@ PumpingStation
 Pump
 ~~~~
 
-.. cpp:class:: Pump : Deltares::ChannelFlow::Hydraulic::Structures::Pump
+.. cpp:class:: Pump : Deltares::ChannelFlow::Hydraulic::Structures::DischargeControlledStructure
 
   Represents a single pump object. Because the power of the pump is seldom a
   linear function of `Q` and `H`, this class is wrapped by the Python API's
@@ -294,9 +294,9 @@ PumpingStation
 Weir
 ----
 
-.. cpp:namespace:: Deltares::ChannelFlow::Hydraulic::Structures::Weir
+.. cpp:namespace:: Deltares::ChannelFlow::Hydraulic::Structures
 
-.. cpp:class:: Weir : Deltares::ChannelFlow::Hydraulic::Structures
+.. cpp:class:: Weir : Deltares::ChannelFlow::Internal::HQTwoPort
 
   Represents a general movable-crest weir object described by the conventional
   weir equation (see e.g. Swamee, Prabhata K. "Generalized rectangular weir equations."
