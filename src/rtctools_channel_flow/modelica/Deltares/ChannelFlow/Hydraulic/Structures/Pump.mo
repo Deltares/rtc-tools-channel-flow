@@ -6,7 +6,7 @@ model Pump "Pump"
   // If dH cannot be calculated directly from the upstream and downstream heads
   // use the PumpDynamicHead model instead
   parameter Integer head_option = 0;
-  Modelica.Units.SI.Distance dH;
+  Modelica.Units.SI.Position dH;
  
 equation
   if head_option == -1 then
