@@ -66,7 +66,7 @@ if any(np.isnan(hist_status)):
                     structure.symbol
                 )
             )
-            raise KeyError
+            return 0.0, 0.0
 
         rev_hist_times = np.abs(hist_times[::-1])
         rev_hist_status = hist_status[::-1]
