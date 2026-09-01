@@ -13,7 +13,6 @@ from rtctools.optimization.optimization_problem import OptimizationProblem
 from .util import _ObjectParameterWrapper
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 
 class Weir(_ObjectParameterWrapper):
