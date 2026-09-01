@@ -221,7 +221,7 @@ def _point_on_segment(point, segment):
     x_min, x_max = min(x1, x2), max(x1, x2)
     y_min, y_max = min(y1, y2), max(y1, y2)
 
-    return (x_min <= x0 <= x_max) and (y_min <= y1 <= y_max)
+return (x_min <= x0 <= x_max) and (y_min <= y0 <= y_max)
 
 
 def _general_equation_form(segment):
