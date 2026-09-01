@@ -2371,7 +2371,7 @@ self.__additional_results[p.symbol + "_power"] = power_calculated * status_reali
                 power_realised = results[p.symbol + "__power"][1:]
                 power_calculated = results[p.symbol + "_power"][1:]
 
-                if np.any(isinstance(g, MinimizePumpCostGoal) for g in self.goals()):
+if any(isinstance(g, MinimizePumpCostGoal) for g in self.goals()):
                     # Minimized for cost. We will skip any time steps where
                     # the price is zero in the check below.
                     ts = self.get_timeseries(p.energy_price_symbol)
