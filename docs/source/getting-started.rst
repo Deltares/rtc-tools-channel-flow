@@ -8,7 +8,7 @@ Installation
 Installation of the RTC-Tools Hydraulic Structures library is as simple as::
 
     # 1. Use pip and PyPI to install
-    pip install rtc-tools-hydraulic-structures
+    pip install rtc-tools-channel-flow
 
 RTC-Tools Hydraulic Structures depends on `RTC-Tools <https://gitlab.com/deltares/rtc-tools.git>`_
 and its `ChannelFlow <https://gitlab.com/deltares/rtc-tools-channel-flow.git>`_ library,
@@ -42,8 +42,8 @@ should see something like the following output.
 Contribute
 ==========
 
-You can contribute to this code through Pull Request on GitLab_. Please, make
-sure that your code is coming with unit tests to ensure full coverage and
-continuous integration in the API.
+You can contribute to this code through a pull request on GitHub_. Please make
+sure that your code comes with unit tests to ensure coverage and
+continuous integration for the API.
 
-.. _GitLab: https://gitlab.com/deltares/rtc-tools-hydraulic-structures/merge_requests
+.. _GitHub: https://github.com/Deltares/rtc-tools-channel-flow/pulls
