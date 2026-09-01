@@ -2147,7 +2147,8 @@ else:
 
     def bounds(self):
         bounds = super().bounds()
-        bounds.update(self.__pump_status_bounds)
+bounds.update(self.__pump_status_bounds)
+bounds.update(self.__station_status_bounds)
         bounds.update(self.__pump_power_bounds)
         bounds.update(self._psmixin_pump_discharge_bounds)
         return bounds
