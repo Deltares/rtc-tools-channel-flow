@@ -88,10 +88,10 @@ if any(np.isnan(hist_status)):
         if self.pumpingstation_history_constraints == "hard":
             hist_bounds = (Timeseries(times, min_vals), Timeseries(times, max_vals))
             if isinstance(structure, Pump):
-                cur_bounds = self.__pump_status_bounds[status_sym]
-                self.__pump_status_bounds[status_sym] = self.merge_bounds(
-                    hist_bounds, cur_bounds
-                )
+cur_bounds = self._PumpingStationMixin__pump_status_bounds[status_sym]
+self._PumpingStationMixin__pump_status_bounds[status_sym] = self.merge_bounds(
+    hist_bounds, cur_bounds
+)
             if isinstance(structure, PumpingStation):
                 cur_bounds = self._PumpingStationMixin__station_status_bounds[
                     status_sym
