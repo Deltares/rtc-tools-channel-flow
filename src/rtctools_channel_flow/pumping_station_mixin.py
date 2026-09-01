@@ -2251,8 +2251,8 @@ bounds.update(self.__station_status_bounds)
                     status_realised,
                 )
 
-                power_calculated = np.amax(powers_calculated, axis=0)
-                results[p.symbol + "_power"] = power_calculated * status_realised
+power_calculated = np.amax(powers_calculated, axis=0)
+self.__additional_results[p.symbol + "_power"] = power_calculated * status_realised
 
                 # Energy
                 minimization_nominals[_MinimizePumpGoalType.ENERGY] += power_calculated[
