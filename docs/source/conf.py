@@ -1,4 +1,4 @@
-from rtctools_hydraulic_structures._version import get_versions
+from rtctools_channel_flow._version import get_versions
 
 
 # Configuration file for the Sphinx documentation builder.

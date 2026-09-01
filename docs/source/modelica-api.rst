@@ -41,7 +41,7 @@ Pump
 
   Represents a single pump object. Because the power of the pump is seldom a
   linear function of `Q` and `H`, this class is wrapped by the Python API's
-  :py:class:`~rtctools_hydraulic_structures.pumping_station_mixin.Pump` which
+  :py:class:`~rtctools_channel_flow.pumping_station_mixin.Pump` which
   turns the power equation specified by :cpp:var:`power_coefficients` into
   a set of inequality constraints:
 

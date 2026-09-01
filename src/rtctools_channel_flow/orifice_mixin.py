@@ -15,7 +15,6 @@ from rtctools.optimization.timeseries import Timeseries
 from .util import _ObjectParameterWrapper
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 
 class Orifice(_ObjectParameterWrapper):
@@ -30,18 +29,17 @@ class Orifice(_ObjectParameterWrapper):
 
     def discharge(self):
         """
-        Get the state corresponding to the weir discharge.
+Get the state corresponding to the orifice discharge.
 
-        :returns: `MX` expression of the weir discharge.
+:returns: `MX` expression of the orifice discharge.
         """
         return self.optimization_problem.state(self.symbol + ".Q")
 
     def _head_up(self):
         """
-        Get the state corresponding to the pump head. This depends on the
-        ``head_option`` that was specified by the user.
+Get the state corresponding to the upstream head of the orifice.
 
-        :returns: `MX` expression of the pump head.
+:returns: `MX` expression of the upstream head.
         """
         return self.optimization_problem.state(self.symbol + ".HQUp.H")
 
