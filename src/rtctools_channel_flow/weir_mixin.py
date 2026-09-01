@@ -224,7 +224,7 @@ def plot_operating_points(optimization_problem, output_folder, results):
         if w.q_max > 2 * max(weir_flow_results[1:]):
             logger.warning(
                 "The given maximum weir flow ({}) is much higher than the actual maximum flow ({}). "
-                "This might lead to an unncessarily big linearization error.".format(
+                "This might lead to an unnecessarily big linearization error.".format(
                     w.q_max, max(weir_flow_results)
                 )
             )
