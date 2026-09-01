@@ -1997,8 +1997,12 @@ for k, v in minimization_nominals.items():
                     constraints.append(
                         (self.state(power_sym) - powers[0] * status, 0.0, 0.0)
                     )
-                    station_m += float(powers[0])
-                    station_Ms += float(powers[0])
+constant_power = float(powers[0])
+station_m = constant_power if station_m is None else min(station_m, constant_power)
+if station_Ms is None:
+    station_Ms = np.array([constant_power])
+else:
+    station_Ms += constant_power
                 else:
                     constraints.append((self.state(power_sym) - m * status, 0.0, inf))
                     constraints.append(
