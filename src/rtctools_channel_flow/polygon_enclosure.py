@@ -153,8 +153,10 @@ def _split_lines(lines):
 
     new_lines = []
 
-    for points_i in lines:
-        new_line = [points_i[0]]
+for points_i in lines:
+    if not points_i:
+        continue
+    new_line = [points_i[0]]
 
         for segment in zip(points_i[:-1], points_i[1:]):
             # Note that we also check other segments of the current line, as we
