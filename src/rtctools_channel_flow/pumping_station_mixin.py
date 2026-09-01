@@ -96,9 +96,9 @@ self._PumpingStationMixin__pump_status_bounds[status_sym] = self.merge_bounds(
                 cur_bounds = self._PumpingStationMixin__station_status_bounds[
                     status_sym
                 ]
-                self.__station_status_bounds[status_sym] = self.merge_bounds(
-                    hist_bounds, cur_bounds
-                )
+self._PumpingStationMixin__station_status_bounds[status_sym] = self.merge_bounds(
+    hist_bounds, cur_bounds
+)
         else:
             if isinstance(structure, Pump):
                 self._PumpingStationMixin__psmixin_initial_pump_status[
