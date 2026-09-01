@@ -2371,7 +2371,7 @@ self.__additional_results[p.symbol + "_power"] = power_calculated * status_reali
                 power_realised = results[p.symbol + "__power"][1:]
                 power_calculated = results[p.symbol + "_power"][1:]
 
-if any(isinstance(g, MinimizePumpCostGoal) for g in self.goals()):
+                if any(isinstance(g, MinimizePumpCostGoal) for g in self.goals()):
                     # Minimized for cost. We will skip any time steps where
                     # the price is zero in the check below.
                     ts = self.get_timeseries(p.energy_price_symbol)
@@ -2418,46 +2418,44 @@ if any(isinstance(g, MinimizePumpCostGoal) for g in self.goals()):
                     )
 
             # Append pump speed to results and output timeseries
-            for ps in self.pumping_stations():
-                for p in ps.pumps():
-                    coeffs = p.speed_coefficients
+            for p in ps.pumps():
+                coeffs = p.speed_coefficients
 
-                    # Only calculate and output pump speed if non-zero
-                    # coefficients are specified
-                    if np.all(coeffs == 0):
-                        continue
+                # Only calculate and output pump speed if non-zero
+                # coefficients are specified
+                if np.all(coeffs == 0):
+                    continue
 
-                    head_realised = results[p.symbol + "_head"]
-                    discharge_realised = results[p.symbol + "_discharge"]
-                    status_realised = results[p.symbol + "_status"]
+                head_realised = results[p.symbol + "_head"]
+                discharge_realised = results[p.symbol + "_discharge"]
+                status_realised = results[p.symbol + "_status"]
 
-                    speed = discharge_realised * 0.0
+                speed = discharge_realised * 0.0
 
-                    for i in range(coeffs.shape[0]):
-                        for j in range(coeffs.shape[1]):
-                            speed += (
-                                coeffs[i, j]
-                                * head_realised**i
-                                * discharge_realised**j
-                                * status_realised
-                            )
+                for i in range(coeffs.shape[0]):
+                    for j in range(coeffs.shape[1]):
+                        speed += (
+                            coeffs[i, j]
+                            * head_realised**i
+                            * discharge_realised**j
+                            * status_realised
+                        )
 
-                    speed_key = "{}_{}".format(p.symbol, "speed")
+                speed_key = "{}_{}".format(p.symbol, "speed")
 
-                    self.__additional_output_variables.add(speed_key)
-                    self.__additional_results[speed_key] = speed
+                self.__additional_output_variables.add(speed_key)
+                self.__additional_results[speed_key] = speed
 
             # Append pump power and status to output timeseries
-            for ps in self.pumping_stations():
-                for p in ps.pumps():
-                    power_calculated = results[p.symbol + "_power"]
-                    status_realised = results[p.symbol + "_status"]
+            for p in ps.pumps():
+                power_calculated = results[p.symbol + "_power"]
+                status_realised = results[p.symbol + "_status"]
 
-                    power_key = "{}_{}".format(p.symbol, "power")
-                    self.__additional_output_variables.add(power_key)
+                power_key = "{}_{}".format(p.symbol, "power")
+                self.__additional_output_variables.add(power_key)
 
-                    status_key = "{}_{}".format(p.symbol, "status")
-                    self.__additional_output_variables.add(status_key)
+                status_key = "{}_{}".format(p.symbol, "status")
+                self.__additional_output_variables.add(status_key)
 
         # NOTE: If we call super() first, adding output time series with
         # set_time series has no effect, as e.g. PIMIxin/CSVMixin have already
