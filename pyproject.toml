@@ -15,14 +15,20 @@ readme = "README.md"
 
 requires-python = ">=3.10"
 
+[project]
 dependencies = [
+    "numpy",
+    "casadi",
+    "rtc-tools",
 ]
-
 [dependency-groups]
 docs = [
     "sphinx",
     "sphinx_rtd_theme",
     "matplotlib",
+    "numpy",
+    "mock",
+    "sphinxcontrib-spelling",
 ]
 
 [tool.hatch.build.targets.wheel]
