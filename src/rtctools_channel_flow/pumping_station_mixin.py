@@ -60,7 +60,7 @@ class CommonStructureSwitchFunctions:
         hist_times = history.times[hist_start_ind : hist_end_ind + 1]
         hist_status = history.values[hist_start_ind : hist_end_ind + 1]
 
-        if any(np.isnan(hist_status[hist_start_ind:hist_end_ind])):
+if any(np.isnan(hist_status)):
             logger.info(
                 "Missing values in history of {}, skipping status history constraints.".format(
                     structure.symbol
