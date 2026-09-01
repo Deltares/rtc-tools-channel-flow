@@ -1430,10 +1430,9 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                 pump_nominal = avg_pump_energy_price * avg_pump_power
                 minimization_nominals[_MinimizePumpGoalType.COST] += pump_nominal
 
-        for k, v in minimization_nominals.items():
-            self._psmixin_pump_minimization_nominal[k] = [
-                (-np.inf, v * (self.times()[-1] - self.times()[0]))
-            ]
+for k, v in minimization_nominals.items():
+    nominal = v * (self.times()[-1] - self.times()[0])
+    self._psmixin_pump_minimization_nominal[k] = [(-np.inf, max(nominal, 1.0))]
 
         # Store cache to disk
         if self.pumpingstation_cache_hq_subproblem:
