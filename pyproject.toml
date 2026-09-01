@@ -15,9 +15,12 @@ readme = "README.md"
 
 requires-python = ">=3.10"
 
+[project]
 dependencies = [
+    "numpy",
+    "casadi",
+    "rtc-tools",
 ]
-
 [dependency-groups]
 docs = [
     "sphinx",
