@@ -2,4 +2,4 @@
 Support
 #######
 
-Raise any issue on `GitLab <https://gitlab.com/deltares/rtc-tools-hydraulic-structures/issues>`_ such that we can address your problem.
+Raise an issue on `GitHub <https://github.com/Deltares/rtc-tools-channel-flow/issues>`_ so that we can address your problem.
