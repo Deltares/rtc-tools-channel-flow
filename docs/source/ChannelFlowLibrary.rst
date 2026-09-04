@@ -75,7 +75,7 @@ The *Reservoir* node is used for modelling reservoirs. The basic equation is the
 
 .. math:: \frac{\partial V}{\partial t} = Q_\mathrm{in} - Q_\mathrm{out} + Q_\mathrm{forcing} + Q_\mathrm{lateral}
 
-The reservoir outflow is split into turbnie flow and spill:
+The reservoir outflow is split into turbine flow and spill:
 
 .. math:: Q_\mathrm{out} = Q_\mathrm{turbine} + Q_\mathrm{spill}
 

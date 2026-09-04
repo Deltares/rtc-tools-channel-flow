@@ -1,13 +1,39 @@
+import os
+import re
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'src')))
+
+from rtctools_channel_flow._version import get_versions
+
 # Configuration file for the Sphinx documentation builder.
 
 # -- Project information
 
 project = 'RTC-Tools channel flow'
 copyright = 'Deltares'
-author = 'Bernhard Becker, Bernhard.Becker@deltares.nl'
+author = 'Bernhard Becker, Bernhard.Becker@deltares.nl, Tjerk Vreeken, Klaudia Horvath, et al.'
 
-release = '0.1'
-version = '0.1.0'
+# The full version, including alpha/beta/rc tags.
+release = get_versions()['version']
+del get_versions
+
+# The short X.Y version.
+version = '.'.join(release.split('.')[:2])
+
+# Usually you set "language" from the command line for these cases.
+language = "en"
+
+# List of patterns, relative to source directory, that match files and
+# directories to ignore when looking for source files.
+# This patterns also effect to html_static_path and html_extra_path
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = 'sphinx'
+
+# If true, `todo` and `todoList` produce output, else they produce nothing.
+todo_include_todos = True
 
 # -- General configuration
 
@@ -17,15 +43,37 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
+    'sphinxcontrib.spelling',
 ]
+
+spelling_word_list_filename = "../spelling_wordlist.txt"
+spelling_show_suggestions = True
+spelling_lang = "en_US"
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
     'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
+    'rtctools': ('http://rtc-tools.readthedocs.io/en/latest/', None)
 }
 intersphinx_disabled_domains = ['std']
 
 templates_path = ['_templates']
+
+# Custom sidebar templates, must be a dictionary that maps document names
+# to template names.
+#
+# This is required for the alabaster theme
+# refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
+html_sidebars = {
+    '**': [
+        'about.html',
+        'navigation.html',
+        'relations.html',  # needs 'show_related': True theme option to display
+        'searchbox.html',
+        'donate.html',
+    ]
+}
+
 
 # -- Options for HTML output
 
@@ -33,3 +81,25 @@ html_theme = 'sphinx_rtd_theme'
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
+
+# -- Hack to strip annotations from Modelica files ------------------------
+MODELICA_EXAMPLE_BASE_FOLDER = '../examples'
+MODELICA_STRIPPED_EXAMPLE_FOLDER = '_build/_stripped_examples'
+
+for root, _dirs, files in os.walk(MODELICA_EXAMPLE_BASE_FOLDER):
+    mo_files = [x for x in files if x.endswith('.mo')]
+    if mo_files:
+        rel_path = os.path.relpath(root, MODELICA_EXAMPLE_BASE_FOLDER)
+        target_path = os.path.join(MODELICA_STRIPPED_EXAMPLE_FOLDER, rel_path)
+        os.makedirs(target_path, exist_ok=True)
+
+        for m in mo_files:
+            mo_in = os.path.join(root, m)
+            mo_out = os.path.join(target_path, m)
+
+            with open(mo_in, 'r') as f_in:
+                with open(mo_out, 'w') as f_out:
+                    s = f_in.read()
+                    s = re.sub(r'[\r\n]+[ \t]*annotation\(.*\);([\r\n]+)', r'\1', s)
+                    s = re.sub(r'[ \t]+annotation\(.*?\);', ';', s, flags=re.DOTALL | re.MULTILINE)
+                    f_out.write(s)

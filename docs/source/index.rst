@@ -23,4 +23,19 @@ Contents
 
    usage
    ChannelFlowLibrary
+   
+.. toctree::
+   :maxdepth: 2
+   :caption: Hydraulic Structures API Documentation
 
+   modelica-api
+
+
+   
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
