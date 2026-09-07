@@ -26,13 +26,6 @@ Contents
    
 .. toctree::
    :maxdepth: 2
-   :caption: Hydraulic Structures User Documentation
-
-   getting-started
-   support
-
-.. toctree::
-   :maxdepth: 2
    :caption: Hydarulic Structures API Documentation
 
    python-api

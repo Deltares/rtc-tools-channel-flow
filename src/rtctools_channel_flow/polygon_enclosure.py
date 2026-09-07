@@ -52,8 +52,8 @@ def enclosing_segments(point, lines, return_lines=False):
     for closest_segment in sorted_segments:
         (x1, y1), (x2, y2) = closest_segment
         (x0, y0) = point
-angle_start = atan2(float(y1 - y0), float(x1 - x0))
-angle_end = atan2(float(y2 - y0), float(x2 - x0))
+        angle_start = atan2(float(y1 - y0), float(x1 - x0))
+        angle_end = atan2(float(y2 - y0), float(x2 - x0))
         angle_diff = (angle_end - angle_start) % TWO_PI
 
         if angle_diff > pi:
@@ -153,10 +153,10 @@ def _split_lines(lines):
 
     new_lines = []
 
-for points_i in lines:
-    if not points_i:
-        continue
-    new_line = [points_i[0]]
+    for points_i in lines:
+        if not points_i:
+            continue
+        new_line = [points_i[0]]
 
         for segment in zip(points_i[:-1], points_i[1:]):
             # Note that we also check other segments of the current line, as we
@@ -172,7 +172,7 @@ for points_i in lines:
 
         new_lines.append(new_line)
 
-    return new_lines
+        return new_lines
 
 
 def _split_segment(segment, other_segments):
@@ -221,7 +221,7 @@ def _point_on_segment(point, segment):
     x_min, x_max = min(x1, x2), max(x1, x2)
     y_min, y_max = min(y1, y2), max(y1, y2)
 
-return (x_min <= x0 <= x_max) and (y_min <= y0 <= y_max)
+    return (x_min <= x0 <= x_max) and (y_min <= y0 <= y_max)
 
 
 def _general_equation_form(segment):
@@ -263,12 +263,12 @@ def _distance_point_to_segment(point, segment):
     # We check whether this point is on the segment. If not, we take the
     # minimum distance to either of the end points as the distance from the
     # point to this segment.
-if _point_on_segment((xt, yt), segment):
-    distance = sqrt(float((xt - x0) ** 2 + (yt - y0) ** 2))
-else:
-    d_1 = sqrt(float((x1 - x0) ** 2 + (y1 - y0) ** 2))
-    d_2 = sqrt(float((x2 - x0) ** 2 + (y2 - y0) ** 2))
-    distance = min(d_1, d_2)
+    if _point_on_segment((xt, yt), segment):
+        distance = sqrt(float((xt - x0) ** 2 + (yt - y0) ** 2))
+    else:
+        d_1 = sqrt(float((x1 - x0) ** 2 + (y1 - y0) ** 2))
+        d_2 = sqrt(float((x2 - x0) ** 2 + (y2 - y0) ** 2))
+        distance = min(d_1, d_2)
 
     return distance
 

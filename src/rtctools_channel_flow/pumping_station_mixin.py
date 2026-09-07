@@ -60,7 +60,7 @@ class CommonStructureSwitchFunctions:
         hist_times = history.times[hist_start_ind : hist_end_ind + 1]
         hist_status = history.values[hist_start_ind : hist_end_ind + 1]
 
-if any(np.isnan(hist_status)):
+        if any(np.isnan(hist_status)):
             logger.info(
                 "Missing values in history of {}, skipping status history constraints.".format(
                     structure.symbol
@@ -88,17 +88,13 @@ if any(np.isnan(hist_status)):
         if self.pumpingstation_history_constraints == "hard":
             hist_bounds = (Timeseries(times, min_vals), Timeseries(times, max_vals))
             if isinstance(structure, Pump):
-cur_bounds = self._PumpingStationMixin__pump_status_bounds[status_sym]
-self._PumpingStationMixin__pump_status_bounds[status_sym] = self.merge_bounds(
-    hist_bounds, cur_bounds
-)
+                cur_bounds = self._PumpingStationMixin__pump_status_bounds[status_sym]
+                self._PumpingStationMixin__pump_status_bounds[status_sym] = self.merge_bounds(hist_bounds, cur_bounds)
             if isinstance(structure, PumpingStation):
                 cur_bounds = self._PumpingStationMixin__station_status_bounds[
                     status_sym
                 ]
-self._PumpingStationMixin__station_status_bounds[status_sym] = self.merge_bounds(
-    hist_bounds, cur_bounds
-)
+                self._PumpingStationMixin__station_status_bounds[status_sym] = self.merge_bounds(hist_bounds, cur_bounds)
         else:
             if isinstance(structure, Pump):
                 self._PumpingStationMixin__psmixin_initial_pump_status[
@@ -1430,9 +1426,9 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                 pump_nominal = avg_pump_energy_price * avg_pump_power
                 minimization_nominals[_MinimizePumpGoalType.COST] += pump_nominal
 
-for k, v in minimization_nominals.items():
-    nominal = v * (self.times()[-1] - self.times()[0])
-    self._psmixin_pump_minimization_nominal[k] = [(-np.inf, max(nominal, 1.0))]
+        for k, v in minimization_nominals.items():
+            nominal = v * (self.times()[-1] - self.times()[0])
+            self._psmixin_pump_minimization_nominal[k] = [(-np.inf, max(nominal, 1.0))]
 
         # Store cache to disk
         if self.pumpingstation_cache_hq_subproblem:
@@ -1997,12 +1993,12 @@ for k, v in minimization_nominals.items():
                     constraints.append(
                         (self.state(power_sym) - powers[0] * status, 0.0, 0.0)
                     )
-constant_power = float(powers[0])
-station_m = constant_power if station_m is None else min(station_m, constant_power)
-if station_Ms is None:
-    station_Ms = np.array([constant_power])
-else:
-    station_Ms += constant_power
+                    constant_power = float(powers[0])
+                    station_m = constant_power if station_m is None else min(station_m, constant_power)
+                    if station_Ms is None:
+                        station_Ms = np.array([constant_power])
+                    else:
+                        station_Ms += constant_power
                 else:
                     constraints.append((self.state(power_sym) - m * status, 0.0, inf))
                     constraints.append(
@@ -2147,8 +2143,8 @@ else:
 
     def bounds(self):
         bounds = super().bounds()
-bounds.update(self.__pump_status_bounds)
-bounds.update(self.__station_status_bounds)
+        bounds.update(self.__pump_status_bounds)
+        bounds.update(self.__station_status_bounds)
         bounds.update(self.__pump_power_bounds)
         bounds.update(self._psmixin_pump_discharge_bounds)
         return bounds
@@ -2251,8 +2247,8 @@ bounds.update(self.__station_status_bounds)
                     status_realised,
                 )
 
-power_calculated = np.amax(powers_calculated, axis=0)
-self.__additional_results[p.symbol + "_power"] = power_calculated * status_realised
+                power_calculated = np.amax(powers_calculated, axis=0)
+                self.__additional_results[p.symbol + "_power"] = power_calculated * status_realised
 
                 # Energy
                 minimization_nominals[_MinimizePumpGoalType.ENERGY] += power_calculated[

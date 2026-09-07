@@ -7,8 +7,8 @@ Pumping Station
 .. cpp:namespace:: Deltares::ChannelFlow::Hydraulic::Structures::PumpingStation
 
 These Modelica blocks are part of the standard 
-`ChannelFlow library <https://gitlab.com/deltares/rtc-tools-channel-
-flow.git>`_. It consists of the following components:
+`ChannelFlow library <https://gitlab.com/deltares/rtc-tools-channel-flow.git>`_.
+They consist of the following components:
 
 Pump
   A pump model with a QHP (discharge, head, power) relationship, to be used
@@ -134,7 +134,7 @@ Pump
       The downstream head.
 
     2
-      The differential head (i.e. downstream head minus upstream head) where the upsteam head is a determined by 
+      The differential head (i.e. downstream head minus upstream head) where the upstream head is a determined by 
       the variable HW which can be set using a function of the users choice.
 
     .. note::
