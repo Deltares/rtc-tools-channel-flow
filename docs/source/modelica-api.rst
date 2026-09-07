@@ -134,7 +134,7 @@ Pump
       The downstream head.
 
     2
-      The differential head (i.e. downstream head minus upstream head) where the upsteam head is a determined by 
+      The differential head (i.e. downstream head minus upstream head) where the upstream head is a determined by 
       the variable HW which can be set using a function of the users choice.
 
     .. note::
