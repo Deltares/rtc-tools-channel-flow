@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rtcDataConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:rtc="http://www.wldelft.nl/fews" xmlns="http://www.wldelft.nl/fews" xsi:schemaLocation="http://www.wldelft.nl/fews ./bin/rtcDataConfig.xsd">
+	<importSeries>
+		<PITimeSeriesFile>
+			<timeSeriesFile>timeseries_import.xml</timeSeriesFile>
+			<useBinFile>false</useBinFile>
+		</PITimeSeriesFile>
+		<!--States of model-->
+		<timeSeries id="storage.HQ.H">
+			<PITimeSeries>
+				<locationId>TAG_000091_H1</locationId>
+				<parameterId>H.measured</parameterId>
+			</PITimeSeries>
+		</timeSeries>
+		<!--Upstream Boundary Conditions-->
+		<timeSeries id="energy_price">
+			<PITimeSeries>
+				<locationId>PriceArea</locationId>
+				<parameterId>Price.measured</parameterId>
+			</PITimeSeries>
+		</timeSeries>
+		<timeSeries id="Q_in">
+			<PITimeSeries>
+				<locationId>TAG_000091</locationId>
+				<parameterId>Q.measured.aanvoer</parameterId>
+			</PITimeSeries>
+		</timeSeries>
+		<timeSeries id="H_ext">
+			<PITimeSeries>
+				<locationId>TAG_000091_H2</locationId>
+				<parameterId>H.measured</parameterId>
+			</PITimeSeries>
+		</timeSeries>
+
+	</importSeries>
+	<exportSeries>
+		<PITimeSeriesFile>
+			<timeSeriesFile>timeseries_export.xml</timeSeriesFile>
+			<useBinFile>false</useBinFile>
+		</PITimeSeriesFile>
+		<timeSeries id="pumpingstation1.pump1_head">
+			<PITimeSeries>
+				<locationId>TAG_000091_P1</locationId>
+				<parameterId>head.pump.rtc</parameterId>
+			</PITimeSeries>
+		</timeSeries>
+		<timeSeries id="pumpingstation1.pump1_discharge">
+			<PITimeSeries>
+				<locationId>TAG_000091_P1</locationId>
+				<parameterId>Q.pump.rtc</parameterId>
+			</PITimeSeries>
+		</timeSeries>
+		<timeSeries id="pumpingstation1.pump1_power">
+			<PITimeSeries>
+				<locationId>TAG_000091_P1</locationId>
+				<parameterId>P.pump.rtc</parameterId>
+			</PITimeSeries>
+		</timeSeries>
+		<timeSeries id="pumpingstation1.pump1_speed">
+			<PITimeSeries>
+				<locationId>TAG_000091_P1</locationId>
+				<parameterId>rpm.pump.rtc</parameterId>
+			</PITimeSeries>
+		</timeSeries>
+		<timeSeries id="pumpingstation1.pump1_status">
+			<PITimeSeries>
+				<locationId>TAG_000091_P1</locationId>
+				<parameterId>status.pump.rtc</parameterId>
+			</PITimeSeries>
+		</timeSeries>
+		<timeSeries id="storage_level">
+			<PITimeSeries>
+				<locationId>TAG_000091_H1</locationId>
+				<parameterId>H.measured.rtc</parameterId>
+			</PITimeSeries>
+		</timeSeries>
+		<timeSeries id="sea_level">
+			<PITimeSeries>
+				<locationId>TAG_000091_H2</locationId>
+				<parameterId>H.measured.rtc</parameterId>
+			</PITimeSeries>
+		</timeSeries>
+	</exportSeries>
+</rtcDataConfig>

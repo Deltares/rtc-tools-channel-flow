@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TimeSeries xmlns="http://www.wldelft.nl/fews/PI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.wldelft.nl/fews/PI http://fews.wldelft.nl/schemas/version1.0/pi-schemas/pi_timeseries.xsd" version="1.2">
+    <timeZone>0.0</timeZone>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>PriceArea</locationId>
+            <parameterId>Price.measured</parameterId>
+            <timeStep unit="second" multiplier="3600"/>
+            <startDate date="2015-08-30" time="23:00:00"/>
+            <endDate date="2015-08-31" time="09:00:00"/>
+            <missVal>-999.0</missVal>
+            <stationName>PriceArea</stationName>
+            <units>Euro</units>
+        </header>
+        <event date="2015-08-30" time="23:00:00" value="0.1" flag="0"/>
+        <event date="2015-08-31" time="00:00:00" value="0.1" flag="0"/>
+        <event date="2015-08-31" time="01:00:00" value="0.1" flag="0"/>
+        <event date="2015-08-31" time="02:00:00" value="0.1" flag="0"/>
+        <event date="2015-08-31" time="03:00:00" value="0.1" flag="0"/>
+        <event date="2015-08-31" time="04:00:00" value="0.1" flag="0"/>
+        <event date="2015-08-31" time="05:00:00" value="0.1" flag="0"/>
+        <event date="2015-08-31" time="06:00:00" value="0.1" flag="0"/>
+        <event date="2015-08-31" time="07:00:00" value="0.1" flag="0"/>
+        <event date="2015-08-31" time="08:00:00" value="0.2" flag="0"/>
+        <event date="2015-08-31" time="09:00:00" value="0.2" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>TAG_000091_H2</locationId>
+            <parameterId>H.measured</parameterId>
+            <timeStep unit="second" multiplier="3600"/>
+            <startDate date="2015-08-30" time="23:00:00"/>
+            <endDate date="2015-08-31" time="09:00:00"/>
+            <missVal>-999.0</missVal>
+            <stationName>Pumping station downstream</stationName>
+            <units>m</units>
+        </header>
+        <event date="2015-08-30" time="23:00:00" value="5.0" flag="0"/>
+        <event date="2015-08-31" time="00:00:00" value="7.033626204" flag="0"/>
+        <event date="2015-08-31" time="01:00:00" value="8.502380879" flag="0"/>
+        <event date="2015-08-31" time="02:00:00" value="8.998294412" flag="0"/>
+        <event date="2015-08-31" time="03:00:00" value="8.383619052" flag="0"/>
+        <event date="2015-08-31" time="04:00:00" value="6.829090507" flag="0"/>
+        <event date="2015-08-31" time="05:00:00" value="4.766503426" flag="0"/>
+        <event date="2015-08-31" time="06:00:00" value="2.768773676" flag="0"/>
+        <event date="2015-08-31" time="07:00:00" value="1.390801983" flag="0"/>
+        <event date="2015-08-31" time="08:00:00" value="1.015341565" flag="0"/>
+        <event date="2015-08-31" time="09:00:00" value="1.746682434" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>TAG_000091</locationId>
+            <parameterId>Q.measured.aanvoer</parameterId>
+            <timeStep unit="second" multiplier="3600"/>
+            <startDate date="2015-08-30" time="23:00:00"/>
+            <endDate date="2015-08-31" time="09:00:00"/>
+            <missVal>-999.0</missVal>
+            <stationName>Pumping station</stationName>
+            <units>m3/s</units>
+        </header>
+        <event date="2015-08-30" time="23:00:00" value="2.0" flag="0"/>
+        <event date="2015-08-31" time="00:00:00" value="2.0" flag="0"/>
+        <event date="2015-08-31" time="01:00:00" value="2.0" flag="0"/>
+        <event date="2015-08-31" time="02:00:00" value="2.0" flag="0"/>
+        <event date="2015-08-31" time="03:00:00" value="2.0" flag="0"/>
+        <event date="2015-08-31" time="04:00:00" value="2.0" flag="0"/>
+        <event date="2015-08-31" time="05:00:00" value="2.0" flag="0"/>
+        <event date="2015-08-31" time="06:00:00" value="2.0" flag="0"/>
+        <event date="2015-08-31" time="07:00:00" value="2.2" flag="0"/>
+        <event date="2015-08-31" time="08:00:00" value="2.2" flag="0"/>
+        <event date="2015-08-31" time="09:00:00" value="2.2" flag="0"/>
+    </series>
+    <series>
+        <header>
+            <type>instantaneous</type>
+            <locationId>TAG_000091_H1</locationId>
+            <parameterId>H.measured</parameterId>
+            <timeStep unit="second" multiplier="3600"/>
+            <startDate date="2015-08-30" time="23:00:00"/>
+            <endDate date="2015-08-30" time="23:00:00"/>
+            <missVal>-999.0</missVal>
+            <stationName>Pumping station upstream</stationName>
+            <units>m</units>
+        </header>
+        <event date="2015-08-30" time="23:00:00" value="-0.45" flag="0"/>
+    </series>
+</TimeSeries>
