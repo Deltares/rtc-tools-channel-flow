@@ -1,0 +1,107 @@
+<pi:TimeSeries xmlns:pi="http://www.wldelft.nl/fews/PI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="http://www.wldelft.nl/fews/PI http://fews.wldelft.nl/schemas/version1.0/pi-schemas/pi_timeseries.xsd">
+  <pi:timeZone>0.0</pi:timeZone>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_H2</pi:locationId>
+      <pi:parameterId>H.measured</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_H2</pi:stationName>
+      <pi:units>m</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:20</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="5.0" />
+    <pi:event date="2015-08-31" time="00:00:00" value="7.033626204" />
+    <pi:event date="2015-08-31" time="01:00:00" value="8.502380879" />
+    <pi:event date="2015-08-31" time="02:00:00" value="8.998294412" />
+    <pi:event date="2015-08-31" time="03:00:00" value="8.383619052" />
+    <pi:event date="2015-08-31" time="04:00:00" value="6.829090507" />
+    <pi:event date="2015-08-31" time="05:00:00" value="4.766503426" />
+    <pi:event date="2015-08-31" time="06:00:00" value="2.768773676" />
+    <pi:event date="2015-08-31" time="07:00:00" value="1.390801983" />
+    <pi:event date="2015-08-31" time="08:00:00" value="1.015341565" />
+    <pi:event date="2015-08-31" time="09:00:00" value="1.746682434" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_H2</pi:locationId>
+      <pi:parameterId>H.measured.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_H2</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:20</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="5.0" />
+    <pi:event date="2015-08-31" time="00:00:00" value="7.033626204" />
+    <pi:event date="2015-08-31" time="01:00:00" value="8.502380879" />
+    <pi:event date="2015-08-31" time="02:00:00" value="8.998294412" />
+    <pi:event date="2015-08-31" time="03:00:00" value="8.383619052" />
+    <pi:event date="2015-08-31" time="04:00:00" value="6.829090507" />
+    <pi:event date="2015-08-31" time="05:00:00" value="4.766503426" />
+    <pi:event date="2015-08-31" time="06:00:00" value="2.768773676" />
+    <pi:event date="2015-08-31" time="07:00:00" value="1.390801983" />
+    <pi:event date="2015-08-31" time="08:00:00" value="1.015341565" />
+    <pi:event date="2015-08-31" time="09:00:00" value="1.746682434" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_H1</pi:locationId>
+      <pi:parameterId>H.measured</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_H1</pi:stationName>
+      <pi:units>m</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:20</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="-0.45" />
+    <pi:event date="2015-08-31" time="00:00:00" value="-0.40771992386595207" />
+    <pi:event date="2015-08-31" time="01:00:00" value="-0.3655361448604162" />
+    <pi:event date="2015-08-31" time="02:00:00" value="-0.32344097550765144" />
+    <pi:event date="2015-08-31" time="03:00:00" value="-0.28143036686068174" />
+    <pi:event date="2015-08-31" time="04:00:00" value="-0.23950168189352242" />
+    <pi:event date="2015-08-31" time="05:00:00" value="-0.19765275382214254" />
+    <pi:event date="2015-08-31" time="06:00:00" value="-0.15588123631834042" />
+    <pi:event date="2015-08-31" time="07:00:00" value="-0.10936104623158939" />
+    <pi:event date="2015-08-31" time="08:00:00" value="-0.06291807973566212" />
+    <pi:event date="2015-08-31" time="09:00:00" value="-0.016536159524366927" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_H1</pi:locationId>
+      <pi:parameterId>H.measured.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_H1</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:20</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="-0.45" />
+    <pi:event date="2015-08-31" time="00:00:00" value="-0.40771992386595207" />
+    <pi:event date="2015-08-31" time="01:00:00" value="-0.3655361448604162" />
+    <pi:event date="2015-08-31" time="02:00:00" value="-0.32344097550765144" />
+    <pi:event date="2015-08-31" time="03:00:00" value="-0.28143036686068174" />
+    <pi:event date="2015-08-31" time="04:00:00" value="-0.23950168189352242" />
+    <pi:event date="2015-08-31" time="05:00:00" value="-0.19765275382214254" />
+    <pi:event date="2015-08-31" time="06:00:00" value="-0.15588123631834042" />
+    <pi:event date="2015-08-31" time="07:00:00" value="-0.10936104623158939" />
+    <pi:event date="2015-08-31" time="08:00:00" value="-0.06291807973566212" />
+    <pi:event date="2015-08-31" time="09:00:00" value="-0.016536159524366927" />
+    </pi:series>
+  </pi:TimeSeries>
