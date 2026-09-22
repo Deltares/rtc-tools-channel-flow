@@ -1,6 +1,9 @@
 from math import atan2, pi, sqrt
+import logging
+import numpy as np
 
 TWO_PI = 2.0 * pi
+logger = logging.getLogger(__name__)
 
 
 class DeadEndError(Exception):
@@ -52,8 +55,26 @@ def enclosing_segments(point, lines, return_lines=False):
     for closest_segment in sorted_segments:
         (x1, y1), (x2, y2) = closest_segment
         (x0, y0) = point
-        angle_start = atan2(float(y1 - y0), float(x1 - x0))
-        angle_end = atan2(float(y2 - y0), float(x2 - x0))
+        dx_start = np.asarray(x1 - x0).flatten()
+        dy_start = np.asarray(y1 - y0).flatten()
+
+        if dx_start.size == 0 or dy_start.size == 0:
+            raise ValueError(
+                f"Empty start coordinate difference: dx={dx_start}, dy={dy_start}"
+            )
+
+        angle_start = atan2(float(dy_start[0]), float(dx_start[0]))
+
+        dx_end = np.asarray(x2 - x0).flatten()
+        dy_end = np.asarray(y2 - y0).flatten()
+
+        if dx_end.size == 0 or dy_end.size == 0:
+            raise ValueError(
+                f"Empty end coordinate difference: dx={dx_end}, dy={dy_end}"
+            )
+
+        angle_end = atan2(float(dy_end[0]), float(dx_end[0]))
+
         angle_diff = (angle_end - angle_start) % TWO_PI
 
         if angle_diff > pi:
@@ -264,10 +285,10 @@ def _distance_point_to_segment(point, segment):
     # minimum distance to either of the end points as the distance from the
     # point to this segment.
     if _point_on_segment((xt, yt), segment):
-        distance = sqrt(float((xt - x0) ** 2 + (yt - y0) ** 2))
+        distance = sqrt(float(((xt - x0) ** 2 + (yt - y0) ** 2)[0]))
     else:
-        d_1 = sqrt(float((x1 - x0) ** 2 + (y1 - y0) ** 2))
-        d_2 = sqrt(float((x2 - x0) ** 2 + (y2 - y0) ** 2))
+        d_1 = sqrt(float(((x1 - x0) ** 2 + (y1 - y0) ** 2)[0]))
+        d_2 = sqrt(float(((x2 - x0) ** 2 + (y2 - y0) ** 2)[0]))
         distance = min(d_1, d_2)
 
     return distance
