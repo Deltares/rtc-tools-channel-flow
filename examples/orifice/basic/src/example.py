@@ -7,8 +7,8 @@ from rtctools.optimization.modelica_mixin import ModelicaMixin
 from rtctools.optimization.optimization_problem import OptimizationProblem
 from rtctools.util import run_optimization_problem
 
-from rtctools_hydraulic_structures.orifice_mixin import Orifice, OrificeMixin, plot_operating_points
-from rtctools_hydraulic_structures.pumping_station_mixin import \
+from rtctools_channel_flow.orifice_mixin import Orifice, OrificeMixin, plot_operating_points
+from rtctools_channel_flow.pumping_station_mixin import \
     MinimizePumpCostGoal, PumpingStation, PumpingStationMixin
 
 

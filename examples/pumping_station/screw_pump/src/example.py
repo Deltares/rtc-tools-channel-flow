@@ -8,7 +8,7 @@ from rtctools.optimization.modelica_mixin import ModelicaMixin
 from rtctools.optimization.pi_mixin import PIMixin
 from rtctools.util import run_optimization_problem
 
-from rtctools_hydraulic_structures.pumping_station_mixin import \
+from rtctools_channel_flow.pumping_station_mixin import \
     PumpingStation, PumpingStationMixin, plot_operating_points
 
 

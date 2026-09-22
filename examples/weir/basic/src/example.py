@@ -7,7 +7,7 @@ from rtctools.optimization.goal_programming_mixin import GoalProgrammingMixin, S
 from rtctools.optimization.modelica_mixin import ModelicaMixin
 from rtctools.util import run_optimization_problem
 
-from rtctools_hydraulic_structures.weir_mixin import Weir, WeirMixin, plot_operating_points
+from rtctools_channel_flow.weir_mixin import Weir, WeirMixin, plot_operating_points
 
 # There are two water level targets, with different priority.
 # The water level should stay in the required range during all the simulation
