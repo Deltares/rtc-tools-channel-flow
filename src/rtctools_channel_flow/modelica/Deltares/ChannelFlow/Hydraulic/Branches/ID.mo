@@ -6,8 +6,31 @@ model ID
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
   extends Deltares.ChannelFlow.Internal.Reservoir;
-  annotation (
-  Documentation(info="
+
+  input Real Q_upstream_delayed;
+  input Real Q_downstream_delayed;
+  parameter SI.Duration Delay_in_hour;
+
+  // States
+  SI.Position[2] H;
+  SI.VolumeFlowRate[2] Q;
+  parameter SI.Area Ad;
+
+equation
+  // Water level
+  H[1] = HQUp.H;
+  H[2] = HQDown.H;
+  Q[1] = HQUp.Q;
+  Q[2] = HQDown.Q;
+
+  der(HQDown.H) = Q_upstream_delayed / Ad + sum(QForcing) / Ad + sum(QLateral.Q) / Ad + HQDown.Q / Ad ;
+  der(HQUp.H) =   HQUp.Q / Ad + sum(QForcing) / Ad + sum(QLateral.Q) / Ad + Q_downstream_delayed / Ad ;
+
+  Q_downstream_delayed = delay(HQDown.Q, Delay_in_hour);
+  Q_upstream_delayed = delay(HQUp.Q, Delay_in_hour);
+
+
+  annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10})), Documentation(info="
   <html>
   <p>
   This block represents an Integrator Delay (ID) reach, modelling the propagation
@@ -36,34 +59,5 @@ model ID
   of the reach, allowing the model to represent transport and attenuation effects
   while maintaining a simple storage-based formulation.
   </p>
-  </html>")
-);
-
-
-  input Real Q_upstream_delayed;
-  input Real Q_downstream_delayed;
-  parameter SI.Duration Delay_in_hour;
-
-
-
-  // States
-  SI.Position[2] H;
-  SI.VolumeFlowRate[2] Q; 
-  parameter SI.Area Ad;
-
-equation
-  // Water level
-  H[1] = HQUp.H;
-  H[2] = HQDown.H;
-  Q[1] = HQUp.Q;
-  Q[2] = HQDown.Q;
-  
-  der(HQDown.H) = Q_upstream_delayed / Ad + sum(QForcing) / Ad + sum(QLateral.Q) / Ad + HQDown.Q / Ad ;
-  der(HQUp.H) =   HQUp.Q / Ad + sum(QForcing) / Ad + sum(QLateral.Q) / Ad + Q_downstream_delayed / Ad ;
-
-  Q_downstream_delayed = delay(HQDown.Q, Delay_in_hour);
-  Q_upstream_delayed = delay(HQUp.Q, Delay_in_hour);
-
-
-  annotation(Icon(coordinateSystem(extent = {{-100, -100}, {100, 100}}, preserveAspectRatio = true, initialScale = 0.1, grid = {10, 10})));
+  </html>"));
 end ID;
