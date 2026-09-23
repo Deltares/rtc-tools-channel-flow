@@ -186,68 +186,74 @@ class OrificeMixin(OptimizationProblem):
             )
 
 
-def plot_operating_points(optimization_problem, output_folder):
-    """
-    Plot the operating area of the orifice with its operating points.
-    """
-    import matplotlib.pyplot as plt
+    def plot_operating_points(
+        self,
+        output_folder=None,
+        plot_expanded_working_area=True,
+        plot_specific_energy=False,
+        include_prices=False,
+    ):
+        """
+        Plot the operating area of the orifice with its operating points.
+        """
+        import matplotlib.pyplot as plt
 
-    results = optimization_problem.extract_results()
+        results = self.extract_results()
 
-    for o in optimization_problem.orifices():
-        plt.clf()
+        for o in self.orifices():
+            plt.clf()
 
-        # For the head range, we take the extremes of the head over the
-        # orifice encountered during optimization, and the maximum head
-        # difference specified by the user.
-        head_loss = results[o.symbol + ".HQUp.H"] - results[o.symbol + ".HQDown.H"]
-        hrange = (min(head_loss), o.dh_max)
-        qrange = (0.0, o.q_max)
+            # For the head range, we take the extremes of the head over the
+            # orifice encountered during optimization, and the maximum head
+            # difference specified by the user.
+            head_loss = results[o.symbol + ".HQUp.H"] - results[o.symbol + ".HQDown.H"]
+            hrange = (min(head_loss), o.dh_max)
+            qrange = (0.0, o.q_max)
 
-        # For the lines, use a little bit wider range for both H
-        extra_space = 0.25 * (hrange[1] - hrange[0])
-        hs_range = (hrange[0] - extra_space, hrange[1] + extra_space)
+            # For the lines, use a little bit wider range for both H
+            extra_space = 0.25 * (hrange[1] - hrange[0])
+            hs_range = (hrange[0] - extra_space, hrange[1] + extra_space)
 
-        hs = np.linspace(*hs_range)[:, None]
+            hs = np.linspace(*hs_range)[:, None]
 
-        # For the x and y limits we use slightly less extra space. For the H
-        # we use no extra space on the upper limit, to avoid confusion.
-        extra_space = 0.1 * (qrange[1] - qrange[0])
-        qplot_range = (qrange[0] - extra_space, qrange[1] + extra_space)
+            # For the x and y limits we use slightly less extra space. For the H
+            # we use no extra space on the upper limit, to avoid confusion.
+            extra_space = 0.1 * (qrange[1] - qrange[0])
+            qplot_range = (qrange[0] - extra_space, qrange[1] + extra_space)
 
-        extra_space = 0.1 * (hrange[1] - hrange[0])
-        hplot_range = (hrange[0] - extra_space, hrange[1])
+            extra_space = 0.1 * (hrange[1] - hrange[0])
+            hplot_range = (hrange[0] - extra_space, hrange[1])
 
-        plt.xlim(*hplot_range)
-        plt.ylim(*qplot_range)
+            plt.xlim(*hplot_range)
+            plt.ylim(*qplot_range)
 
-        # Plot lines for the horizontal and vertical axes
-        plt.axhline(0, color="black", zorder=1)
-        plt.axvline(0, color="black", zorder=1)
+            # Plot lines for the horizontal and vertical axes
+            plt.axhline(0, color="black", zorder=1)
+            plt.axvline(0, color="black", zorder=1)
 
-        # Plot the maximum discharge at each head, if the orifice is fully open
-        hs_clipped = np.clip(hs, 0.0, o.dh_max)
-        plt.plot(hs, o._calc_q(hs_clipped), "b")
+            # Plot the maximum discharge at each head, if the orifice is fully open
+            hs_clipped = np.clip(hs, 0.0, o.dh_max)
+            plt.plot(hs, o._calc_q(hs_clipped), "b")
 
-        # Plot the operating points
-        discharge_sym = o.symbol + ".Q"
-        plt.plot(
-            head_loss[1:],
-            results[discharge_sym][1:],
-            "r+",
-            markeredgewidth=2,
-            label="Operating points",
-        )
+            # Plot the operating points
+            discharge_sym = o.symbol + ".Q"
+            plt.plot(
+                head_loss[1:],
+                results[discharge_sym][1:],
+                "r+",
+                markeredgewidth=2,
+                label="Operating points",
+            )
 
-        plt.xlabel(r"$\Delta H$ [$\mathdefault{m}$]")
-        plt.ylabel(r"Discharge [$\mathdefault{m^3\!/s}$]")
+            plt.xlabel(r"$\Delta H$ [$\mathdefault{m}$]")
+            plt.ylabel(r"Discharge [$\mathdefault{m^3\!/s}$]")
 
-        f = plt.gcf()
-        f.set_size_inches(8, 6)
-        f.tight_layout()
+            f = plt.gcf()
+            f.set_size_inches(8, 6)
+            f.tight_layout()
 
-        plt.grid(True)
+            plt.grid(True)
 
-        fname = "{}_operating_points.png".format(o.symbol.replace(".", "_"))
-        fname = os.path.join(output_folder, fname)
-        plt.savefig(fname, bbox_inches="tight", pad_inches=0.1)
+            fname = "{}_operating_points.png".format(o.symbol.replace(".", "_"))
+            fname = os.path.join(output_folder, fname)
+            plt.savefig(fname, bbox_inches="tight", pad_inches=0.1)

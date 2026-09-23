@@ -7,7 +7,7 @@ from rtctools.optimization.modelica_mixin import ModelicaMixin
 from rtctools.optimization.optimization_problem import OptimizationProblem
 from rtctools.util import run_optimization_problem
 
-from rtctools_channel_flow.orifice_mixin import Orifice, OrificeMixin, plot_operating_points
+from rtctools_channel_flow.orifice_mixin import Orifice, OrificeMixin
 from rtctools_channel_flow.pumping_station_mixin import \
     MinimizePumpCostGoal, PumpingStation, PumpingStationMixin
 
@@ -167,7 +167,7 @@ class Example(PumpingStationMixin, OrificeMixin, GoalProgrammingMixin, CSVMixin,
         plt.savefig(os.path.join(self.__output_folder, 'overall_results.png'), bbox_inches='tight', pad_inches=0.1)
 
         # Plot the operating points of the orifice
-        plot_operating_points(self, self.__output_folder)
+        self.plot_operating_points(self.__output_folder)
 
 
 # Run

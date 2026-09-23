@@ -2467,256 +2467,261 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
         return variables
 
 
-def plot_operating_points(
-    optimization_problem,
-    output_folder=None,
-    plot_expanded_working_area=True,
-    plot_specific_energy=False,
-    include_prices=False,
-):
-    """
-    Plot the working area of each pump with its operating points.
-    """
-    import matplotlib.pyplot as plt
-    import matplotlib.lines as mlines
+    def plot_operating_points(
+        self,
+        output_folder=None,
+        plot_expanded_working_area=True,
+        plot_specific_energy=False,
+        include_prices=False,
+    ):
+        """
+        Plot the working area of each pump with its operating points.
+        """
+        import matplotlib.pyplot as plt
+        import matplotlib.lines as mlines
 
-    plots = {}
+        plots = {}
 
-    for ps in optimization_problem.pumping_stations():
-        for p in ps.pumps():
-            f = plt.figure(figsize=(8, 6))
+        for ps in self.pumping_stations():
+            for p in ps.pumps():
+                f = plt.figure(figsize=(8, 6))
 
-            # For the head range, we take the extremes of the head over the
-            # pump encountered during optimization, and the maximum head
-            # inside the working area.
-            hr = optimization_problem._psmixin_head_range[p.head_option][ps.symbol]
-            hr = [float(x) for x in hr]  # Convert DMatrix to float
+                # For the head range, we take the extremes of the head over the
+                # pump encountered during optimization, and the maximum head
+                # inside the working area.
+                hr = self._psmixin_head_range[p.head_option][ps.symbol]
+                hr = [float(x) for x in hr]  # Convert DMatrix to float
 
-            head_sym = p.symbol + "_head"
-            if plot_expanded_working_area:
-                hrange_wa = (
-                    optimization_problem._psmixin_pump_extended_working_area_head_range[
+                head_sym = p.symbol + "_head"
+                if plot_expanded_working_area:
+                    hrange_wa = (
+                        self._psmixin_pump_extended_working_area_head_range[
+                            head_sym
+                        ]
+                    )
+                else:
+                    hrange_wa = self._psmixin_pump_working_area_head_range[
                         head_sym
                     ]
-                )
-            else:
-                hrange_wa = optimization_problem._psmixin_pump_working_area_head_range[
-                    head_sym
-                ]
-            hrange_wa = [float(x) for x in hrange_wa]  # Convert DMatrix to float
+                hrange_wa = [float(x) for x in hrange_wa]  # Convert DMatrix to float
 
-            hrange = [min(hr[0], hrange_wa[0]), max(hr[1], hrange_wa[1])]
+                hrange = [min(hr[0], hrange_wa[0]), max(hr[1], hrange_wa[1])]
 
-            discharge_sym = p.symbol.replace(".", "_") + "_Q"
-            qrange = optimization_problem._psmixin_pump_discharge_bounds[discharge_sym]
-            qrange = [float(x) for x in qrange]  # Convert DMatrix to float
+                discharge_sym = p.symbol.replace(".", "_") + "_Q"
+                qrange = self._psmixin_pump_discharge_bounds[discharge_sym]
+                qrange = [float(x) for x in qrange]  # Convert DMatrix to float
 
-            # For the lines, use a little bit wider range for both H and Q
-            extra_space = 0.25 * (qrange[1] - qrange[0])
-            qs_range = (qrange[0] - extra_space, qrange[1] + extra_space)
+                # For the lines, use a little bit wider range for both H and Q
+                extra_space = 0.25 * (qrange[1] - qrange[0])
+                qs_range = (qrange[0] - extra_space, qrange[1] + extra_space)
 
-            extra_space = 0.25 * (hrange[1] - hrange[0])
-            hs_range = (hrange[0] - extra_space, hrange[1] + extra_space)
+                extra_space = 0.25 * (hrange[1] - hrange[0])
+                hs_range = (hrange[0] - extra_space, hrange[1] + extra_space)
 
-            qs = np.linspace(*qs_range)
-            hs = np.linspace(*hs_range)[:, None]
+                qs = np.linspace(*qs_range)
+                hs = np.linspace(*hs_range)[:, None]
 
-            # For the x and y limits we use slightly less extra space. This is
-            # to make sure that the contour lines go all the way to the edge
-            # of our plots.
-            extra_space = 0.1 * (qrange[1] - qrange[0])
-            qplot_range = (qrange[0] - extra_space, qrange[1] + extra_space)
+                # For the x and y limits we use slightly less extra space. This is
+                # to make sure that the contour lines go all the way to the edge
+                # of our plots.
+                extra_space = 0.1 * (qrange[1] - qrange[0])
+                qplot_range = (qrange[0] - extra_space, qrange[1] + extra_space)
 
-            extra_space = 0.1 * (hrange[1] - hrange[0])
-            hplot_range = (hrange[0] - extra_space, hrange[1] + extra_space)
+                extra_space = 0.1 * (hrange[1] - hrange[0])
+                hplot_range = (hrange[0] - extra_space, hrange[1] + extra_space)
 
-            plt.xlim(*qplot_range)
-            plt.ylim(*hplot_range)
+                plt.xlim(*qplot_range)
+                plt.ylim(*hplot_range)
 
-            # Plot lines for the horizontal and vertical axes
-            plt.axhline(0, color="black", zorder=1)
-            plt.axvline(0, color="black", zorder=1)
+                # Plot lines for the horizontal and vertical axes
+                plt.axhline(0, color="black", zorder=1)
+                plt.axvline(0, color="black", zorder=1)
 
-            wa = p.working_area
-            wa_dir = p.working_area_direction
+                wa = p.working_area
+                wa_dir = p.working_area_direction
 
-            wa_lines = []
+                wa_lines = []
 
-            inner_points = qs * hs * 0.0
+                inner_points = qs * hs * 0.0
 
-            # Plot the working area
-            for w in range(len(wa)):
-                constraints = optimization_problem._psmixin_working_area_constraints(
-                    wa[w : w + 1], wa_dir[w : w + 1], hr, hs, qs, 1
-                )
-
-                C = plt.contour(
-                    qs, hs.ravel(), constraints[0][0], [0], colors="b", zorder=2
-                )
-
-                inner_points += ((constraints[0][0] * wa_dir[w]) > 0).astype(int)
-                if len(C.allsegs[0]) > 0:
-                    wa_lines.append([tuple(x) for x in C.allsegs[0][0]])
-                else:
-                    wa_lines.append([])
-
-                if plot_expanded_working_area:
-                    constraints = (
-                        optimization_problem._psmixin_working_area_constraints(
-                            wa[w : w + 1], wa_dir[w : w + 1], hr, hs, qs, 0
-                        )
+                # Plot the working area
+                for w in range(len(wa)):
+                    constraints = self._psmixin_working_area_constraints(
+                        wa[w : w + 1], wa_dir[w : w + 1], hr, hs, qs, 1
                     )
 
-                    plt.contour(
-                        qs,
-                        hs.ravel(),
-                        constraints[0][0],
-                        [0],
-                        colors="g",
-                        linestyles="dashed",
-                        zorder=2,
+                    C = plt.contour(
+                        qs, hs.ravel(), constraints[0][0], [0], colors="b", zorder=2
                     )
 
-            plt.plot(
-                [0, 0], list(hr), "yo", ms=6, mec="k", label="Head range", zorder=3
-            )
+                    inner_points += ((constraints[0][0] * wa_dir[w]) > 0).astype(int)
+                    if len(C.allsegs[0]) > 0:
+                        wa_lines.append([tuple(x) for x in C.allsegs[0][0]])
+                    else:
+                        wa_lines.append([])
 
-            results = optimization_problem.extract_results()
-
-            # Check if we found any point inside the working area, so that we
-            # can color it. We typically will not have found such a point for
-            # constant speed pumps (or close to constant speed pumps), in which
-            # case we skip the filling. If for some other reason we cannot find
-            # and enclosing polyline, we just skip the color fill.
-            h_inds, q_inds = np.where(inner_points == len(wa))
-            if h_inds.size > 0 and q_inds.size > 0:
-                try:
-                    point = (qs[q_inds[0]], hs[h_inds[0]])
-                    wa_segments = enclosing_segments(point, wa_lines)
-                    x, y = list(zip(*(s[0] for s in wa_segments)))
-                    poly = plt.fill_between(x, y, alpha=0.25, color="none")
-                    verts = np.vstack([k.vertices for k in poly.get_paths()])
-
-                    # Add the specific energy as a gradient to the working area of the pump
-                    if plot_specific_energy:
-                        # Determine coordinates of the working area of the pump to plot the specific energy
-                        minh = 999.0
-                        maxh = -999.0
-                        minq = 999.0
-                        maxq = -999.0
-                        rows_points, cols_points = np.shape(inner_points)
-                        for row in range(rows_points):
-                            for col in range(cols_points):
-                                if inner_points[row, col] == len(wa):
-                                    if qs[col] < minq:
-                                        minq = qs[col]
-                                    if hs[row] < minh:
-                                        minh = hs[row]
-                                    if qs[col] > maxq:
-                                        maxq = qs[col]
-                                    if hs[row] > maxh:
-                                        maxh = hs[row]
-
-                        qplot_range = (minq, maxq)
-                        hplot_range = (minh, maxh)
-
-                        step_number = 50
-                        h_step_length = (hplot_range[1] - hplot_range[0]) / step_number
-                        q_step_length = (qplot_range[1] - qplot_range[0]) / step_number
-                        h_step_length = h_step_length.item()
-                        grid_h, grid_q = np.mgrid[
-                            hplot_range[0].item() : hplot_range[1].item()
-                            + h_step_length : h_step_length,
-                            qplot_range[0].item() : qplot_range[1].item()
-                            + q_step_length : q_step_length,
-                        ]
-
-                        # Compute specific energy using the defined coeffs in the working area of the pump
-                        coeffs = p.power_coefficients
-                        spece_array = optimization_problem.spec_energy_functions(
-                            grid_h, grid_q, coeffs
+                    if plot_expanded_working_area:
+                        constraints = (
+                            self._psmixin_working_area_constraints(
+                                wa[w : w + 1], wa_dir[w : w + 1], hr, hs, qs, 0
+                            )
                         )
-                        # Compute maximum for given set of coeffs
-                        spece_array_max = max(spece_array, key=methodcaller("tolist"))
 
-                        # Plot the specific energy in the working area of the pump
-                        gradient = plt.imshow(
-                            spece_array_max,
-                            cmap="cool",
-                            aspect="auto",
-                            origin="lower",
-                            extent=[
-                                verts[1 : len(x), 0].min(),
-                                verts[1 : len(x), 0].max(),
-                                verts[1 : len(y), 1].min(),
-                                verts[1 : len(y), 1].max(),
-                            ],
+                        plt.contour(
+                            qs,
+                            hs.ravel(),
+                            constraints[0][0],
+                            [0],
+                            colors="g",
+                            linestyles="dashed",
+                            zorder=2,
                         )
-                        gradient.set_clip_path(
-                            poly.get_paths()[0], transform=plt.gca().transData
-                        )
-                        # Add the colorbar to the plot
-                        cb = plt.colorbar(
-                            gradient,
-                            shrink=0.9,
-                            label=r"Spec. energy  [$\mathdefault{kWh/1000m^3}$]",
-                        )
-                        cb.outline.set_color("black")
-                        plt.clim(0, math.ceil(spece_array_max.max()))
 
-                except DeadEndError:
-                    pass
-
-            # Plot the operating points of the pump
-            if include_prices:
-                # Add the cost (energy price) as a color gradient to the operating points.
-                colors = results[p.energy_price_symbol][1:]
-                sc = plt.scatter(
-                    results[discharge_sym][1:],
-                    results[head_sym][1:],
-                    zorder=4,
-                    s=100,
-                    cmap="YlOrRd",
-                    c=colors,
-                    marker="x",
-                    label="Operating points",
-                )
-                cb = plt.colorbar(sc, shrink=0.9, label=r"Energy price [€/kWh]")
-                cb.outline.set_color("black")
-                plt.clim(0, math.ceil(max(colors)))
-            else:
                 plt.plot(
-                    results[discharge_sym][1:],
-                    results[head_sym][1:],
-                    "rx",
-                    markeredgecolor="black",
-                    markeredgewidth=2,
-                    label="Operating points",
-                    zorder=4,
+                    [0, 0], list(hr), "yo", ms=6, mec="k", label="Head range", zorder=3
                 )
 
-            # Manually add legend entries for the working area(s), because
-            # contour plots do not handle that automatically
-            handles, _ = plt.gca().get_legend_handles_labels()
-            handles.append(mlines.Line2D([], [], color="b", label="Working area"))
-            if plot_expanded_working_area:
-                handles.append(
-                    mlines.Line2D(
-                        [], [], color="g", linestyle="--", label="Extended working area"
+                results = self.extract_results()
+
+                # Check if we found any point inside the working area, so that we
+                # can color it. We typically will not have found such a point for
+                # constant speed pumps (or close to constant speed pumps), in which
+                # case we skip the filling. If for some other reason we cannot find
+                # and enclosing polyline, we just skip the color fill.
+                h_inds, q_inds = np.where(inner_points == len(wa))
+                if h_inds.size > 0 and q_inds.size > 0:
+                    try:
+                        point = (qs[q_inds[0]], hs[h_inds[0]])
+                        wa_segments = enclosing_segments(point, wa_lines)
+                        x, y = list(zip(*(s[0] for s in wa_segments)))
+                        poly = plt.fill_between(x, y, alpha=0.25, color="none")
+                        verts = np.vstack([k.vertices for k in poly.get_paths()])
+
+                        # Add the specific energy as a gradient to the working area of the pump
+                        if plot_specific_energy:
+                            # Determine coordinates of the working area of the pump to plot the specific energy
+                            minh = 999.0
+                            maxh = -999.0
+                            minq = 999.0
+                            maxq = -999.0
+                            rows_points, cols_points = np.shape(inner_points)
+                            for row in range(rows_points):
+                                for col in range(cols_points):
+                                    if inner_points[row, col] == len(wa):
+                                        if qs[col] < minq:
+                                            minq = qs[col]
+                                        if hs[row] < minh:
+                                            minh = hs[row]
+                                        if qs[col] > maxq:
+                                            maxq = qs[col]
+                                        if hs[row] > maxh:
+                                            maxh = hs[row]
+
+                            qplot_range = (minq, maxq)
+                            hplot_range = (minh, maxh)
+
+                            step_number = 50
+                            h_step_length = (hplot_range[1] - hplot_range[0]) / step_number
+                            q_step_length = (qplot_range[1] - qplot_range[0]) / step_number
+                            h_step_length = h_step_length.item()
+                            grid_h, grid_q = np.mgrid[
+                                hplot_range[0].item() : hplot_range[1].item()
+                                + h_step_length : h_step_length,
+                                qplot_range[0].item() : qplot_range[1].item()
+                                + q_step_length : q_step_length,
+                            ]
+
+                            # Compute specific energy using the defined coeffs in the working area of the pump
+                            coeffs = p.power_coefficients
+                            spece_array = self.spec_energy_functions(
+                                grid_h, grid_q, coeffs
+                            )
+                            # Compute maximum for given set of coeffs
+                            spece_array_max = max(spece_array, key=methodcaller("tolist"))
+
+                            # Plot the specific energy in the working area of the pump
+                            gradient = plt.imshow(
+                                spece_array_max,
+                                cmap="cool",
+                                aspect="auto",
+                                origin="lower",
+                                extent=[
+                                    verts[1 : len(x), 0].min(),
+                                    verts[1 : len(x), 0].max(),
+                                    verts[1 : len(y), 1].min(),
+                                    verts[1 : len(y), 1].max(),
+                                ],
+                            )
+                            gradient.set_clip_path(
+                                poly.get_paths()[0], transform=plt.gca().transData
+                            )
+                            # Add the colorbar to the plot
+                            cb = plt.colorbar(
+                                gradient,
+                                shrink=0.9,
+                                label=r"Spec. energy  [$\mathdefault{kWh/1000m^3}$]",
+                            )
+                            cb.outline.set_color("black")
+                            plt.clim(0, math.ceil(spece_array_max.max()))
+
+                    except DeadEndError:
+                        pass
+
+                # Plot the operating points of the pump
+                if include_prices:
+                    # Add the cost (energy price) as a color gradient to the operating points.
+                    colors = results[p.energy_price_symbol][1:]
+                    sc = plt.scatter(
+                        results[discharge_sym][1:],
+                        results[head_sym][1:],
+                        zorder=4,
+                        s=100,
+                        cmap="YlOrRd",
+                        c=colors,
+                        marker="x",
+                        label="Operating points",
                     )
-                )
+                    cb = plt.colorbar(sc, shrink=0.9, label=r"Energy price [€/kWh]")
+                    cb.outline.set_color("black")
+                    plt.clim(0, math.ceil(max(colors)))
+                else:
+                    plt.plot(
+                        results[discharge_sym][1:],
+                        results[head_sym][1:],
+                        "rx",
+                        markeredgecolor="black",
+                        markeredgewidth=2,
+                        label="Operating points",
+                        zorder=4,
+                    )
 
-            plt.legend(handles=handles)
-            plt.xlabel(r"Discharge [$\mathdefault{m^3\!/s}$]")
-            plt.ylabel(r"Head [$\mathdefault{m}$]")
-            plt.grid(True)
-            f.tight_layout()
+                # Manually add legend entries for the working area(s), because
+                # contour plots do not handle that automatically
+                handles, _ = plt.gca().get_legend_handles_labels()
+                handles.append(mlines.Line2D([], [], color="b", label="Working area"))
+                if plot_expanded_working_area:
+                    handles.append(
+                        mlines.Line2D(
+                            [], [], color="g", linestyle="--", label="Extended working area"
+                        )
+                    )
+
+                plt.legend(handles=handles)
+                plt.xlabel(r"Discharge [$\mathdefault{m^3\!/s}$]")
+                plt.ylabel(r"Head [$\mathdefault{m}$]")
+                plt.grid(True)
+                f.tight_layout()
 
             if output_folder is not None:
                 fname = "QHP_{}.png".format(p.symbol.replace(".", "_"))
                 fname = os.path.join(output_folder, fname)
                 plt.savefig(fname, bbox_inches="tight", pad_inches=0.1)
 
-            plots[p.symbol] = f
-
-    return plots
+                plots[p.symbol] = f
+        super().plot_operating_points(
+            output_folder=output_folder,
+            plot_expanded_working_area=plot_expanded_working_area,
+            plot_specific_energy=plot_specific_energy,
+            include_prices=include_prices,
+        )
+        return plots

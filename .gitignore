@@ -1,6 +1,7 @@
 # pycache files
 __pycache__
 .pymoca_cache/
+*/output/*
 *.pickle
 # Distribution & Packaging
 *.eggs
