@@ -1,8 +1,19 @@
 # pycache files
 __pycache__
 .pymoca_cache/
-*/output/*
+*.pymoca_cache
 *.pickle
+
+# Generated outputs
+**/output/*
+
 # Distribution & Packaging
 *.eggs
 *.egg-info
+
+# Documentation builds
+docs/build/
+docs/source/build/
+
+# IDE
+.idea/
