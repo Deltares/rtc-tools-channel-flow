@@ -2015,12 +2015,9 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                         else:
                             station_m = np.minimum(m, station_m)
                     if station_Ms is None:
-                        station_Ms = Ms
+                        station_Ms = np.array([max(Ms)])
                     else:
-                        if isinstance(station_Ms, float):
-                            station_Ms = Ms + station_Ms
-                        else:
-                            station_Ms += Ms
+                        station_Ms +=max(Ms)
 
                     for power, M in zip(powers, Ms):
                         # NOTE: Inequality constraint for power, as an equality constraint would have to be affine
