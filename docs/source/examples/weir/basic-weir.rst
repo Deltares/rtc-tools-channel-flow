@@ -170,7 +170,7 @@ Now there is only one weir, and the definition looks like:
 
 In case of more weirs, the names can be separated with a comma, for example::
 
-        self._weirs = [Weir('weir1'), Weir('weir2')]
+        self.__weirs = [Weir(self, 'weir1'), Weir(self, 'weir2')]
 
 Lastly we have to override the abstract method the returns the list of weirs:
 
