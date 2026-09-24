@@ -26,11 +26,16 @@ Contents
    
 .. toctree::
    :maxdepth: 2
-   :caption: Hydraulic Structures API Documentation
+   :caption: Hydarulic Structures API Documentation
 
+   python-api
    modelica-api
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Examples
 
+   examples/index
    
 
 Indices and tables
