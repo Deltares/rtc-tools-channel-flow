@@ -88,9 +88,9 @@ class WeirExample(WeirMixin, GoalProgrammingMixin, CSVMixin, ModelicaMixin, Coll
         axarr[0].set_ylabel('Water level\n[m]')
         axarr[0].plot(times, results['branch_1_water_level'], label='Upstream',
                       linewidth=2, color='b')
-        axarr[0].plot(times, self.get_timeseries('h_min_branch1').values, label='Upstream Max',
+        axarr[0].plot(times, self.get_timeseries('h_min_branch1').values, label='Upstream Min',
                       linewidth=2, color='r', linestyle='--')
-        axarr[0].plot(times, self.get_timeseries('h_max_branch1').values, label='Upstream Min',
+        axarr[0].plot(times, self.get_timeseries('h_max_branch1').values, label='Upstream Max',
                       linewidth=2, color='g', linestyle='--')
         ymin, ymax = axarr[0].get_ylim()
         axarr[0].set_ylim(ymin - 0.1, ymax + 0.1)
