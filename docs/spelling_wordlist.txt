@@ -8,3 +8,7 @@ Indices
 linearization
 polder
 submodel
+Swamee
+Prabhata
+discretized
+renewables
