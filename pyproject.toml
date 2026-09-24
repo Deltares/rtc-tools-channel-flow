@@ -19,6 +19,7 @@ dependencies = [
     "numpy",
     "casadi",
     "rtc-tools",
+    "pymoca >= 0.4.2",
 ]
 
 [dependency-groups]
