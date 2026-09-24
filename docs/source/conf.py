@@ -107,8 +107,12 @@ html_theme = 'sphinx_rtd_theme'
 epub_show_urls = 'footnote'
 
 # -- Hack to strip annotations from Modelica files ------------------------
-MODELICA_EXAMPLE_BASE_FOLDER = '../../examples'
-MODELICA_STRIPPED_EXAMPLE_FOLDER = 'build/_stripped_examples'
+MODELICA_EXAMPLE_BASE_FOLDER = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "examples")
+)
+MODELICA_STRIPPED_EXAMPLE_FOLDER = os.path.join(
+    os.path.dirname(__file__), "build", "_stripped_examples"
+)
 
 for root, _dirs, files in os.walk(MODELICA_EXAMPLE_BASE_FOLDER):
     mo_files = [x for x in files if x.endswith('.mo')]
