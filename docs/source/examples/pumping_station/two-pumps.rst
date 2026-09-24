@@ -67,7 +67,7 @@ The Optimization Problem
 When using multiple pumps it is important to specify the right order of pumps.
 This order should match the order of pumps in the
 :cpp:var:`~Deltares::ChannelFlow::Hydraulic::Structures::PumpingStation::PumpingStation::pump_switching_matrix`.
-The parameter ``energy_price_symbol`` is used to specify the energy price of each pump in the pumping station.
+The parameter ``energy_price_symbols`` is used to specify the energy price of each pump in the pumping station.
 This is either a string or a list of strings of names of the energy prices time series.
 If ``energy_price_symbol`` is a string, then all the pumps of the pumping station will have the same energy price.
 Else there must be as many energy price symbols as number of pumps.
