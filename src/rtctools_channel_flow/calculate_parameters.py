@@ -579,7 +579,6 @@ def IdzFun(q, n, B, m, Sb, Y0, L, shape):
 
 
 class GetLinearSVVariables:
-    
     """
     Pre-compute steady-state and linearized shallow-water (Saint-Venant) variables
     for a 1D open-channel flow in a rectangular cross-section.
@@ -625,7 +624,6 @@ class GetLinearSVVariables:
         y_nominal_down=0,
         friction_coefficient=0,
     ):
-        
         """
         Initialize channel and nominal-flow parameters.
 
@@ -669,7 +667,6 @@ class GetLinearSVVariables:
         self.friction_coefficient = friction_coefficient
 
     def getVariables(self):
-        
         """
         Compute and store all derived steady/linearized arrays in-place.
 
@@ -711,7 +708,7 @@ class GetLinearSVVariables:
         Linearization auxiliaries
         -------------------------
         delta : list[float], length n_level_nodes + 1
-            Array used in linearized momentum relations, coefficient of the 
+            Array used in linearized momentum relations, coefficient of the
             discharge term; set to zeros if
             `q_nominal == 0` to avoid division by zero, otherwise computed from
             `v0`, `s_b`, and `dydx`.
@@ -734,8 +731,8 @@ class GetLinearSVVariables:
         - This function does not return a value; it populates instance attributes.
         - If `q_nominal == 0`, `delta` is set to a zero array (to prevent division
           by zero in `v0` terms).
-        - The detailed description of this linearization of the Saint-Venant equations 
-          can be found in Litrico, X., & Fromion, V. (2009). Modeling and control of 
+        - The detailed description of this linearization of the Saint-Venant equations
+          can be found in Litrico, X., & Fromion, V. (2009). Modeling and control of
           hydrosystems. London: Springer London.
 
         Raises
@@ -828,7 +825,7 @@ class GetLinearSVVariables:
 
         # Calculate self.deltas
         self.delta = [None] * (self.n_level_nodes + 1)
-        if self.q_nominal ==0:
+        if self.q_nominal == 0:
             self.delta = [0.0] * (self.n_level_nodes + 1)
         else:
             self.delta[0] = (2 * g_n / self.v0[0]) * (s_b - self.dydx[0])
@@ -888,7 +885,6 @@ class GetLinearSVVariables:
 
 
 class GetIDZVariables:
-    
     """
     Compute IDZ (Integrator Delay Zero) model variables for a 1D open‑channel flow
     segment, based on nominal discharge, geometry, slope, and friction.
@@ -970,5 +966,3 @@ class GetIDZVariables:
         self.Au = au_hat
         self.p21 = p21_inf_hat
         self.p22 = p22_inf_hat
-
-

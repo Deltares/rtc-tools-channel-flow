@@ -2,6 +2,30 @@ import os
 import re
 import sys
 
+
+import sys
+
+print("Python executable:", sys.executable)
+
+try:
+    from casadi import MX
+    print("CasADi import OK")
+except Exception as e:
+    print("CasADi import failed:", repr(e))
+
+try:
+    import rtctools_channel_flow.orifice_mixin
+    print("Orifice mixin import OK")
+except Exception as e:
+    print("Orifice mixin import failed:", repr(e))
+
+
+
+
+
+
+
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'src')))
 
 from rtctools_channel_flow._version import get_versions
