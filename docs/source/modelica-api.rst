@@ -378,7 +378,7 @@ Orifice
     \begin{aligned} \
     \Delta H - \left(1 - S\right) \cdot M &\le 0\\[5pt]
     \Delta H + S \cdot M &\ge 0\\[5pt]
-    0 \le Q + \left(1 - status\right) \cdot Q_{max} &\le Q_{max}\\[5pt]
+    0 \le Q + \left(1 - S\right) \cdot Q_{max} &\le Q_{max}\\[5pt]
     \end{aligned}
 
   where :math:`S` is the status of the orifice (open = 1, closed = 0), and
