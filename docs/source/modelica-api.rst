@@ -361,7 +361,7 @@ Orifice
 
     Q \le C_d \cdot A \cdot \sqrt{2 g \Delta H}
 
-  where :math:`Q` is the pump discharge, and :math:`\Delta H` is the head over
+  where :math:`Q` is the orifice discharge, and :math:`\Delta H` is the head over
   the orifice (:math:`\Delta H = H_{down} - H_{up}`).
 
   Note that the convex inequality constraint means that the orifice is
