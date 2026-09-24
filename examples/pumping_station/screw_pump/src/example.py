@@ -152,7 +152,7 @@ class Example(PumpingStationMixin, GoalProgrammingMixin, PIMixin, ModelicaMixin,
 
         # Output Plot
         f.set_size_inches(8, 9)
-        plt.savefig(os.path.join(self._output_folder, 'overall_results.png'),
+        plt.savefig(os.path.join(self.__output_folder, 'overall_results.png'),
                     bbox_inches='tight', pad_inches=0.1)
 
         # Plot the working area with the operating points of the pump.
