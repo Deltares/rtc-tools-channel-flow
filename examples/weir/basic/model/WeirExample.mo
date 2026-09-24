@@ -2,8 +2,8 @@ model WeirExample
   input Modelica.SIunits.VolumeFlowRate upstream_q_ext(fixed = true);
   input Modelica.SIunits.VolumeFlowRate downstream_q_ext(fixed = true);
   input Modelica.SIunits.VolumeFlowRate WeirFlow1(fixed = false, nominal=1, min=0, max=2.5);
-  output Modelica.SIunits.Volume branch_1_water_level;
-  output Modelica.SIunits.Volume branch_2_water_level;
+  output Modelica.SIunits.Position branch_1_water_level;
+  output Modelica.SIunits.Position branch_2_water_level;
   Deltares.ChannelFlow.Hydraulic.BoundaryConditions.Discharge Upstream annotation(Placement(visible = true, transformation(origin = {-90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 90)));
   Deltares.ChannelFlow.Hydraulic.BoundaryConditions.Discharge Downstream annotation(Placement(visible = true, transformation(origin = {90, 10}, extent = {{-10, -10}, {10, 10}}, rotation = -90)));
   Deltares.ChannelFlow.Hydraulic.Reservoir.Linear Branch1(A = 50, H_b = 0, H(nominal=1, min=0, max=100))  annotation(Placement(visible = true, transformation(origin = {-62, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
