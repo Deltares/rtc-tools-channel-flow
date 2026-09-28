@@ -12,5 +12,3 @@ Swamee
 Prabhata
 discretized
 renewables
-modelling
-modeller

@@ -6,7 +6,7 @@ Pumping Station
 
 .. cpp:namespace:: Deltares::ChannelFlow::Hydraulic::Structures::PumpingStation
 
-These Modelica blocks are part of the standard
+These Modelica blocks are part of the standard 
 `ChannelFlow library <https://gitlab.com/deltares/rtc-tools-channel-flow.git>`_.
 They consist of the following components:
 
@@ -37,11 +37,11 @@ PumpingStation
 Pump
 ~~~~
 
-.. cpp:class:: Pump : Deltares::ChannelFlow::Hydraulic::Structures::DischargeControlledStructure
+.. cpp:class:: Pump : Deltares::ChannelFlow::Hydraulic::Structures::Pump
 
   Represents a single pump object. Because the power of the pump is seldom a
   linear function of `Q` and `H`, this class is wrapped by the Python API's
-  :py:class:`~rtctools_hydraulic_structures.pumping_station_mixin.Pump` which
+  :py:class:`~rtctools_channel_flow.pumping_station_mixin.Pump` which
   turns the power equation specified by :cpp:var:`power_coefficients` into
   a set of inequality constraints:
 
@@ -294,9 +294,9 @@ PumpingStation
 Weir
 ----
 
-.. cpp:namespace:: Deltares::ChannelFlow::Hydraulic::Structures
+.. cpp:namespace:: Deltares::ChannelFlow::Hydraulic::Structures::Weir
 
-.. cpp:class:: Weir : Deltares::ChannelFlow::Internal::HQTwoPort
+.. cpp:class:: Weir : Deltares::ChannelFlow::Hydraulic::Structures
 
   Represents a general movable-crest weir object described by the conventional
   weir equation (see e.g. Swamee, Prabhata K. "Generalized rectangular weir equations."
@@ -343,9 +343,9 @@ Weir
 Orifice
 -------
 
-.. cpp:namespace:: Deltares::ChannelFlow::Hydraulic::Structures
+.. cpp:namespace:: Deltares::ChannelFlow::Hydraulic::Structures::Orifice
 
-.. cpp:class:: Orifice : Deltares::ChannelFlow::Hydraulic::Structures::DischargeControlledStructure
+.. cpp:class:: Orifice : Deltares::ChannelFlow::Hydraulic::Structures::Orifice
 
   
   
@@ -359,9 +359,9 @@ Orifice
 
   .. math::
 
-    Q \le C_d \cdot A \cdot \sqrt{-2 g \Delta H}
+    Q \le C_d \cdot A \cdot \sqrt{2 g \Delta H}
 
-  where :math:`Q` is the orifice discharge, and :math:`\Delta H` is the head over
+  where :math:`Q` is the pump discharge, and :math:`\Delta H` is the head over
   the orifice (:math:`\Delta H = H_{down} - H_{up}`).
 
   Note that the convex inequality constraint means that the orifice is
@@ -378,7 +378,7 @@ Orifice
     \begin{aligned} \
     \Delta H - \left(1 - S\right) \cdot M &\le 0\\[5pt]
     \Delta H + S \cdot M &\ge 0\\[5pt]
-    0 \le Q + \left(1 - S\right) \cdot Q_{max} &\le Q_{max}\\[5pt]
+    0 \le Q + \left(1 - status\right) \cdot Q_{max} &\le Q_{max}\\[5pt]
     \end{aligned}
 
   where :math:`S` is the status of the orifice (open = 1, closed = 0), and
@@ -387,7 +387,7 @@ Orifice
 
   .. cpp:var:: Modelica::SIunits::Length dH_max = 10.0
 
-    The maximum possible head over the orifice. Among other used to
+    The maximum possible head over the orifice. Amongst other used to
     calculate the maximum possible discharge through the orifice if it is not
     set using bounds, and to make sure the inequality constraint relating
     :math:`Q` to :math:`H` remains feasible when the orifice is closed.

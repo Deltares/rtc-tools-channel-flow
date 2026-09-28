@@ -1,6 +1,6 @@
 The Channel Flow Library
 ========================
-The channel flow library contains Modelica building blocks to compose water system models from. The modeling objects are grouped into different categories. There are three main categories that would be used directly by the modeller: hydraulic, simple routing and salt. Hydraulic blocks model the open water channel flow with spatially discretized nodes. Simple routing has elements that has only one water level, or only volume. The salt block is an experimental version to model dispersive and convective salt transport.
+The channel flow library contains Modelica building blocks to compose water system models from. The modeling objects are grouped into different categories. There are three main categories that would be used directly by the modeler: hydraulic, simple routing and salt. Hydraulic blocks model the open water channel flow with spatially discretized nodes. Simple routing has elements that has only one water level, or only volume. The salt block is an experimental version to model dispersive and convective salt transport.
 
 Media
 -----
@@ -71,7 +71,7 @@ In this example, the *Node*  with name *Alder* has two inflow connectors (``nin`
 Reservoir
 ^^^^^^^^^
 
-The *Reservoir* node is used for modelling reservoirs. The basic equation is the storage equation
+The *Reservoir* node is used for modeling reservoirs. The basic equation is the storage equation
 
 .. math:: \frac{\partial V}{\partial t} = Q_\mathrm{in} - Q_\mathrm{out} + Q_\mathrm{forcing} + Q_\mathrm{lateral}
 
@@ -103,7 +103,7 @@ The *DischargeControlledStructure* takes a discharge value. Typically, this mode
 
 Hydraulic
 ---------
-This group of modeling objects contains building blocks for hydraulic modelling, basically one-dimensional open channel flow. 
+This group of modeling objects contains building blocks for hydraulic modeling, basically one-dimensional open channel flow. 
 
 
 Salt
