@@ -37,7 +37,7 @@ PumpingStation
 Pump
 ~~~~
 
-.. cpp:class:: Pump : Deltares::ChannelFlow::Hydraulic::Structures::Pump
+.. cpp:class:: Pump : Deltares::ChannelFlow::Hydraulic::Structures::DischargeControlledStructure
 
   Represents a single pump object. Because the power of the pump is seldom a
   linear function of `Q` and `H`, this class is wrapped by the Python API's
