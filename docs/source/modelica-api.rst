@@ -294,9 +294,9 @@ PumpingStation
 Weir
 ----
 
-.. cpp:namespace:: Deltares::ChannelFlow::Hydraulic::Structures::Weir
+.. cpp:namespace:: Deltares::ChannelFlow::Hydraulic::Structures
 
-.. cpp:class:: Weir : Deltares::ChannelFlow::Hydraulic::Structures
+.. cpp:class:: Weir : Deltares::ChannelFlow::Internal::HQTwoPort
 
   Represents a general movable-crest weir object described by the conventional
   weir equation (see e.g. Swamee, Prabhata K. "Generalized rectangular weir equations."
