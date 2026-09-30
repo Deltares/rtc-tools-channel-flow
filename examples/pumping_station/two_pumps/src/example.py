@@ -9,7 +9,7 @@ from rtctools.optimization.pi_mixin import PIMixin
 from rtctools.util import run_optimization_problem
 
 from rtctools_channel_flow.pumping_station_mixin import \
-    MinimizePumpCostGoal, PumpStatusGoal, PumpingStation, PumpingStationMixin, plot_operating_points
+    MinimizePumpCostGoal, PumpStatusGoal, PumpingStation, PumpingStationMixin
 
 
 class WaterLevelRangeGoal(StateGoal):
@@ -205,7 +205,7 @@ class Example(PumpingStationMixin,
         plt.savefig(os.path.join(self.__output_folder, 'overall_results.png'), bbox_inches='tight', pad_inches=0.1)
 
         # Plot the working area with the operating points of the pump.
-        plot_operating_points(self, self.__output_folder)
+        self.plot_operating_points(self.__output_folder)
 
 
 # Run
