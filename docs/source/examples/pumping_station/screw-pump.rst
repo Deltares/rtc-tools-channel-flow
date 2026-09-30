@@ -35,7 +35,7 @@ power of the screw-pump depends on the upstream head, but it does not depend on
 the downstream one. Therefore the ``head_option`` should be set to -1 in the 
 modelica file, see ``Example.mo``:
 
-.. literalinclude:: ../../build/_stripped_examples/pumping_station/constant_speed_pump/model/Example.mo
+.. literalinclude:: ../../build/_stripped_examples/pumping_station/screw_pump/model/Example.mo
   :language: modelica
   :lines: 8-35
   :lineno-match:
