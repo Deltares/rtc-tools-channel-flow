@@ -8,7 +8,7 @@ Constant speed pump
 .. note::
 
   This example focuses on how to model a constant speed pump, and
-  assumes basic exposure to RTC-Tools and the :py:class:`~rtctools_hydraulic_structures.pumping_station_mixin.PumpingStationMixin`.
+   assumes basic exposure to RTC-Tools and the :py:class:`~rtctools_channel_flow.pumping_station_mixin.PumpingStationMixin`.
   To start with basics of pump modeling, see :doc:`basic-pumping-station`.
 
 The purpose of this example is to understand the technical setup of a model
