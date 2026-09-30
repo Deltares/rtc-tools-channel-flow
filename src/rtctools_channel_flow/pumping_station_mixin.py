@@ -2729,5 +2729,3 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
             )
 
         return plots
-
-        return plots
