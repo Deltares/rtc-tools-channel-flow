@@ -253,7 +253,7 @@ result is not seen in the upstream branch, because the weir moves up to
 compensate it. After the weir moved up, the water level drops in the
 downstream branch.
 
-Using :py:func:`~rtctools_hydraulic_structures.weir_mixin.plot_operating_points`
+Using :py:func:`~rtctools_channel_flow.weir_mixin.plot_operating_points`
 it is possible to generate a Q-H plot of the weir's working area and
 operating points, such as shown below. Here we see that it would have been
 possible to choose a slightly lower upper bound for the working area, to
