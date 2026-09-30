@@ -285,10 +285,10 @@ def _distance_point_to_segment(point, segment):
     # minimum distance to either of the end points as the distance from the
     # point to this segment.
     if _point_on_segment((xt, yt), segment):
-        distance = sqrt(float(((xt - x0) ** 2 + (yt - y0) ** 2)[0]))
+        distance = sqrt(float(np.asarray((xt - x0) ** 2 + (yt - y0) ** 2).ravel()[0]))
     else:
-        d_1 = sqrt(float(((x1 - x0) ** 2 + (y1 - y0) ** 2)[0]))
-        d_2 = sqrt(float(((x2 - x0) ** 2 + (y2 - y0) ** 2)[0]))
+        d_1 = sqrt(float(np.asarray((x1 - x0) ** 2 + (y1 - y0) ** 2).ravel()[0]))
+        d_2 = sqrt(float(np.asarray((x2 - x0) ** 2 + (y2 - y0) ** 2).ravel()[0]))
         distance = min(d_1, d_2)
 
     return distance
