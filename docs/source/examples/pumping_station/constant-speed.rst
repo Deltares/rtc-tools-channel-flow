@@ -17,7 +17,7 @@ of a constant speed pump.
 The scenario of this example is equal to that of :doc:`basic-pumping-station`,
 but with one constant speed pump instead of a variable speed pump. The
 resistance has also been removed. The folder
-``examples/pumping_station/two_pumps`` contains the complete RTC- Tools
+``examples/pumping_station/constant_speed_pump`` contains the complete RTC-Tools
 optimization problem. The discussion below will focus on the differences from
 the :doc:`basic-pumping-station`.
 
