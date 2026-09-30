@@ -32,6 +32,11 @@ docs = [
     "sphinxcontrib-spelling",
 ]
 
+tests = [
+    "pytest >= 8.2.0",
+    "pytest-cov >= 6.0.0",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/rtctools_channel_flow"]
 include = [

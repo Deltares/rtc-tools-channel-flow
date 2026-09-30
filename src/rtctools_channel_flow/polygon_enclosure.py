@@ -193,7 +193,7 @@ def _split_lines(lines):
 
         new_lines.append(new_line)
 
-        return new_lines
+    return new_lines
 
 
 def _split_segment(segment, other_segments):
