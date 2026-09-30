@@ -2718,10 +2718,16 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
                 plt.savefig(fname, bbox_inches="tight", pad_inches=0.1)
 
                 plots[p.symbol] = f
-        super().plot_operating_points(
-            output_folder=output_folder,
-            plot_expanded_working_area=plot_expanded_working_area,
-            plot_specific_energy=plot_specific_energy,
-            include_prices=include_prices,
-        )
+
+        parent = getattr(super(), "plot_operating_points", None)
+        if parent is not None:
+            parent(
+                output_folder=output_folder,
+                plot_expanded_working_area=plot_expanded_working_area,
+                plot_specific_energy=plot_specific_energy,
+                include_prices=include_prices,
+            )
+
+        return plots
+
         return plots
