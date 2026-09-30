@@ -21,6 +21,6 @@ Weir Mixin
 ----------
 
 
-.. automodule:: rtctools_hydraulic_structures.weir_mixin
+.. automodule:: rtctools_channel_flow.weir_mixin
     :members: 
     :show-inheritance:

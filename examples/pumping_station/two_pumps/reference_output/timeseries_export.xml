@@ -1,0 +1,367 @@
+<pi:TimeSeries xmlns:pi="http://www.wldelft.nl/fews/PI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.2" xsi:schemaLocation="http://www.wldelft.nl/fews/PI http://fews.wldelft.nl/schemas/version1.0/pi-schemas/pi_timeseries.xsd">
+  <pi:timeZone>0.0</pi:timeZone>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_H2</pi:locationId>
+      <pi:parameterId>H.measured</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_H2</pi:stationName>
+      <pi:units>m</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="5.0" />
+    <pi:event date="2015-08-31" time="00:00:00" value="7.033626204" />
+    <pi:event date="2015-08-31" time="01:00:00" value="8.502380879" />
+    <pi:event date="2015-08-31" time="02:00:00" value="8.998294412" />
+    <pi:event date="2015-08-31" time="03:00:00" value="8.383619052" />
+    <pi:event date="2015-08-31" time="04:00:00" value="6.829090507" />
+    <pi:event date="2015-08-31" time="05:00:00" value="4.766503426" />
+    <pi:event date="2015-08-31" time="06:00:00" value="2.768773676" />
+    <pi:event date="2015-08-31" time="07:00:00" value="1.390801983" />
+    <pi:event date="2015-08-31" time="08:00:00" value="1.015341565" />
+    <pi:event date="2015-08-31" time="09:00:00" value="1.746682434" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_P1</pi:locationId>
+      <pi:parameterId>Q.pump.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_P1</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="0.19938663949911672" />
+    <pi:event date="2015-08-31" time="00:00:00" value="0.23622259743267274" />
+    <pi:event date="2015-08-31" time="01:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="02:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="03:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="04:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="05:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="06:00:00" value="0.39091576283914775" />
+    <pi:event date="2015-08-31" time="07:00:00" value="0.5317368213407826" />
+    <pi:event date="2015-08-31" time="08:00:00" value="0.2911757681609817" />
+    <pi:event date="2015-08-31" time="09:00:00" value="0.0" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_P1</pi:locationId>
+      <pi:parameterId>head.pump.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_P1</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="5.45" />
+    <pi:event date="2015-08-31" time="00:00:00" value="7.441011447964816" />
+    <pi:event date="2015-08-31" time="01:00:00" value="8.86144397531381" />
+    <pi:event date="2015-08-31" time="02:00:00" value="9.309035360662802" />
+    <pi:event date="2015-08-31" time="03:00:00" value="8.646037853011794" />
+    <pi:event date="2015-08-31" time="04:00:00" value="7.043187160360789" />
+    <pi:event date="2015-08-31" time="05:00:00" value="4.932277931709783" />
+    <pi:event date="2015-08-31" time="06:00:00" value="2.8956709786642856" />
+    <pi:event date="2015-08-31" time="07:00:00" value="1.4773922558443313" />
+    <pi:event date="2015-08-31" time="08:00:00" value="1.0628477138896943" />
+    <pi:event date="2015-08-31" time="09:00:00" value="1.746662434" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_P1</pi:locationId>
+      <pi:parameterId>P.pump.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_P1</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="21974.538844279963" />
+    <pi:event date="2015-08-31" time="00:00:00" value="35357.18986266041" />
+    <pi:event date="2015-08-31" time="01:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="02:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="03:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="04:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="05:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="06:00:00" value="14175.943869855095" />
+    <pi:event date="2015-08-31" time="07:00:00" value="11600.354534326558" />
+    <pi:event date="2015-08-31" time="08:00:00" value="3780.4564072962057" />
+    <pi:event date="2015-08-31" time="09:00:00" value="0.0" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_P1</pi:locationId>
+      <pi:parameterId>rpm.pump.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_P1</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="400.3615192843167" />
+    <pi:event date="2015-08-31" time="00:00:00" value="476.0323152985444" />
+    <pi:event date="2015-08-31" time="01:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="02:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="03:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="04:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="05:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="06:00:00" value="350.1132271511152" />
+    <pi:event date="2015-08-31" time="07:00:00" value="342.6121718827073" />
+    <pi:event date="2015-08-31" time="08:00:00" value="235.59403746589138" />
+    <pi:event date="2015-08-31" time="09:00:00" value="0.0" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_P1</pi:locationId>
+      <pi:parameterId>status.pump.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_P1</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="1.0" />
+    <pi:event date="2015-08-31" time="00:00:00" value="1.0" />
+    <pi:event date="2015-08-31" time="01:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="02:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="03:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="04:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="05:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="06:00:00" value="1.0" />
+    <pi:event date="2015-08-31" time="07:00:00" value="1.0" />
+    <pi:event date="2015-08-31" time="08:00:00" value="1.0" />
+    <pi:event date="2015-08-31" time="09:00:00" value="0.0" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_P2</pi:locationId>
+      <pi:parameterId>Q.pump.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_P2</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="00:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="01:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="02:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="03:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="04:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="05:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="06:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="07:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="08:00:00" value="0.2911757681609818" />
+    <pi:event date="2015-08-31" time="09:00:00" value="0.23294550428764313" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_P2</pi:locationId>
+      <pi:parameterId>head.pump.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_P2</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="5.45" />
+    <pi:event date="2015-08-31" time="00:00:00" value="7.441011447964818" />
+    <pi:event date="2015-08-31" time="01:00:00" value="8.86144397531381" />
+    <pi:event date="2015-08-31" time="02:00:00" value="9.309035360662802" />
+    <pi:event date="2015-08-31" time="03:00:00" value="8.646037853011798" />
+    <pi:event date="2015-08-31" time="04:00:00" value="7.04318716036079" />
+    <pi:event date="2015-08-31" time="05:00:00" value="4.932277931709783" />
+    <pi:event date="2015-08-31" time="06:00:00" value="2.8956709786642856" />
+    <pi:event date="2015-08-31" time="07:00:00" value="1.4773922558443318" />
+    <pi:event date="2015-08-31" time="08:00:00" value="1.0628477138896943" />
+    <pi:event date="2015-08-31" time="09:00:00" value="1.746662434" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_P2</pi:locationId>
+      <pi:parameterId>P.pump.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_P2</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="00:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="01:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="02:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="03:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="04:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="05:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="06:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="07:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="08:00:00" value="3780.4564072962075" />
+    <pi:event date="2015-08-31" time="09:00:00" value="5406.383588891633" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_P2</pi:locationId>
+      <pi:parameterId>rpm.pump.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_P2</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="00:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="01:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="02:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="03:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="04:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="05:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="06:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="07:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="08:00:00" value="235.5940374658914" />
+    <pi:event date="2015-08-31" time="09:00:00" value="249.8215846458495" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_P2</pi:locationId>
+      <pi:parameterId>status.pump.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_P2</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="00:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="01:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="02:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="03:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="04:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="05:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="06:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="07:00:00" value="0.0" />
+    <pi:event date="2015-08-31" time="08:00:00" value="1.0" />
+    <pi:event date="2015-08-31" time="09:00:00" value="1.0" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_H2</pi:locationId>
+      <pi:parameterId>H.measured.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_H2</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="5.0" />
+    <pi:event date="2015-08-31" time="00:00:00" value="7.033626204" />
+    <pi:event date="2015-08-31" time="01:00:00" value="8.502380879" />
+    <pi:event date="2015-08-31" time="02:00:00" value="8.998294412" />
+    <pi:event date="2015-08-31" time="03:00:00" value="8.383619052" />
+    <pi:event date="2015-08-31" time="04:00:00" value="6.829090507" />
+    <pi:event date="2015-08-31" time="05:00:00" value="4.766503426" />
+    <pi:event date="2015-08-31" time="06:00:00" value="2.768773676" />
+    <pi:event date="2015-08-31" time="07:00:00" value="1.390801983" />
+    <pi:event date="2015-08-31" time="08:00:00" value="1.015341565" />
+    <pi:event date="2015-08-31" time="09:00:00" value="1.746682434" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_H1</pi:locationId>
+      <pi:parameterId>H.measured</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_H1</pi:stationName>
+      <pi:units>m</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="-0.45" />
+    <pi:event date="2015-08-31" time="00:00:00" value="-0.40738524396481646" />
+    <pi:event date="2015-08-31" time="01:00:00" value="-0.3590630963138097" />
+    <pi:event date="2015-08-31" time="02:00:00" value="-0.31074094866280305" />
+    <pi:event date="2015-08-31" time="03:00:00" value="-0.2624188010117963" />
+    <pi:event date="2015-08-31" time="04:00:00" value="-0.21409665336078962" />
+    <pi:event date="2015-08-31" time="05:00:00" value="-0.1657745057097829" />
+    <pi:event date="2015-08-31" time="06:00:00" value="-0.1268973026642858" />
+    <pi:event date="2015-08-31" time="07:00:00" value="-0.08659027284433152" />
+    <pi:event date="2015-08-31" time="08:00:00" value="-0.04750614888969445" />
+    <pi:event date="2015-08-31" time="09:00:00" value="1.999999999992139e-05" />
+    </pi:series>
+  <pi:series>
+    <pi:header>
+      <pi:type>instantaneous</pi:type>
+      <pi:locationId>TAG_000091_H1</pi:locationId>
+      <pi:parameterId>H.measured.rtc</pi:parameterId>
+      <pi:timeStep unit="second" multiplier="3600" />
+      <pi:startDate date="2015-08-30" time="23:00:00" />
+      <pi:endDate date="2015-08-31" time="09:00:00" />
+      <pi:missVal>-999</pi:missVal>
+      <pi:stationName>TAG_000091_H1</pi:stationName>
+      <pi:units>unit_unknown</pi:units>
+      <pi:creationDate>2026-09-22</pi:creationDate>
+      <pi:creationTime>10:33:13</pi:creationTime>
+      </pi:header>
+    <pi:event date="2015-08-30" time="23:00:00" value="-0.45" />
+    <pi:event date="2015-08-31" time="00:00:00" value="-0.40738524396481646" />
+    <pi:event date="2015-08-31" time="01:00:00" value="-0.3590630963138097" />
+    <pi:event date="2015-08-31" time="02:00:00" value="-0.31074094866280305" />
+    <pi:event date="2015-08-31" time="03:00:00" value="-0.2624188010117963" />
+    <pi:event date="2015-08-31" time="04:00:00" value="-0.21409665336078962" />
+    <pi:event date="2015-08-31" time="05:00:00" value="-0.1657745057097829" />
+    <pi:event date="2015-08-31" time="06:00:00" value="-0.1268973026642858" />
+    <pi:event date="2015-08-31" time="07:00:00" value="-0.08659027284433152" />
+    <pi:event date="2015-08-31" time="08:00:00" value="-0.04750614888969445" />
+    <pi:event date="2015-08-31" time="09:00:00" value="1.999999999992139e-05" />
+    </pi:series>
+  </pi:TimeSeries>

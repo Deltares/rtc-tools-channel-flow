@@ -116,7 +116,9 @@ class WeirMixin(OptimizationProblem):
 
             # calculate maximum possible discharge (weir @ min), using
             # linearized curve
-            q_max_h = w.slope * (w._head() - w.h_nom - 1 * (status - 1)) + w.q_nom
+            #TODO: make maximum possible head difference dynamic, not hard coded
+            M_head_diff = 2.0
+            q_max_h = w.slope * (w._head() - w.h_nom - M_head_diff * (status - 1)) + w.q_nom
 
             # flow should be lower than physical maximum and bigger then zero
             constraints.append((w.discharge() - w.q_max * (status), -inf, 0))
