@@ -126,7 +126,7 @@ For this example, the import block is as follows:
   :lineno-match:
 
 Note that we are importing both ``PumpingStationMixin`` and ``PumpingStation``
-from ``rtctools_hydraulic_structures.pumping_station_mixin``.
+from ``rtctools_channel_flow.pumping_station_mixin``.
 
 Water Level Goal
 ''''''''''''''''
