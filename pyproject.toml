@@ -19,6 +19,7 @@ dependencies = [
     "numpy",
     "casadi",
     "rtc-tools",
+    "pymoca >= 0.4.2",
 ]
 
 [dependency-groups]
@@ -29,6 +30,11 @@ docs = [
     "numpy",
     "mock",
     "sphinxcontrib-spelling",
+]
+
+tests = [
+    "pytest >= 8.2.0",
+    "pytest-cov >= 6.0.0",
 ]
 
 [tool.hatch.build.targets.wheel]

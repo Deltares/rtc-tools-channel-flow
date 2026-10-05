@@ -37,7 +37,7 @@ PumpingStation
 Pump
 ~~~~
 
-.. cpp:class:: Pump : Deltares::ChannelFlow::Hydraulic::Structures::Pump
+.. cpp:class:: Pump : Deltares::ChannelFlow::Hydraulic::Structures::DischargeControlledStructure
 
   Represents a single pump object. Because the power of the pump is seldom a
   linear function of `Q` and `H`, this class is wrapped by the Python API's
@@ -294,9 +294,9 @@ PumpingStation
 Weir
 ----
 
-.. cpp:namespace:: Deltares::ChannelFlow::Hydraulic::Structures::Weir
+.. cpp:namespace:: Deltares::ChannelFlow::Hydraulic::Structures
 
-.. cpp:class:: Weir : Deltares::ChannelFlow::Hydraulic::Structures
+.. cpp:class:: Weir : Deltares::ChannelFlow::Internal::HQTwoPort
 
   Represents a general movable-crest weir object described by the conventional
   weir equation (see e.g. Swamee, Prabhata K. "Generalized rectangular weir equations."
@@ -361,7 +361,7 @@ Orifice
 
     Q \le C_d \cdot A \cdot \sqrt{2 g \Delta H}
 
-  where :math:`Q` is the pump discharge, and :math:`\Delta H` is the head over
+  where :math:`Q` is the orifice discharge, and :math:`\Delta H` is the head over
   the orifice (:math:`\Delta H = H_{down} - H_{up}`).
 
   Note that the convex inequality constraint means that the orifice is
@@ -378,7 +378,7 @@ Orifice
     \begin{aligned} \
     \Delta H - \left(1 - S\right) \cdot M &\le 0\\[5pt]
     \Delta H + S \cdot M &\ge 0\\[5pt]
-    0 \le Q + \left(1 - status\right) \cdot Q_{max} &\le Q_{max}\\[5pt]
+    0 \le Q + \left(1 - S\right) \cdot Q_{max} &\le Q_{max}\\[5pt]
     \end{aligned}
 
   where :math:`S` is the status of the orifice (open = 1, closed = 0), and
