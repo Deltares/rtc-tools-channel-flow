@@ -90,8 +90,11 @@ class Example(PumpingStationMixin, GoalProgrammingMixin, PIMixin, ModelicaMixin,
         print("Total power = {} kWh".format(total_power))
 
         # Make plots
-        import matplotlib.dates as mdates
-        import matplotlib.pyplot as plt
+        try:
+            import matplotlib.dates as mdates
+            import matplotlib.pyplot as plt
+        except ImportError:
+            return
         import numpy as np
 
         plt.style.use('ggplot')
