@@ -1,7 +1,6 @@
 within Deltares.ChannelFlow.Hydraulic.Structures.PumpingStation;
 
 partial model Pump "Pump with QHP relationship"
-  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Hydraulic.Structures.DischargeControlledStructure;
   //This block if from rtc-tools-hydraulic-structures and works correctly if the corresponding mixin is imported
   // Increasing row number is increasing H power (starting at 0th power).
@@ -25,8 +24,8 @@ partial model Pump "Pump with QHP relationship"
   parameter Real working_area_direction[:];
 
   // Pump's minimum on and off time.
-  parameter SI.Duration minimum_on = 0.0;
-  parameter SI.Duration minimum_off = 0.0;
+  parameter Modelica.Units.SI.Duration minimum_on = 0.0;
+  parameter Modelica.Units.SI.Duration minimum_off = 0.0;
 
   // NOTE: Enumerations are not supported in JModelica's CasADi interface. We
   // therefore resort to an integer.
@@ -36,16 +35,16 @@ partial model Pump "Pump with QHP relationship"
   //  1: The downstream head.
   parameter Integer head_option = 0;
 
-  parameter SI.Energy start_up_energy = 0.0;
+  parameter Modelica.Units.SI.Energy start_up_energy = 0.0;
   parameter Real start_up_cost = 0.0;
 
-  parameter SI.Energy shut_down_energy = 0.0;
+  parameter Modelica.Units.SI.Energy shut_down_energy = 0.0;
   parameter Real shut_down_cost = 0.0;
 
   // NOTE: The equality constraint setting dH to some combination of HQUp and
   // HQDown (based on head_option) will be added in the Mixin.
-  SI.Distance dH;
-  SI.Position HW;
+  Modelica.Units.SI.Distance dH;
+  Modelica.Units.SI.Position HW;
 
 equation
   if head_option == -1 then

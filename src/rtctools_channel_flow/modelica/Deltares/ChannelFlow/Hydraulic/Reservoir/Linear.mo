@@ -1,12 +1,11 @@
 within Deltares.ChannelFlow.Hydraulic.Reservoir;
 
 model Linear
-  import SI = Modelica.Units.SI;
   extends Internal.PartialReservoir(H(min = H_b));
   // Parameters
-  parameter SI.Area A;
+  parameter Modelica.Units.SI.Area A;
   // Bed level
-  parameter SI.Position H_b;
+  parameter Modelica.Units.SI.Position H_b;
 equation
   // Volume - forebay relation
   V = A * (H - H_b);

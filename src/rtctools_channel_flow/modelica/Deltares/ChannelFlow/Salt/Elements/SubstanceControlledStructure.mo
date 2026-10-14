@@ -6,23 +6,22 @@ model SubstanceControlledStructure "SubstanceControlledStructure"
    between salty reservoir elements, do not use in optimization.
   */
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
-  import SI = Modelica.Units.SI;
   function smooth_abs = Deltares.ChannelFlow.Internal.Functions.SmoothAbs;
 
-  parameter SI.VolumeFlowRate Q_nominal = 1;
-  parameter SI.Concentration C_nominal = 1e-3;
-  parameter SI.Height width = 2000;
-  parameter SI.Temperature temperature_up;   //Temperature of the upstream block
-  parameter SI.Temperature temperature_down; //Temperature of the downstream block
-  parameter SI.Height H_b_up;                //Bottom level of the upstream block 
-  parameter SI.Height H_b_down;              //Bottom level of the downstream block
+  parameter Modelica.Units.SI.VolumeFlowRate Q_nominal = 1;
+  parameter Modelica.Units.SI.Concentration C_nominal = 1e-3;
+  parameter Modelica.Units.SI.Height width = 2000;
+  parameter Modelica.Units.SI.Temperature temperature_up;   //Temperature of the upstream block
+  parameter Modelica.Units.SI.Temperature temperature_down; //Temperature of the downstream block
+  parameter Modelica.Units.SI.Height H_b_up;                //Bottom level of the upstream block 
+  parameter Modelica.Units.SI.Height H_b_down;              //Bottom level of the downstream block
 
-  SI.Density rho_up(nominal=1000, start = 1000.0);
-  SI.Density rho_down(nominal=1000, start = 1000.0);
-  SI.Concentration salinity_psu_up(nominal=34.7, start = 34.7);
-  SI.Concentration salinity_psu_down(nominal=34.7, start = 34.7);
-  SI.Density rho_ref_up;
-  SI.Density rho_ref_down;
+  Modelica.Units.SI.Density rho_up(nominal=1000, start = 1000.0);
+  Modelica.Units.SI.Density rho_down(nominal=1000, start = 1000.0);
+  Modelica.Units.SI.Concentration salinity_psu_up(nominal=34.7, start = 34.7);
+  Modelica.Units.SI.Concentration salinity_psu_down(nominal=34.7, start = 34.7);
+  Modelica.Units.SI.Density rho_ref_up;
+  Modelica.Units.SI.Density rho_ref_down;
   
   Real a_up;
   Real b_up;
