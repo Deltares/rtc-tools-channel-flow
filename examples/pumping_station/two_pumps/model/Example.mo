@@ -1,5 +1,4 @@
 model Example
-  import SI = Modelica.Units.SI;
   model MyPumpingStation
     extends Deltares.ChannelFlow.Hydraulic.Structures.PumpingStation.PumpingStation(
       n_pumps=2
@@ -137,16 +136,16 @@ model Example
   MyPumpingStation pumpingstation1 annotation(Placement(visible = true, transformation(origin = {20, 10}, extent = {{-10, -10}, {10, 10}}, rotation = 0)));
 
   // Input variables
-  input SI.VolumeFlowRate Q_in(fixed = true);
-  input SI.Position H_ext(fixed=true);
+  input Modelica.Units.SI.VolumeFlowRate Q_in(fixed = true);
+  input Modelica.Units.SI.Position H_ext(fixed=true);
 
   input Real pumpingstation1_pump1_Q;
   input Real pumpingstation1_pump2_Q;
   input Real pumpingstation1_resistance1_dH(min=0.0, max=10.0);
 
   // Output variables
-  output SI.Position storage_level;
-  output SI.Position sea_level;
+  output Modelica.Units.SI.Position storage_level;
+  output Modelica.Units.SI.Position sea_level;
 equation
   connect(pumpingstation1.HQUp, storage.HQ) annotation(Line(points = {{12, 10}, {-20, 10}}, color = {0, 0, 255}));
   connect(pumpingstation1.HQDown, sea.HQ) annotation(Line(points = {{28, 10}, {58, 10}}, color = {0, 0, 255}));

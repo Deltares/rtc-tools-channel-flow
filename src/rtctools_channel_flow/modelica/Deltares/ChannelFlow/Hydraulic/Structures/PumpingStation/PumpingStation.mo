@@ -1,7 +1,6 @@
 within Deltares.ChannelFlow.Hydraulic.Structures.PumpingStation;
 
 model PumpingStation
-  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
 
   parameter Integer n_pumps = 0;
@@ -16,8 +15,8 @@ model PumpingStation
   parameter Integer pump_switching_matrix[n_pumps, n_pumps] = fill(-999, n_pumps, n_pumps);
   parameter Integer pump_switching_constraints[n_pumps, 2] = fill(-999, n_pumps, 2);
 
-  SI.VolumeFlowRate Q;
-  SI.Position HW;
+  Modelica.Units.SI.VolumeFlowRate Q;
+  Modelica.Units.SI.Position HW;
 equation
   // Discharge
   Q = HQUp.Q;

@@ -1,18 +1,17 @@
 within  Deltares.ChannelFlow.Hydraulic.Structures;
 
 model Weir
-  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   //This block is from rtc-tools-hydraulic-structures and works correctly if the corresponding mixin is imported
   // Inputs
-  input SI.VolumeFlowRate Q;
+  input Modelica.Units.SI.VolumeFlowRate Q;
 
   // Parameters
-  parameter SI.Length width "Width of the weir";
-  parameter SI.VolumeFlowRate q_min "Minimum flow of the weir; has to be positive";
-  parameter SI.VolumeFlowRate q_max "Maximum flow of the weir. Should be as low as possible.";
-  parameter SI.Length hw_min "Minimum height of the weir";
-  parameter SI.Length hw_max "Maximum height of the weir";
+  parameter Modelica.Units.SI.Length width "Width of the weir";
+  parameter Modelica.Units.SI.VolumeFlowRate q_min "Minimum flow of the weir; has to be positive";
+  parameter Modelica.Units.SI.VolumeFlowRate q_max "Maximum flow of the weir. Should be as low as possible.";
+  parameter Modelica.Units.SI.Length hw_min "Minimum height of the weir";
+  parameter Modelica.Units.SI.Length hw_max "Maximum height of the weir";
   parameter Real weir_coef=0.61 "Weir discharge coefficient";
 equation
   HQUp.Q + HQDown.Q = 0; // Negative comes in, positive out, so in a branch positive goes in

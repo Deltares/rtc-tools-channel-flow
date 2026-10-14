@@ -1,19 +1,18 @@
 within Deltares.ChannelFlow.Salt.Elements;
 
 partial model SaltyPartialReservoir
-  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends QMForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
   extends Deltares.ChannelFlow.Internal.Reservoir;
   // States
-  SI.Position H;
-  SI.Concentration C(nominal = 0.001);
+  Modelica.Units.SI.Position H;
+  Modelica.Units.SI.Concentration C(nominal = 0.001);
 
   parameter Real theta = 1.0;
-  parameter SI.VolumeFlowRate Q_nominal = 1.0;
-  parameter SI.Concentration C_nominal = 1.0;
-  parameter SI.Volume V_nominal;
+  parameter Modelica.Units.SI.VolumeFlowRate Q_nominal = 1.0;
+  parameter Modelica.Units.SI.Concentration C_nominal = 1.0;
+  parameter Modelica.Units.SI.Volume V_nominal;
 
 equation
   // Water level

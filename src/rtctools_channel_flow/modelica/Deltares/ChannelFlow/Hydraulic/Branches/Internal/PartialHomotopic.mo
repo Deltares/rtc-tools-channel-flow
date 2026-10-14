@@ -6,7 +6,6 @@ partial model PartialHomotopic
   // to false.  Consult Baayen and Piovesan, A continuation approach to nonlinear
   // model predictive control of open channel systems, 2018 for details:
   // https://arxiv.org/abs/1801.06507
-  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
@@ -16,23 +15,23 @@ partial model PartialHomotopic
   parameter Real QForcing_map[n_QForcing, n_level_nodes] = fill(1.0 / n_level_nodes, n_QForcing, n_level_nodes);
   parameter Real QLateral_map[n_QLateral, n_level_nodes] = fill(1.0 / n_level_nodes, n_QLateral, n_level_nodes);
   // Wind stress
-  input SI.Stress wind_stress_u(nominal = 1e-1) = 0.0; // Wind stress in x (u, easting) direction (= 0 radians, 0 degrees)
-  input SI.Stress wind_stress_v(nominal = 1e-1) = 0.0; // Wind stress in y (v, northing) direction (= 0.5*pi radians, 90 degrees)
+  input Modelica.Units.SI.Stress wind_stress_u(nominal = 1e-1) = 0.0; // Wind stress in x (u, easting) direction (= 0 radians, 0 degrees)
+  input Modelica.Units.SI.Stress wind_stress_v(nominal = 1e-1) = 0.0; // Wind stress in y (v, northing) direction (= 0.5*pi radians, 90 degrees)
   // Flow
-  SI.VolumeFlowRate[n_level_nodes + 1] Q(each nominal = abs(Q_nominal));
+  Modelica.Units.SI.VolumeFlowRate[n_level_nodes + 1] Q(each nominal = abs(Q_nominal));
   // Water level
-  SI.Position[n_level_nodes] H(min = cat(1, max(H_b[1], H_b[2]), max(H_b[1:n_level_nodes - 2], max(H_b[2:n_level_nodes - 1], H_b[3:n_level_nodes])), max(H_b[n_level_nodes - 1], H_b[n_level_nodes])));
+  Modelica.Units.SI.Position[n_level_nodes] H(min = cat(1, max(H_b[1], H_b[2]), max(H_b[1:n_level_nodes - 2], max(H_b[2:n_level_nodes - 1], H_b[3:n_level_nodes])), max(H_b[n_level_nodes - 1], H_b[n_level_nodes])));
   // Array of Bottom Levels
-  parameter SI.Position[n_level_nodes] H_b;
+  parameter Modelica.Units.SI.Position[n_level_nodes] H_b;
   // Length
-  parameter SI.Distance length = 1.0;
+  parameter Modelica.Units.SI.Distance length = 1.0;
   // Rotation
   parameter Real rotation_deg = 0.0; // Rotation of branch relative to x (u, easting) in degrees
   // Nominal depth and width for linearized pressure term and wind stress term
-  parameter SI.Distance nominal_depth[n_level_nodes + 1] = fill(1.0, n_level_nodes + 1);
-  parameter SI.Distance nominal_width[n_level_nodes + 1] = fill(1.0, n_level_nodes + 1);
+  parameter Modelica.Units.SI.Distance nominal_depth[n_level_nodes + 1] = fill(1.0, n_level_nodes + 1);
+  parameter Modelica.Units.SI.Distance nominal_width[n_level_nodes + 1] = fill(1.0, n_level_nodes + 1);
   // Water density
-  parameter SI.Density density_water = 1000.0;
+  parameter Modelica.Units.SI.Density density_water = 1000.0;
   // Chézy or Manning bottom friction coefficient
   parameter Real friction_coefficient = 0.0;
   // Interpret 'friction_coefficient' as Manning instead of the default Chézy
@@ -45,33 +44,33 @@ partial model PartialHomotopic
   // Homotopy parameter
   parameter Real theta;
   // Nominal flow used in linearization
-  parameter SI.VolumeFlowRate Q_nominal = 1.0;
+  parameter Modelica.Units.SI.VolumeFlowRate Q_nominal = 1.0;
   // Minimum value of the divisor of the friction term.  This defaults to a nonzero value,
   // so that empty reaches won't immediately yield NaN errors.
   parameter Real min_divisor = Deltares.Constants.eps;
   // Minimum value of the sabs(Q) part of the friction term.  This defaults to a nonzero value,
   // so that sabs(Q) = sqrt(Q^2 + min_abs_Q^2) is continuously differentiable for all Q.
-  parameter SI.VolumeFlowRate min_abs_Q = Deltares.Constants.eps;
+  parameter Modelica.Units.SI.VolumeFlowRate min_abs_Q = Deltares.Constants.eps;
   // Time step size used to create a semi-implicit discretization of the friction term.
   // Zero by default, which means that a fully implicit discretization is used.
-  input SI.Duration semi_implicit_step_size = 0.0;
-  SI.VolumeFlowRate M[n_level_nodes + 1, medium.n_substances](each nominal = 10);
+  input Modelica.Units.SI.Duration semi_implicit_step_size = 0.0;
+  Modelica.Units.SI.VolumeFlowRate M[n_level_nodes + 1, medium.n_substances](each nominal = 10);
   // Substance concentrations
-  SI.Density C[n_level_nodes, medium.n_substances](each min = 0, each nominal = 1);
+  Modelica.Units.SI.Density C[n_level_nodes, medium.n_substances](each min = 0, each nominal = 1);
   // Nominal substance concentrations used in linearization
   parameter Real C_nominal[medium.n_substances] = fill(1e-3, medium.n_substances);
 protected
-  SI.Stress _wind_stress;
+  Modelica.Units.SI.Stress _wind_stress;
   Real[n_level_nodes] _dQ_sq_div_Adx(each unit = "m^3/s^2");
-  parameter SI.Angle rotation_rad = Deltares.Constants.D2R * rotation_deg; // Conversion to rotation in radians
-  parameter SI.Distance dx = length / (n_level_nodes - 1);
-  SI.Area[n_level_nodes] _friction;
-  SI.Area[n_level_nodes] _cross_section;
-  SI.Area[n_level_nodes + 1] _cross_sectionq;
-  SI.Distance[n_level_nodes] _wetted_perimeter;
-  parameter SI.Distance[n_level_nodes] _dxq = cat(1, {dx / 2}, fill(dx, n_level_nodes - 2), {dx / 2});
-  SI.VolumeFlowRate[n_QLateral] _lat = QLateral.Q;
-  SI.VolumeFlowRate[n_level_nodes] _QPerpendicular_distribution = transpose(QForcing_map) * QForcing .+ transpose(QLateral_map) * _lat;
+  parameter Modelica.Units.SI.Angle rotation_rad = Deltares.Constants.D2R * rotation_deg; // Conversion to rotation in radians
+  parameter Modelica.Units.SI.Distance dx = length / (n_level_nodes - 1);
+  Modelica.Units.SI.Area[n_level_nodes] _friction;
+  Modelica.Units.SI.Area[n_level_nodes] _cross_section;
+  Modelica.Units.SI.Area[n_level_nodes + 1] _cross_sectionq;
+  Modelica.Units.SI.Distance[n_level_nodes] _wetted_perimeter;
+  parameter Modelica.Units.SI.Distance[n_level_nodes] _dxq = cat(1, {dx / 2}, fill(dx, n_level_nodes - 2), {dx / 2});
+  Modelica.Units.SI.VolumeFlowRate[n_QLateral] _lat = QLateral.Q;
+  Modelica.Units.SI.VolumeFlowRate[n_level_nodes] _QPerpendicular_distribution = transpose(QForcing_map) * QForcing .+ transpose(QLateral_map) * _lat;
 equation
   // Store boundary values into array for convenience
   Q[1] = HQUp.Q;

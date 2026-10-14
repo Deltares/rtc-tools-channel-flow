@@ -5,12 +5,11 @@ partial model PartialHomotopicVolume
 // the relation between water level and volume is specified as a fourth order polynomial. 
 // the optimization starts with a linearized simplification, here the volume is divided by a area A to obtain the water level. 
 // during the homotopy optimization this linear equation is gradually bended towards the fourth order polynomial with the help of theta. 
-  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Hydraulic.Reservoir.Internal.PartialReservoir;
 
-  parameter SI.Area A;
+  parameter Modelica.Units.SI.Area A;
   // Bed level
-  parameter SI.Position H_b;
+  parameter Modelica.Units.SI.Position H_b;
   // Homotopy parameter
   parameter Real theta;
   // Water level polynomial coefficients, to be specified as parameters in the model
