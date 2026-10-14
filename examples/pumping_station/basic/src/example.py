@@ -101,8 +101,11 @@ class Example(PumpingStationMixin,
         print("Total cost = {} Euro".format(cost))
 
         # Make plots
-        import matplotlib.dates as mdates
-        import matplotlib.pyplot as plt
+        try:
+            import matplotlib.dates as mdates
+            import matplotlib.pyplot as plt
+        except ImportError:
+            return
         import numpy as np
 
         plt.style.use('ggplot')
