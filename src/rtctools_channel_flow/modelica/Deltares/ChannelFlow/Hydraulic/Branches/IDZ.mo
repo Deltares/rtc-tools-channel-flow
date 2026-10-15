@@ -5,7 +5,6 @@ model IDZ
 
   // Bed level
   parameter Modelica.Units.SI.Position H_b_up;
-  parameter Modelica.Units.SI.Position H_b_down;
   parameter Modelica.Units.SI.Position length;
   parameter Modelica.Units.SI.Position width;
   parameter Modelica.Units.SI.VolumeFlowRate Q_nominal;
