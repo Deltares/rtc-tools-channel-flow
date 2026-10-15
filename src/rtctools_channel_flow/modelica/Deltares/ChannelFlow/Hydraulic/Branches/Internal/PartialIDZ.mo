@@ -9,6 +9,8 @@ partial model PartialIDZ
   input Real Q_downstream_delayed;
   parameter Modelica.Units.SI.Duration Delay_in_hour;
 
+  // Bed level
+  parameter Modelica.Units.SI.Position H_b_down;
 
   // States
   Modelica.Units.SI.Position[2] H(min = H_b_down);
