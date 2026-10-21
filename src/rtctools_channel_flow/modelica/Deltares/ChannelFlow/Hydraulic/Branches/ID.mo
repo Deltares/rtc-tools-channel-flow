@@ -1,7 +1,6 @@
 within Deltares.ChannelFlow.Hydraulic.Branches;
 
 model ID
-  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
@@ -9,12 +8,12 @@ model ID
 
   input Real Q_upstream_delayed;
   input Real Q_downstream_delayed;
-  parameter SI.Duration Delay_in_hour;
+  parameter Modelica.Units.SI.Duration Delay_in_hour;
 
   // States
-  SI.Position[2] H;
-  SI.VolumeFlowRate[2] Q;
-  parameter SI.Area Ad;
+  Modelica.Units.SI.Position[2] H;
+  Modelica.Units.SI.VolumeFlowRate[2] Q;
+  parameter Modelica.Units.SI.Area Ad;
 
 equation
   // Water level

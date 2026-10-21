@@ -1,11 +1,10 @@
 within Deltares.ChannelFlow.SimpleRouting.Nodes;
 
 block NodeHQPort "Block with multiple inflows and multiple outflows, where allocation is based on explicitly specified outflows, including a port for a reservoir"
-  import SI = Modelica.Units.SI;
   extends Internal.PartialNode;
   extends Deltares.ChannelFlow.Internal.HQOnePort;
-  input SI.VolumeFlowRate QOut_control[nout](each nominal=Q_nominal);
-  output SI.Position H;
+  input Modelica.Units.SI.VolumeFlowRate QOut_control[nout](each nominal=Q_nominal);
+  output Modelica.Units.SI.Position H;
 equation
   QInSum = sum(QIn.Q);
   QOutSum = sum(QOut_control);

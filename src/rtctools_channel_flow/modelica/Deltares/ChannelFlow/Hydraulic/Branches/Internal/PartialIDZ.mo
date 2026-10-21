@@ -7,18 +7,20 @@ partial model PartialIDZ
   extends Deltares.ChannelFlow.Internal.Reservoir;
   input Real Q_upstream_delayed;
   input Real Q_downstream_delayed;
-  parameter SI.Duration Delay_in_hour;
+  parameter Modelica.Units.SI.Duration Delay_in_hour;
 
+  // Bed level
+  parameter Modelica.Units.SI.Position H_b_down;
 
   // States
-  SI.Position[2] H(min = H_b_down);
-  SI.VolumeFlowRate[2] Q; 
+  Modelica.Units.SI.Position[2] H(min = H_b_down);
+  Modelica.Units.SI.VolumeFlowRate[2] Q; 
   parameter Real p21;
   parameter Real p22;
   parameter Real p11;
   parameter Real p12;
-  parameter SI.Area Au;
-  parameter SI.Area Ad;
+  parameter Modelica.Units.SI.Area Au;
+  parameter Modelica.Units.SI.Area Ad;
 
 equation
   // Water level

@@ -1,7 +1,6 @@
 within Deltares.ChannelFlow.Hydraulic.Branches;
 
 model LinearisedSV
-  import SI = Modelica.Units.SI;
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   extends Deltares.ChannelFlow.Internal.QForcing;
   extends Deltares.ChannelFlow.Internal.QLateral;
@@ -10,63 +9,63 @@ model LinearisedSV
   parameter Real QForcing_map[n_QForcing, n_level_nodes] = fill(1.0 / n_level_nodes, n_QForcing, n_level_nodes);
   parameter Real QLateral_map[n_QLateral, n_level_nodes] = fill(1.0 / n_level_nodes, n_QLateral, n_level_nodes);
   // Wind stress
-  input SI.Stress wind_stress_u(nominal = 1e-1) = 0.0; // Wind stress in x (u, easting) direction (= 0 radians, 0 degrees)
-  input SI.Stress wind_stress_v(nominal = 1e-1) = 0.0; // Wind stress in y (v, northing) direction (= 0.5*pi radians, 90 degrees)
+  input Modelica.Units.SI.Stress wind_stress_u(nominal = 1e-1) = 0.0; // Wind stress in x (u, easting) direction (= 0 radians, 0 degrees)
+  input Modelica.Units.SI.Stress wind_stress_v(nominal = 1e-1) = 0.0; // Wind stress in y (v, northing) direction (= 0.5*pi radians, 90 degrees)
   // Flow
-  SI.VolumeFlowRate[n_level_nodes + 1] Q;
-  SI.VolumeFlowRate[n_level_nodes + 1] Q_relative;
+  Modelica.Units.SI.VolumeFlowRate[n_level_nodes + 1] Q;
+  Modelica.Units.SI.VolumeFlowRate[n_level_nodes + 1] Q_relative;
   // Water Level
-  SI.Position[n_level_nodes] H(min = H_b);
-  SI.Position[n_level_nodes] Y_relative;
-  parameter SI.Position H_nominal = 1.0;
-  parameter SI.Position H_nominal_down = 1.0;
-  parameter SI.Position[n_level_nodes] H_nominal_vec = linspace(H_nominal, H_nominal_down, n_level_nodes); 
+  Modelica.Units.SI.Position[n_level_nodes] H(min = H_b);
+  Modelica.Units.SI.Position[n_level_nodes] Y_relative;
+  parameter Modelica.Units.SI.Position H_nominal = 1.0;
+  parameter Modelica.Units.SI.Position H_nominal_down = 1.0;
+  parameter Modelica.Units.SI.Position[n_level_nodes] H_nominal_vec = linspace(H_nominal, H_nominal_down, n_level_nodes); 
   // Length
-  parameter SI.Distance length = 1.0;
+  parameter Modelica.Units.SI.Distance length = 1.0;
   // Rotation
   parameter Real rotation_deg = 0.0; // Rotation of branch relative to x (u, easting) in degrees
   // Water density
-  parameter SI.Density density_water = 1000.0;
+  parameter Modelica.Units.SI.Density density_water = 1000.0;
   // Manning
   parameter Real friction_coefficient = 0.0;
   // Discretization options
   parameter Integer n_level_nodes = 4;
   // Nominal flow used in linearization
-  parameter SI.VolumeFlowRate Q_nominal = 1.0;
+  parameter Modelica.Units.SI.VolumeFlowRate Q_nominal = 1.0;
 
   // Width
-  parameter SI.Distance width = 1.0;
+  parameter Modelica.Units.SI.Distance width = 1.0;
   // Upstream Bottom Level (same 'Up' as HQUp)
-  parameter SI.Position H_b_up; 
+  parameter Modelica.Units.SI.Position H_b_up; 
   // Downstream Bottom Level (same 'Down' as HQDown)
-  parameter SI.Position H_b_down;
+  parameter Modelica.Units.SI.Position H_b_down;
   // Array of Bottom Levels
-  parameter SI.Position[n_level_nodes] H_b = linspace(H_b_up, H_b_down, n_level_nodes); 
+  parameter Modelica.Units.SI.Position[n_level_nodes] H_b = linspace(H_b_up, H_b_down, n_level_nodes); 
 
-  //input SI.Duration semi_implicit_step_size = 0.0;
-  //parameter SI.VolumeFlowRate[n_level_nodes + 1] Q0;
-  //SI.Position[n_level_nodes] Y;
-  //parameter SI.Position Y0[n_level_nodes];
+  //input Modelica.Units.SI.Duration semi_implicit_step_size = 0.0;
+  //parameter Modelica.Units.SI.VolumeFlowRate[n_level_nodes + 1] Q0;
+  //Modelica.Units.SI.Position[n_level_nodes] Y;
+  //parameter Modelica.Units.SI.Position Y0[n_level_nodes];
 
-  parameter SI.Distance T0[n_level_nodes];
-  parameter SI.Velocity[n_level_nodes * 2 - 1] V0;
+  parameter Modelica.Units.SI.Distance T0[n_level_nodes];
+  parameter Modelica.Units.SI.Velocity[n_level_nodes * 2 - 1] V0;
   parameter Real[n_level_nodes + 1] Delta;
   parameter Real[n_level_nodes] Gamma;
   parameter Real[n_level_nodes + 1] C0;
   
 
-  parameter SI.VolumeFlowRate[n_QLateral] Qlateral_nominal = fill(0.0, n_QLateral);
-  parameter SI.VolumeFlowRate[n_QForcing] Qforcing_nominal = fill(0.0, n_QForcing);
+  parameter Modelica.Units.SI.VolumeFlowRate[n_QLateral] Qlateral_nominal = fill(0.0, n_QLateral);
+  parameter Modelica.Units.SI.VolumeFlowRate[n_QForcing] Qforcing_nominal = fill(0.0, n_QForcing);
 
 
 protected
-  SI.Stress _wind_stress;
+  Modelica.Units.SI.Stress _wind_stress;
   constant Real D2R = 3.141592653590 / 180.0;
-  parameter SI.Angle rotation_rad = D2R * rotation_deg; // Conversion to rotation in radians
-  parameter SI.Distance dx = length / (n_level_nodes - 1);
-  SI.Area[n_level_nodes] _cross_section;
-  SI.VolumeFlowRate[n_QLateral] _lat = QLateral.Q .- Qlateral_nominal;
-  SI.VolumeFlowRate[n_level_nodes] _QPerpendicular_distribution = transpose(QForcing_map) * (QForcing .- Qforcing_nominal) .+ transpose(QLateral_map) * _lat;
+  parameter Modelica.Units.SI.Angle rotation_rad = D2R * rotation_deg; // Conversion to rotation in radians
+  parameter Modelica.Units.SI.Distance dx = length / (n_level_nodes - 1);
+  Modelica.Units.SI.Area[n_level_nodes] _cross_section;
+  Modelica.Units.SI.VolumeFlowRate[n_QLateral] _lat = QLateral.Q .- Qlateral_nominal;
+  Modelica.Units.SI.VolumeFlowRate[n_level_nodes] _QPerpendicular_distribution = transpose(QForcing_map) * (QForcing .- Qforcing_nominal) .+ transpose(QLateral_map) * _lat;
   
   // output Real test_1;
 

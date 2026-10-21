@@ -2,9 +2,8 @@ within Deltares.ChannelFlow.SimpleRouting.Branches.Internal;
 
 partial block PartialMuskingum
   extends Deltares.ChannelFlow.Internal.QSISO(QIn.Q(nominal=Q_nominal), QOut.Q(nominal=Q_nominal));
-  import SI = Modelica.Units.SI;
   // Note: correct formulation guaranteed only if step_size is set to the optimization step size.
-  input SI.Duration step_size = 0.0;
+  input Modelica.Units.SI.Duration step_size = 0.0;
   parameter Modelica.Units.SI.Time K_internal "Storage constant";
   parameter Internal.MuskingumWeightingFactor x_internal "Weighting factor";
   // We don't introduce a storage state, as this would require the user to specify

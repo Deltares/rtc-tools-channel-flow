@@ -65,8 +65,11 @@ class WeirExample(WeirMixin, GoalProgrammingMixin, CSVMixin, ModelicaMixin, Coll
         results = self.extract_results()
 
         # Make plots
-        import matplotlib.dates as mdates
-        import matplotlib.pyplot as plt
+        try:
+            import matplotlib.dates as mdates
+            import matplotlib.pyplot as plt
+        except ImportError:
+            return
         import os
 
         plt.style.use('ggplot')
