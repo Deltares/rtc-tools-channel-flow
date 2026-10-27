@@ -14,17 +14,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # hatch-vcs derives the package version from tags; a shallow
+          # checkout yields 0.1.dev1.
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Install build dependencies
-        run: pip install setuptools wheel
+        run: pip install build
 
       - name: Build package
-        run: python setup.py sdist bdist_wheel
+        run: python -m build
 
       - name: Upload dist as artifact
         uses: actions/upload-artifact@v4
@@ -50,7 +54,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Install twine
         run: pip install twine
