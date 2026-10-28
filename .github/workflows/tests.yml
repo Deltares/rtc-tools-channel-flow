@@ -41,10 +41,7 @@ jobs:
   #   which casadi 3.8 removed, so every model containing a division fails to
   #   compile. Fixed upstream by pymoca#356, which no release carries yet;
   #   pymoca#357 backported it to 0.9.3, which is why the job above is
-  #   uncapped. Drop this cap once a release includes #356 — but note that on
-  #   casadi >=3.8 the three pumping-station examples hit the np.allclose
-  #   RecursionError that test_examples skips, so dropping the cap turns them
-  #   from pass to skip here, as already happens in the 0.9 job above.
+  #   uncapped. Drop this cap once a release includes #356.
   # - pymoca: on 0.12.0, `fill()` fails in the casadi backend because
   #   `get_integer` returns None, stopping 5 of 6 examples at compile time.
   #   Fixed on pymoca master (unreleased); bumping this pin needs a release

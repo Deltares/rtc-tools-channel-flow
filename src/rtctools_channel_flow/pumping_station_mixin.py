@@ -1846,7 +1846,9 @@ class PumpingStationMixin(OptimizationProblem, CommonStructureSwitchFunctions):
             raise Exception("Power inside working area cannot be negative")
 
         # Check if the inequality resolved to (approximately) an equality
-        power_eq = ca.Function("power", [H, Q], [power_expr]).expand()(h, q)
+        # Cast to float: on casadi >=3.8, abs() of a DM stays a DM, and a DM atol
+        # sends np.allclose into infinite recursion.
+        power_eq = float(ca.Function("power", [H, Q], [power_expr]).expand()(h, q))
 
         if not np.allclose(
             power_eq,
