@@ -94,6 +94,9 @@ def clean_html_fragment(text):
 
 
 
+    # Normalize prose indentation (list markers are emitted at line start)
+    text = re.sub(r"(?m)^[ \t]+", "", text)
+
     return text.strip()
 
 
@@ -120,7 +123,7 @@ def html_to_rst(doc):
     '''
 
     block_re = re.compile(
-        r"(<math>.*?</math>|<code>.*?\n.*?</code>)",
+        r"(<math>.*?</math>|<code>(?:(?!</code>).)*\n(?:(?!</code>).)*</code>)",
         re.DOTALL | re.IGNORECASE,
         )
 

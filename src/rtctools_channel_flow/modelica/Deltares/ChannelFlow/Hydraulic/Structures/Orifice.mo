@@ -6,7 +6,8 @@ model Orifice "Orifice that only allows flow when HQDown.H < HQUp.H"
   // The Orifice block represents a free-flow (non-submerged) orifice structure.
   // It can only be used in combination with the orifice_mixin, which provides
   // the necessary formulation and auxiliary variables. It uses a boolean, therefore 
-  // mixed-integer optimization is needed. The flow equation is piecewise linear.
+  // mixed-integer optimization is needed. The flow constraint is nonlinear: it
+  // constrains the square of the discharge, alongside binary status constraints.
   //
   // The crest level of the orifice is fixed. Flow through the orifice is
   // constrained using a boolean variable to ensure that discharge only occurs

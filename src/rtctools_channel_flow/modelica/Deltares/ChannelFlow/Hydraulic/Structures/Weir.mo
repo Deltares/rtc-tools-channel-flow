@@ -10,11 +10,11 @@ model Weir
   // necessary formulation and auxiliary variables. It uses a boolean, therefore 
   // mixed-integer optimization is needed.
   //
-  // The crest height of the weir is treated as a decision variable in the
-  // optimisation problem. The discharge is modelled using a linearised
-  // approximation of the classical weir equation, while preserving the shape
-  // of the full nonlinear relation away from the boundaries. Near the limits,
-  // the formulation is adjusted to ensure numerical robustness.
+  // The crest height is not a decision variable. The decision variable is the
+  // discharge Q, which the weir_mixin bounds using linear approximations of the
+  // classical weir equation (adjusted near the limits for numerical robustness).
+  // After optimisation, the mixin's post() calculates the crest height from the
+  // optimised discharge and the upstream water level.
   //
   // This implementation is valid only for free-flow conditions (i.e. when the
   // downstream water level does not submerge the weir crest).
