@@ -68,6 +68,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinxcontrib.spelling',
+    'sphinx.ext.mathjax',
 ]
 
 spelling_word_list_filename = "../spelling_wordlist.txt"
@@ -103,6 +104,9 @@ html_sidebars = {
 
 html_theme = 'sphinx_rtd_theme'
 
+html_theme_options = {
+    "navigation_depth": 6,
+}
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
 
