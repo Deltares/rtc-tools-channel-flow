@@ -1,6 +1,18 @@
 within Deltares.ChannelFlow.Hydraulic.Structures;
 
 model FreeRectangularWeir "FreeRectangularWeir"
+  
+  // This block does not require a specific mixin for basic usage.
+  // It represents a free-flow (non-submerged) rectangular weir.
+  //
+  // The discharge is described using the nonlinear weir equation,
+  // making the formulation inherently nonlinear. As a result, this
+  // block can only be used in combination with the homotopy_mixin
+  // to ensure robust convergence of the optimisation problem.
+  //
+  // The model is valid for free-flow conditions only and does not
+  // account for submerged behaviour.
+
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
   // Crest level input
   input Modelica.Units.SI.Position crest_level;

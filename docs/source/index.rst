@@ -19,11 +19,17 @@ how to :ref:`installation` the project.
 Contents
 --------
 
+
 .. toctree::
+   :maxdepth: 6
+   :glob:
+   :includehidden:
+
 
    usage
-   ChannelFlowLibrary
-   
+   generated/index
+   generated/Constants
+
 .. toctree::
    :maxdepth: 2
    :caption: Hydraulic Structures API Documentation

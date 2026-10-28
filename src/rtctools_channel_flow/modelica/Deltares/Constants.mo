@@ -1,7 +1,6 @@
 within Deltares;
 
 package Constants
-  "Library of mathematical constants and constants of nature"
 
   // Mathematical constants
   final constant Real pi=3.14159265358979;
@@ -14,4 +13,14 @@ package Constants
 
   // Numerical tuning constants
   constant Real eps=1e-12 "Small number used to guard against singularities";
+  annotation (
+    Documentation(info="
+  <html>
+
+  <p>
+  Defines mathematical, physical, and numerical constants used by the ChannelFlow library. 
+  </p>
+
+  </html>")
+  );
 end Constants;

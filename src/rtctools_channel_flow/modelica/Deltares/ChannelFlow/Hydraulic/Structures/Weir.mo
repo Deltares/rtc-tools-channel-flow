@@ -1,8 +1,24 @@
 within  Deltares.ChannelFlow.Hydraulic.Structures;
 
 model Weir
+
   extends Deltares.ChannelFlow.Internal.HQTwoPort;
-  //This block is from rtc-tools-hydraulic-structures and works correctly if the corresponding mixin is imported
+  
+  // This block originates from rtc-tools-hydraulic-structures and requires the corresponding weir_mixin.
+  // The Weir block represents a free-flow (non-submerged) weir structure.
+  // It can only be used in combination with the weir_mixin, which provides the
+  // necessary formulation and auxiliary variables. It uses a boolean, therefore 
+  // mixed-integer optimization is needed.
+  //
+  // The crest height is not a decision variable. The decision variable is the
+  // discharge Q, which the weir_mixin bounds using linear approximations of the
+  // classical weir equation (adjusted near the limits for numerical robustness).
+  // After optimisation, the mixin's post() calculates the crest height from the
+  // optimised discharge and the upstream water level.
+  //
+  // This implementation is valid only for free-flow conditions (i.e. when the
+  // downstream water level does not submerge the weir crest).
+
   // Inputs
   input Modelica.Units.SI.VolumeFlowRate Q;
 

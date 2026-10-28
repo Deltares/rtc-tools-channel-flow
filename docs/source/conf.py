@@ -68,6 +68,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinxcontrib.spelling',
+    'sphinx.ext.mathjax',
 ]
 
 spelling_word_list_filename = "../spelling_wordlist.txt"
@@ -103,8 +104,17 @@ html_sidebars = {
 
 html_theme = 'sphinx_rtd_theme'
 
+html_theme_options = {
+    "navigation_depth": 6,
+}
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
+
+# -- Generate RST documentation from Modelica annotations ------------------
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from generate_modelica_docs import generate_modelica_docs
+
+generate_modelica_docs()
 
 # -- Hack to strip annotations from Modelica files ------------------------
 MODELICA_EXAMPLE_BASE_FOLDER = os.path.abspath(
