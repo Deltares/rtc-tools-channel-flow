@@ -324,13 +324,7 @@ This creates a navigation tree that matches the Modelica package structure.
 
 # 5. Building the documentation
 
-Generate the RST files:
-
-```bash
-python generate_modelica_docs.py
-```
-
-Build the documentation:
+Building the documentation with Sphinx automatically runs `generate_modelica_docs.py` via `conf.py` to generate the `.rst` files under `source/generated/`:
 
 ```bash
 make html
@@ -340,6 +334,12 @@ or on Windows:
 
 ```powershell
 .\make.bat html
+```
+
+You can also run the generator standalone if needed:
+
+```bash
+python generate_modelica_docs.py
 ```
 
 ---

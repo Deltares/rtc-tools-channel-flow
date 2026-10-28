@@ -1,24 +1,14 @@
 #!/usr/bin/env python3
 
+from collections import defaultdict
 import re
 from pathlib import Path
 import shutil
 
 
-DOCS_DIR = Path(__file__).resolve().parent
-PACKAGE_ROOT = DOCS_DIR.parent / "src/rtctools_channel_flow/modelica/Deltares"
-OUTPUT_DIR = DOCS_DIR / "source/generated"
-
-
-
-
-if OUTPUT_DIR.exists():
-    shutil.rmtree(OUTPUT_DIR)
-
-OUTPUT_DIR.mkdir(parents=True)
-
-
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+DOCS_DIR = Path(__file__).resolve().parent
+PACKAGE_ROOT = DOCS_DIR.parent / "src/rtctools_channel_flow/modelica/Deltares"
+OUTPUT_DIR = DOCS_DIR / "source/generated"
 
 
 MATH_RE = re.compile(r"<math>(.*?)</math>", re.DOTALL | re.IGNORECASE)
@@ -333,52 +323,60 @@ def generate_package_indexes(package_contents, output_dir):
         )
 '''
 
-print(PACKAGE_ROOT.resolve())
-print(PACKAGE_ROOT.exists())
-from collections import defaultdict
+def generate_modelica_docs(package_root=PACKAGE_ROOT, output_dir=OUTPUT_DIR):
+    """Generate RST documentation files from Modelica Documentation annotations."""
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
 
-package_contents = defaultdict(list)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-for mo_file in PACKAGE_ROOT.rglob("*.mo"):
-    text = mo_file.read_text(encoding="utf-8")
+    print(package_root.resolve())
+    print(package_root.exists())
 
-    doc = extract_documentation(text)
+    package_contents = defaultdict(list)
 
-    if not doc:
-        continue
+    for mo_file in package_root.rglob("*.mo"):
+        text = mo_file.read_text(encoding="utf-8")
 
-    print(f"Found documentation in {mo_file}")
-    name = extract_name(text, mo_file.stem)
-    body = html_to_rst(doc).strip()
+        doc = extract_documentation(text)
 
-    relative_path = mo_file.relative_to(PACKAGE_ROOT)
+        if not doc:
+            continue
 
-    # Example:
-    # Hydraulic/Reservoir/HomotopicPower.mo
-    # becomes ("Hydraulic", "Reservoir")
-    package_parts = relative_path.parts[:-1]
+        print(f"Found documentation in {mo_file}")
+        name = extract_name(text, mo_file.stem)
+        body = html_to_rst(doc).strip()
 
-    package_contents[package_parts].append(name)
+        relative_path = mo_file.relative_to(package_root)
 
-    rst = (
-        f"{name}\n"
-        f"{'=' * len(name)}\n\n"
-        f"{body}\n"
-    )
+        # Example:
+        # Hydraulic/Reservoir/HomotopicPower.mo
+        # becomes ("Hydraulic", "Reservoir")
+        package_parts = relative_path.parts[:-1]
 
-    target_dir = OUTPUT_DIR.joinpath(*package_parts)
-    target_dir.mkdir(parents=True, exist_ok=True)
+        package_contents[package_parts].append(name)
 
-    print(f"Writing {target_dir / f'{name}.rst'}")
+        rst = (
+            f"{name}\n"
+            f"{'=' * len(name)}\n\n"
+            f"{body}\n"
+        )
 
-    (target_dir / f"{name}.rst").write_text(
-        rst,
-        encoding="utf-8",
-    )
+        target_dir = output_dir.joinpath(*package_parts)
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+        print(f"Writing {target_dir / f'{name}.rst'}")
+
+        (target_dir / f"{name}.rst").write_text(
+            rst,
+            encoding="utf-8",
+        )
+
+    generate_package_indexes(package_contents, output_dir)
+    generate_root_index(package_contents, output_dir)
+
+    print("Generated documentation pages.")
 
 
-generate_package_indexes(package_contents, OUTPUT_DIR)
-generate_root_index(package_contents, OUTPUT_DIR)
-
-print("Generated documentation pages.")
-
+if __name__ == "__main__":
+    generate_modelica_docs()

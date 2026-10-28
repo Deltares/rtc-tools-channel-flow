@@ -14,6 +14,7 @@ __pycache__
 # Documentation builds
 docs/build/
 docs/source/build/
+docs/source/generated/
 
 # IDE
 .idea/
