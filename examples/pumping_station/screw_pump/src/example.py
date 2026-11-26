@@ -2,14 +2,14 @@ import os
 
 from rtctools.optimization.collocated_integrated_optimization_problem import \
     CollocatedIntegratedOptimizationProblem
-from rtctools.optimization.goal_programming_mixin import (GoalProgrammingMixin,
+from rtctools.optimization.goal_programming_mixin import (Goal, GoalProgrammingMixin,
                                                           StateGoal)
 from rtctools.optimization.modelica_mixin import ModelicaMixin
 from rtctools.optimization.pi_mixin import PIMixin
 from rtctools.util import run_optimization_problem
 
 from rtctools_channel_flow.pumping_station_mixin import \
-    PumpingStation, PumpingStationMixin
+    MinimizePumpEnergyGoal, PumpingStation, PumpingStationMixin
 
 
 class WaterLevelRangeGoal(StateGoal):
@@ -32,13 +32,22 @@ class WaterLevelRangeGoal(StateGoal):
         super(WaterLevelRangeGoal, self).__init__(optimization_problem)
 
 
+class MinimizeHeadLossGoal(Goal):
+    priority = 2
+    order = 1
+    function_nominal = 1.0  # m
+
+    def function(self, optimization_problem, ensemble_member):
+        return optimization_problem.state('pumpingstation1.resistance1.dH')
+
+
 class Example(PumpingStationMixin, GoalProgrammingMixin, PIMixin, ModelicaMixin,
               CollocatedIntegratedOptimizationProblem):
     """
-    An example showing the basic usage of the PumpingStationMixin. It consists of
-    two goals:
+    An example showing the basic usage of the PumpingStationMixin. Its goals are:
     1. Keep water level in the acceptable range.
-    2. Minimize power usage for doing so.
+    2. Minimize resistance head loss.
+    3. Minimize pump energy usage.
     """
 
     # Set the target minimum and maximum water levels.
@@ -66,6 +75,13 @@ class Example(PumpingStationMixin, GoalProgrammingMixin, PIMixin, ModelicaMixin,
     def path_goals(self):
         goals = super(Example, self).path_goals()
         goals.append(WaterLevelRangeGoal(self))
+        # Tighten the mixin's head-loss relaxation before minimizing energy.
+        goals.append(MinimizeHeadLossGoal())
+        return goals
+
+    def goals(self):
+        goals = super(Example, self).goals()
+        goals.append(MinimizePumpEnergyGoal())
         return goals
 
     def solver_options(self):

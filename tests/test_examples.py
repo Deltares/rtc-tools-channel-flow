@@ -19,7 +19,9 @@ has to go.
 With pymoca 0.9.3 all six examples solve, `rc=0`, on casadi 3.7 and 3.8.
 """
 
+import csv
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -48,6 +50,11 @@ BOUNDS_LOST = re.compile(
 MISSING_CLASS = re.compile(
     r"Could not find class|ClassNotFoundError",
 )
+INVALID_SOLUTION = re.compile(
+    r"too (?:few|many) degrees of freedom|"
+    r"relative/absolute (?:power|head loss) error exceedence",
+    re.IGNORECASE,
+)
 
 
 def _example_dirs():
@@ -65,12 +72,22 @@ def _example_id(path):
     strict=True,
     reason="pymoca >=0.10 drops min/max on MSL-typed variables (rtc-tools#1798)",
 )
-def test_example_solves(example):
+def test_example_solves(example, tmp_path):
+    working_copy = tmp_path / "example"
+    working_copy.mkdir()
+    for folder in ("input", "model", "src"):
+        shutil.copytree(
+            example / folder,
+            working_copy / folder,
+            ignore=shutil.ignore_patterns("*.pymoca_cache", "*.pickle", "__pycache__"),
+        )
+    (working_copy / "output").mkdir()
+
     # example.py calls run_optimization_problem() at import time and resolves
     # its input/output folders relative to src/, so it has to run as a script.
     result = subprocess.run(
         [sys.executable, "example.py"],
-        cwd=example / "src",
+        cwd=working_copy / "src",
         capture_output=True,
         text=True,
         timeout=1800,
@@ -87,3 +104,20 @@ def test_example_solves(example):
         raise BoundsLost(output[-1000:])
 
     assert result.returncode == 0, output[-2000:]
+    assert "Solver succeeded" in output, output[-2000:]
+    assert not INVALID_SOLUTION.search(output), output[-4000:]
+
+    if _example_id(example) == "weir/basic":
+        with (working_copy / "output" / "timeseries_export.csv").open(newline="") as f:
+            rows = list(csv.DictReader(f))
+
+        assert len(rows) > 1
+        # Parameters of the example's free-flow weir: width=10 m, coefficient=0.61.
+        c_weir = (2 * 9.81) ** 0.5 * (2 / 3) * 0.61 * 10
+        for row in rows[1:]:
+            flow = float(row["WeirFlow1"])
+            assert -1e-6 <= flow <= 1.0 + 1e-6
+            if flow > 1e-6:
+                crest = float(row["branch_1_water_level"]) - (flow / c_weir) ** (2 / 3)
+                assert 1.7 - 1e-5 <= crest <= 3.0 + 1e-5
+                assert crest >= float(row["branch_2_water_level"]) - 1e-5
