@@ -27,6 +27,7 @@ Contents
 
 
    usage
+   good-practices
    generated/index
    generated/Constants
 

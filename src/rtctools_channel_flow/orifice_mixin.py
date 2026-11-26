@@ -29,17 +29,17 @@ class Orifice(_ObjectParameterWrapper):
 
     def discharge(self):
         """
-Get the state corresponding to the orifice discharge.
+        Get the state corresponding to the orifice discharge.
 
-:returns: `MX` expression of the orifice discharge.
+        :returns: `MX` expression of the orifice discharge.
         """
         return self.optimization_problem.state(self.symbol + ".Q")
 
     def _head_up(self):
         """
-Get the state corresponding to the upstream head of the orifice.
+        Get the state corresponding to the upstream head of the orifice.
 
-:returns: `MX` expression of the upstream head.
+        :returns: `MX` expression of the upstream head.
         """
         return self.optimization_problem.state(self.symbol + ".HQUp.H")
 
