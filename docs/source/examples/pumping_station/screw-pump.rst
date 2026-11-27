@@ -37,7 +37,7 @@ modelica file, see ``Example.mo``:
 
 .. literalinclude:: ../../build/_stripped_examples/pumping_station/screw_pump/model/Example.mo
   :language: modelica
-  :lines: 8-35
+  :lines: 12-39
   :lineno-match:
 
 The interpretation and the calculation of these coefficients is explained in
@@ -48,12 +48,21 @@ speed is the same.
 The Optimization Problem
 ------------------------
 
-The optimization problem is exactly the same as for a variable speed pump.
+The first priority keeps the storage level within its target range. A second
+goal minimizes the resistance head loss to tighten the mixin's head-loss
+inequality, and the final goal minimizes pump energy. The mixin checks the
+resulting head loss and power against their nonlinear relationships.
+
+The fitted power curve is not monotonic in head throughout the working area.
+Consequently, a different input scenario may not tighten these relaxations
+sufficiently; inspect the mixin's post-processing diagnostics for each run.
 
 Results
 -------
 
-The results with the screw pump can be seen:
+The plots below were generated with the earlier formulation, before the
+head-loss and energy goals were added. The updated formulation can produce
+different operating points:
 
 .. image:: ../../../../examples/pumping_station/screw_pump/reference_output/overall_results.png
 

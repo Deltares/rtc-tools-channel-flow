@@ -139,9 +139,9 @@ model Example
   input Modelica.Units.SI.VolumeFlowRate Q_in(fixed = true);
   input Modelica.Units.SI.Position H_ext(fixed=true);
 
-  input Real pumpingstation1_pump1_Q;
-  input Real pumpingstation1_pump2_Q;
-  input Real pumpingstation1_resistance1_dH(min=0.0, max=10.0);
+  input Modelica.Units.SI.VolumeFlowRate pumpingstation1_pump1_Q;
+  input Modelica.Units.SI.VolumeFlowRate pumpingstation1_pump2_Q;
+  input Modelica.Units.SI.Distance pumpingstation1_resistance1_dH(min=0.0, max=10.0);
 
   // Output variables
   output Modelica.Units.SI.Position storage_level;

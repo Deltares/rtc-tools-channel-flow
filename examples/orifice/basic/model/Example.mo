@@ -55,7 +55,7 @@ model Example
   // we need extra variables to do this. Format is expected to be the fully
   // specified name, with all dots replaced with underscores.
   input Modelica.Units.SI.VolumeFlowRate pumpingstation1_pump1_Q;
-  input Modelica.Units.SI.VolumeFlowRate orifice1_Q = orifice1.Q;
+  input Modelica.Units.SI.VolumeFlowRate orifice1_Q;
 
   // Output variables
   output Modelica.Units.SI.Position storage_level;

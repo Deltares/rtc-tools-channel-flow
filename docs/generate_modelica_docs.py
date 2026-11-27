@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
-from collections import defaultdict
 import re
-from pathlib import Path
 import shutil
-
+from collections import defaultdict
+from pathlib import Path
 
 DOCS_DIR = Path(__file__).resolve().parent
 PACKAGE_ROOT = DOCS_DIR.parent / "src/rtctools_channel_flow/modelica/Deltares"
@@ -21,9 +20,7 @@ BLOCK_CODE_RE = re.compile(
     r"<code>(.*?)</code>",
     re.DOTALL | re.IGNORECASE,
 )
-MODEL_RE = re.compile(
-    r"\b(model|package|block|record)\s+([A-Za-z0-9_]+)"
-)
+MODEL_RE = re.compile(r"\b(model|package|block|record)\s+([A-Za-z0-9_]+)")
 
 DOC_RE = re.compile(
     r"Documentation\s*\(\s*info\s*=\s*\"(.*?)\"\s*\)",
@@ -81,7 +78,7 @@ def clean_html_fragment(text):
         text,
         flags=re.IGNORECASE,
     )
-    '''
+    """
     # Inline code
     text = re.sub(
         r"<code>(.*?)</code>",
@@ -89,10 +86,7 @@ def clean_html_fragment(text):
         text,
         flags=re.IGNORECASE | re.DOTALL,
     )
-    '''
-
-
-
+    """
 
     # Normalize prose indentation (list markers are emitted at line start)
     text = re.sub(r"(?m)^[ \t]+", "", text)
@@ -115,21 +109,20 @@ def html_to_rst(doc):
     pos = 0
 
     # Process both math and code blocks in document order
-    '''
+    """
     block_re = re.compile(
         r"(<math>.*?</math>|<code>.*?</code>)",
         re.DOTALL | re.IGNORECASE,
     )
-    '''
+    """
 
     block_re = re.compile(
         r"(<math>.*?</math>|<code>(?:(?!</code>).)*\n(?:(?!</code>).)*</code>)",
         re.DOTALL | re.IGNORECASE,
-        )
-
+    )
 
     for match in block_re.finditer(doc):
-        before = doc[pos:match.start()]
+        before = doc[pos : match.start()]
         before = clean_html_fragment(before)
 
         if before:
@@ -203,7 +196,6 @@ def extract_name(text, fallback):
     return match.group(2) if match else fallback
 
 
-
 def generate_root_index(package_contents, output_dir):
     """
     Create generated/index.rst listing the top-level packages.
@@ -231,7 +223,6 @@ def generate_root_index(package_contents, output_dir):
         "\n".join(lines),
         encoding="utf-8",
     )
-
 
 
 def generate_package_indexes(package_contents, output_dir):
@@ -298,7 +289,7 @@ def generate_package_indexes(package_contents, output_dir):
         )
 
 
-'''
+"""
 def generate_package_indexes(package_contents, output_dir):
 
     for package_path, pages in package_contents.items():
@@ -324,7 +315,8 @@ def generate_package_indexes(package_contents, output_dir):
             "\n".join(lines),
             encoding="utf-8",
         )
-'''
+"""
+
 
 def generate_modelica_docs(package_root=PACKAGE_ROOT, output_dir=OUTPUT_DIR):
     """Generate RST documentation files from Modelica Documentation annotations."""
@@ -359,11 +351,7 @@ def generate_modelica_docs(package_root=PACKAGE_ROOT, output_dir=OUTPUT_DIR):
 
         package_contents[package_parts].append(name)
 
-        rst = (
-            f"{name}\n"
-            f"{'=' * len(name)}\n\n"
-            f"{body}\n"
-        )
+        rst = f"{name}\n{'=' * len(name)}\n\n{body}\n"
 
         target_dir = output_dir.joinpath(*package_parts)
         target_dir.mkdir(parents=True, exist_ok=True)

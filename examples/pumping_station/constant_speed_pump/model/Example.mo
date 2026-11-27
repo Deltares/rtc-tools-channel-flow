@@ -4,7 +4,11 @@ model Example
       n_pumps=1
     );
 
-    Deltares.ChannelFlow.Hydraulic.Structures.PumpingStation.Pump pump1(
+    model MyPump
+      extends Deltares.ChannelFlow.Hydraulic.Structures.PumpingStation.Pump;
+    end MyPump;
+
+    MyPump pump1(
       power_coefficients = {{{-39095.7484857 ,  66783.26438029},
                              {  7281.58399033,       0.0}},
                             {{-27859.72396609,  52991.89678362},
@@ -127,8 +131,7 @@ model Example
   // NOTE: Because we cannot flag each pump's .Q as "input", we need an extra
   // variable to do this. Format is expected to be the fully specified name,
   // with all dots replaced with underscores.
-  input Real pumpingstation1_pump1_Q;
-  // TODO: Move bounds to the mixin.
+  input Modelica.Units.SI.VolumeFlowRate pumpingstation1_pump1_Q;
 
   // Output variables
   output Modelica.Units.SI.Position storage_level;

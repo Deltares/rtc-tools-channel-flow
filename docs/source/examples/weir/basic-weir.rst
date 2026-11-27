@@ -87,7 +87,9 @@ The input variables for the model are:
 .. important::
 
   The min, max and nominal the values should always be meaningful. For
-  nominal, set the value that the variable most likely takes.
+  nominal, set the value that the variable most likely takes. The flow
+  control bounds refer to the weir's ``q_min`` and ``q_max`` parameters, so
+  the control variable cannot exceed the configured physical flow range.
 
 As output, we are interested in the water level in the two branches:
 
@@ -243,7 +245,9 @@ The file found in the example folder includes some visualization routines.
 Interpretation of the results
 -----------------------------
 
-The results of this simulation are summarized in the following figure:
+The following figure shows a solution obtained with the earlier, looser
+control-variable bound. The current bounds can produce a different solution
+because multiple flow schedules satisfy the water-level goals.
 
 .. image:: ../../../../examples/weir/basic/reference_output/overall_results.png
 

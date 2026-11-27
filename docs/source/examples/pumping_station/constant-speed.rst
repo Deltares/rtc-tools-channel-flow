@@ -35,7 +35,7 @@ be seen in the file ``Example.mo``:
 
 .. literalinclude:: ../../build/_stripped_examples/pumping_station/constant_speed_pump/model/Example.mo
   :language: modelica
-  :lines: 8-26
+  :lines: 12-30
   :lineno-match:
 
 The interpretation and the calculation of these coefficients is explained in
